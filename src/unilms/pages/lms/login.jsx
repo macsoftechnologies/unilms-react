@@ -81,9 +81,9 @@ const LmsLogin = () => {
         alignItems: 'center',
         justifyContent: 'center',
         position: 'relative',
-        padding: '30px 20px',
+        padding: '16px 20px',
         boxSizing: 'border-box',
-        overflowX: 'hidden',
+        overflow: 'hidden',
         fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
         transition: 'background-color 0.25s ease'
       }}
@@ -93,18 +93,19 @@ const LmsLogin = () => {
           position: relative;
           z-index: 2;
           width: 100%;
-          max-width: 1040px;
-          border-radius: 24px;
+          max-width: 960px;
+          border-radius: 20px;
           display: grid;
-          grid-template-columns: 1.1fr 1fr;
+          grid-template-columns: 1.05fr 1fr;
           overflow: hidden;
-          min-height: 590px;
+          max-height: 94vh;
           transition: all 0.25s ease;
         }
         @media (max-width: 920px) {
           .lms-auth-card {
             grid-template-columns: 1fr;
-            max-width: 480px;
+            max-width: 460px;
+            max-height: none;
           }
           .lms-hero-side {
             display: none !important;
@@ -113,29 +114,29 @@ const LmsLogin = () => {
         .lms-feature-item {
           display: flex;
           align-items: center;
-          gap: 14px;
+          gap: 12px;
           background: rgba(255, 255, 255, 0.08);
           border: 1px solid rgba(255, 255, 255, 0.12);
           backdrop-filter: blur(8px);
-          padding: 12px 18px;
-          border-radius: 14px;
+          padding: 8px 14px;
+          border-radius: 12px;
           transition: all 0.25s ease;
         }
         .lms-feature-item:hover {
           background: rgba(255, 255, 255, 0.14);
-          transform: translateX(4px);
+          transform: translateX(3px);
         }
       ` }} />
 
       {/* Back to Gateway Button */}
       <Link 
-        to="/unilms/" 
+        to="/" 
         style={{ 
           position: 'absolute', 
-          top: '24px', 
-          left: '24px', 
-          width: '42px', 
-          height: '42px', 
+          top: '20px', 
+          left: '20px', 
+          width: '38px', 
+          height: '38px', 
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center', 
@@ -159,17 +160,17 @@ const LmsLogin = () => {
         onClick={toggleTheme}
         style={{
           position: 'absolute',
-          top: '24px',
-          right: '24px',
+          top: '20px',
+          right: '20px',
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
-          padding: '8px 16px',
+          padding: '7px 14px',
           borderRadius: '24px',
           border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.15)' : '1px solid #cbd5e1',
           background: isDarkMode ? '#151A24' : '#ffffff',
           color: isDarkMode ? '#F8FAFC' : '#1e293b',
-          fontSize: '13px',
+          fontSize: '12.5px',
           fontWeight: '600',
           cursor: 'pointer',
           boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
@@ -229,7 +230,7 @@ const LmsLogin = () => {
           className="lms-hero-side"
           style={{
             background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4338ca 100%)',
-            padding: '48px 44px',
+            padding: '30px 32px',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
@@ -243,17 +244,17 @@ const LmsLogin = () => {
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '10px',
+                gap: '8px',
                 background: 'rgba(255, 255, 255, 0.12)',
                 border: '1px solid rgba(255, 255, 255, 0.2)',
                 backdropFilter: 'blur(12px)',
-                padding: '7px 16px',
+                padding: '5px 14px',
                 borderRadius: '30px',
-                fontSize: '12.5px',
+                fontSize: '12px',
                 fontWeight: '600',
-                letterSpacing: '0.4px',
+                letterSpacing: '0.3px',
                 color: '#ffffff',
-                marginBottom: '26px'
+                marginBottom: '16px'
               }}
             >
               <i className="fa-solid fa-graduation-cap" style={{ color: '#38BDF8' }}></i>
@@ -263,11 +264,11 @@ const LmsLogin = () => {
             <h1 
               style={{
                 fontFamily: "'Outfit', sans-serif",
-                fontSize: '32px',
+                fontSize: '24px',
                 fontWeight: '800',
                 lineHeight: 1.25,
-                letterSpacing: '-0.5px',
-                marginBottom: '14px',
+                letterSpacing: '-0.4px',
+                marginBottom: '8px',
                 color: '#ffffff'
               }}
             >
@@ -281,71 +282,71 @@ const LmsLogin = () => {
               </span>
             </h1>
 
-            <p style={{ fontSize: '14px', color: '#CBD5E1', lineHeight: '1.6', marginBottom: '28px', maxWidth: '420px' }}>
-              Autonomous Engineering Campus • Approved by AICTE, New Delhi • NAAC 'A+' Grade &amp; NBA Accredited Institution
+            <p style={{ fontSize: '13px', color: '#CBD5E1', lineHeight: '1.5', marginBottom: '18px', maxWidth: '400px' }}>
+              Comprehensive Student Academic &amp; Learning Management Portal
             </p>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <div className="lms-feature-item">
                 <div style={{
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '10px',
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '8px',
                   background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(79, 70, 229, 0.4))',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: '#38BDF8',
-                  fontSize: '15px',
+                  fontSize: '13px',
                   flexShrink: 0
                 }}>
                   <i className="fa-solid fa-play"></i>
                 </div>
                 <div>
-                  <span style={{ fontSize: '13px', fontWeight: '600', color: '#F1F5F9', display: 'block' }}>Blended Learning Video Hub</span>
-                  <span style={{ fontSize: '11.5px', color: '#94A3B8', fontWeight: '400' }}>Modular chapters &amp; downloadable study notes</span>
+                  <span style={{ fontSize: '12.5px', fontWeight: '600', color: '#F1F5F9', display: 'block' }}>Blended Learning Video Hub</span>
+                  <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: '400' }}>Modular chapters &amp; downloadable study notes</span>
                 </div>
               </div>
 
               <div className="lms-feature-item">
                 <div style={{
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '10px',
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '8px',
                   background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(79, 70, 229, 0.4))',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: '#38BDF8',
-                  fontSize: '15px',
+                  fontSize: '13px',
                   flexShrink: 0
                 }}>
                   <i className="fa-solid fa-code-branch"></i>
                 </div>
                 <div>
-                  <span style={{ fontSize: '13px', fontWeight: '600', color: '#F1F5F9', display: 'block' }}>OBE-Mapped Assessments</span>
-                  <span style={{ fontSize: '11.5px', color: '#94A3B8', fontWeight: '400' }}>CO/PO mapping &amp; rubric-based grading</span>
+                  <span style={{ fontSize: '12.5px', fontWeight: '600', color: '#F1F5F9', display: 'block' }}>OBE-Mapped Assessments</span>
+                  <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: '400' }}>CO/PO mapping &amp; rubric-based grading</span>
                 </div>
               </div>
 
               <div className="lms-feature-item">
                 <div style={{
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '10px',
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '8px',
                   background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(79, 70, 229, 0.4))',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: '#38BDF8',
-                  fontSize: '15px',
+                  fontSize: '13px',
                   flexShrink: 0
                 }}>
                   <i className="fa-solid fa-chart-pie"></i>
                 </div>
                 <div>
-                  <span style={{ fontSize: '13px', fontWeight: '600', color: '#F1F5F9', display: 'block' }}>Grade Card &amp; Smart Attendance</span>
-                  <span style={{ fontSize: '11.5px', color: '#94A3B8', fontWeight: '400' }}>Live semester progress &amp; timetable tracking</span>
+                  <span style={{ fontSize: '12.5px', fontWeight: '600', color: '#F1F5F9', display: 'block' }}>Grade Card &amp; Smart Attendance</span>
+                  <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: '400' }}>Live semester progress &amp; timetable tracking</span>
                 </div>
               </div>
             </div>
@@ -354,23 +355,23 @@ const LmsLogin = () => {
           <div style={{
             position: 'relative',
             zIndex: 2,
-            paddingTop: '24px',
+            paddingTop: '16px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-            fontSize: '12px',
+            fontSize: '11.5px',
             color: '#94A3B8'
           }}>
-            <span><i className="fa-solid fa-location-dot" style={{ color: '#38BDF8', marginRight: '6px' }}></i> Cyber Valley Campus</span>
-            <span><i className="fa-solid fa-shield-halved" style={{ color: '#38BDF8', marginRight: '6px' }}></i> AICTE / NBA Certified</span>
+            <span><i className="fa-solid fa-graduation-cap" style={{ color: '#38BDF8', marginRight: '6px' }}></i> {currentTenant?.name || tenant?.name || 'Higher Education Cloud'}</span>
+            <span><i className="fa-solid fa-shield-halved" style={{ color: '#38BDF8', marginRight: '6px' }}></i> Verified &amp; Encrypted</span>
           </div>
         </div>
 
         {/* Right Form Side */}
         <div 
           style={{
-            padding: '44px 40px',
+            padding: '26px 30px',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
@@ -379,23 +380,23 @@ const LmsLogin = () => {
             transition: 'all 0.25s ease'
           }}
         >
-          <div style={{ marginBottom: '26px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+          <div style={{ marginBottom: '14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
               <div style={{
-                width: '30px',
-                height: '30px',
+                width: '28px',
+                height: '28px',
                 borderRadius: '8px',
                 background: isDarkMode ? 'rgba(99, 102, 241, 0.2)' : 'rgba(79, 70, 229, 0.1)',
                 color: isDarkMode ? '#818CF8' : '#4F46E5',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '14px'
+                fontSize: '13px'
               }}>
                 <i className="fa-solid fa-building-columns"></i>
               </div>
               <span style={{
-                fontSize: '12px',
+                fontSize: '11.5px',
                 fontWeight: '700',
                 color: isDarkMode ? '#818CF8' : '#4F46E5',
                 textTransform: 'uppercase',
@@ -406,15 +407,15 @@ const LmsLogin = () => {
             </div>
             <h2 style={{
               fontFamily: "'Outfit', sans-serif",
-              fontSize: '25px',
+              fontSize: '22px',
               fontWeight: '800',
               color: isDarkMode ? '#FFFFFF' : '#0F172A',
-              letterSpacing: '-0.4px',
-              margin: '0 0 6px 0'
+              letterSpacing: '-0.3px',
+              margin: '0 0 4px 0'
             }}>
               Student Portal Sign In
             </h2>
-            <p style={{ margin: 0, color: isDarkMode ? '#94A3B8' : '#64748B', fontSize: '13.5px' }}>
+            <p style={{ margin: 0, color: isDarkMode ? '#94A3B8' : '#64748B', fontSize: '12.5px' }}>
               Access your personalized semester courses, lectures &amp; assignments
             </p>
           </div>
@@ -439,27 +440,27 @@ const LmsLogin = () => {
 
           <form onSubmit={handleLogin} id="studentLoginForm">
             {/* Campus Code Input */}
-            <div style={{ marginBottom: '18px' }}>
+            <div style={{ marginBottom: '12px' }}>
               <div style={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                fontSize: '12px',
+                fontSize: '11.5px',
                 fontWeight: '700',
                 textTransform: 'uppercase',
                 letterSpacing: '0.4px',
                 color: isDarkMode ? '#CBD5E1' : '#475569',
-                marginBottom: '7px'
+                marginBottom: '5px'
               }}>
                 <span>Campus / Organization Code</span>
-                <span style={{ fontSize: '11px', color: isDarkMode ? '#64748B' : '#94A3B8', fontWeight: '500', textTransform: 'none' }}>e.g. AIT, SXG</span>
+                <span style={{ fontSize: '10.5px', color: isDarkMode ? '#64748B' : '#94A3B8', fontWeight: '500', textTransform: 'none' }}>e.g. AIT, SXG</span>
               </div>
               <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                 <i className="fa-solid fa-building-columns" style={{
                   position: 'absolute',
-                  left: '15px',
+                  left: '14px',
                   color: isDarkMode ? '#64748B' : '#94A3B8',
-                  fontSize: '15px'
+                  fontSize: '14px'
                 }}></i>
                 <input
                   type="text"
@@ -472,15 +473,15 @@ const LmsLogin = () => {
                   onChange={(e) => setOrgCode(e.target.value.toUpperCase())}
                   style={{
                     width: '100%',
-                    padding: '12px 14px 12px 42px',
-                    fontSize: '14px',
+                    padding: '10px 14px 10px 40px',
+                    fontSize: '13.5px',
                     fontFamily: 'inherit',
                     fontWeight: '700',
                     letterSpacing: '0.8px',
                     background: isDarkMode ? '#1B212E' : '#F8FAFC',
                     color: isDarkMode ? '#F8FAFC' : '#0F172A',
                     border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.16)' : '1px solid #CBD5E1',
-                    borderRadius: '10px',
+                    borderRadius: '8px',
                     outline: 'none',
                     boxSizing: 'border-box',
                     transition: 'all 0.2s ease'
@@ -490,27 +491,27 @@ const LmsLogin = () => {
             </div>
 
             {/* Roll Number Input */}
-            <div style={{ marginBottom: '18px' }}>
+            <div style={{ marginBottom: '12px' }}>
               <div style={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                fontSize: '12px',
+                fontSize: '11.5px',
                 fontWeight: '700',
                 textTransform: 'uppercase',
                 letterSpacing: '0.4px',
                 color: isDarkMode ? '#CBD5E1' : '#475569',
-                marginBottom: '7px'
+                marginBottom: '5px'
               }}>
                 <span>Student Roll Number</span>
-                <span style={{ fontSize: '11px', color: isDarkMode ? '#64748B' : '#94A3B8', fontWeight: '500', textTransform: 'none' }}>e.g. 26CSE001</span>
+                <span style={{ fontSize: '10.5px', color: isDarkMode ? '#64748B' : '#94A3B8', fontWeight: '500', textTransform: 'none' }}>e.g. 26CSE001</span>
               </div>
               <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                 <i className="fa-solid fa-id-card" style={{
                   position: 'absolute',
-                  left: '15px',
+                  left: '14px',
                   color: isDarkMode ? '#64748B' : '#94A3B8',
-                  fontSize: '15px'
+                  fontSize: '14px'
                 }}></i>
                 <input
                   type="text"
@@ -518,19 +519,18 @@ const LmsLogin = () => {
                   id="rollNumberInput"
                   placeholder="Enter student roll number"
                   required
-                  autoFocus
                   value={rollNumber}
                   onChange={(e) => setRollNumber(e.target.value)}
                   style={{
                     width: '100%',
-                    padding: '12px 14px 12px 42px',
-                    fontSize: '14px',
+                    padding: '10px 14px 10px 40px',
+                    fontSize: '13.5px',
                     fontFamily: 'inherit',
                     fontWeight: '500',
                     background: isDarkMode ? '#1B212E' : '#F8FAFC',
                     color: isDarkMode ? '#F8FAFC' : '#0F172A',
                     border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.16)' : '1px solid #CBD5E1',
-                    borderRadius: '10px',
+                    borderRadius: '8px',
                     outline: 'none',
                     boxSizing: 'border-box',
                     transition: 'all 0.2s ease'
@@ -540,29 +540,29 @@ const LmsLogin = () => {
             </div>
 
             {/* Password Input */}
-            <div style={{ marginBottom: '22px' }}>
+            <div style={{ marginBottom: '16px' }}>
               <div style={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                fontSize: '12px',
+                fontSize: '11.5px',
                 fontWeight: '700',
                 textTransform: 'uppercase',
                 letterSpacing: '0.4px',
                 color: isDarkMode ? '#CBD5E1' : '#475569',
-                marginBottom: '7px'
+                marginBottom: '5px'
               }}>
                 <span>Password</span>
-                <a href="#forgot" onClick={(e) => e.preventDefault()} style={{ fontSize: '12px', color: isDarkMode ? '#818CF8' : '#4F46E5', textDecoration: 'none', fontWeight: '600', textTransform: 'none' }}>
+                <a href="#forgot" onClick={(e) => e.preventDefault()} style={{ fontSize: '11.5px', color: isDarkMode ? '#818CF8' : '#4F46E5', textDecoration: 'none', fontWeight: '600', textTransform: 'none' }}>
                   Forgot?
                 </a>
               </div>
               <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                 <i className="fa-solid fa-lock" style={{
                   position: 'absolute',
-                  left: '15px',
+                  left: '14px',
                   color: isDarkMode ? '#64748B' : '#94A3B8',
-                  fontSize: '15px'
+                  fontSize: '14px'
                 }}></i>
                 <input
                   type={showPassword ? "text" : "password"}
@@ -574,14 +574,14 @@ const LmsLogin = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   style={{
                     width: '100%',
-                    padding: '12px 40px 12px 42px',
-                    fontSize: '14px',
+                    padding: '10px 38px 10px 40px',
+                    fontSize: '13.5px',
                     fontFamily: 'inherit',
                     fontWeight: '500',
                     background: isDarkMode ? '#1B212E' : '#F8FAFC',
                     color: isDarkMode ? '#F8FAFC' : '#0F172A',
                     border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.16)' : '1px solid #CBD5E1',
-                    borderRadius: '10px',
+                    borderRadius: '8px',
                     outline: 'none',
                     boxSizing: 'border-box',
                     transition: 'all 0.2s ease'
@@ -592,12 +592,12 @@ const LmsLogin = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   style={{
                     position: 'absolute',
-                    right: '12px',
+                    right: '10px',
                     background: 'none',
                     border: 'none',
                     cursor: 'pointer',
                     color: isDarkMode ? '#94A3B8' : '#64748B',
-                    fontSize: '14px',
+                    fontSize: '13px',
                     padding: '4px'
                   }}
                   title={showPassword ? "Hide password" : "Show password"}
@@ -612,13 +612,13 @@ const LmsLogin = () => {
               type="submit" 
               style={{
                 width: '100%',
-                padding: '13px',
+                padding: '11px',
                 background: 'linear-gradient(135deg, #4F46E5 0%, #4338CA 100%)',
                 color: '#ffffff',
                 border: 'none',
-                borderRadius: '10px',
+                borderRadius: '8px',
                 fontFamily: "'Outfit', sans-serif",
-                fontSize: '15.5px',
+                fontSize: '14.5px',
                 fontWeight: '700',
                 letterSpacing: '0.2px',
                 cursor: 'pointer',
@@ -627,23 +627,23 @@ const LmsLogin = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '10px'
+                gap: '8px'
               }}
             >
               <span>Sign In to Student Portal</span>
-              <i className="fa-solid fa-arrow-right" style={{ fontSize: '13px' }}></i>
+              <i className="fa-solid fa-arrow-right" style={{ fontSize: '12px' }}></i>
             </button>
           </form>
 
           {/* Portal Switch Link */}
           <div style={{
-            marginTop: '22px',
+            marginTop: '14px',
             textAlign: 'center',
-            fontSize: '12.5px',
+            fontSize: '12px',
             color: isDarkMode ? '#94A3B8' : '#64748B'
           }}>
             <span>Faculty or Administrator?{' '}
-              <Link to="/unilms/faculty/login" style={{ color: isDarkMode ? '#818CF8' : '#4F46E5', textDecoration: 'none', fontWeight: '600' }}>
+              <Link to="/org/login" style={{ color: isDarkMode ? '#818CF8' : '#4F46E5', textDecoration: 'none', fontWeight: '600' }}>
                 Staff Login Portal <i className="fa-solid fa-arrow-up-right-from-square" style={{ fontSize: '10px' }}></i>
               </Link>
             </span>

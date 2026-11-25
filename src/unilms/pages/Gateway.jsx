@@ -433,7 +433,7 @@ const Gateway = () => {
 
             {/* Top Navigation */}
             <header className="header-nav">
-                <Link to="/unilms/" className="brand-logo">
+                <Link to="/" className="brand-logo">
                     <div className="brand-icon">
                         <i className="fa-solid fa-graduation-cap"></i>
                     </div>
@@ -472,7 +472,7 @@ const Gateway = () => {
             <div className="portals-grid">
                 
                 {/* 1. Student LMS Portal */}
-                <Link to="/unilms/lms/login" className="portal-card portal-student">
+                <Link to="/lms/login" className="portal-card portal-student">
                     <div>
                         <div className="portal-header">
                             <div className="portal-icon-box">
@@ -495,7 +495,7 @@ const Gateway = () => {
                 </Link>
 
                 {/* 2. Faculty & Staff Portal */}
-                <Link to="/unilms/org/login" className="portal-card portal-faculty">
+                <Link to="/org/login" className="portal-card portal-faculty">
                     <div>
                         <div className="portal-header">
                             <div className="portal-icon-box">
@@ -518,7 +518,7 @@ const Gateway = () => {
                 </Link>
 
                 {/* 3. Parent Guardian Portal */}
-                <Link to="/unilms/parent/login" className="portal-card portal-parent">
+                <Link to="/parent/login" className="portal-card portal-parent">
                     <div>
                         <div className="portal-header">
                             <div className="portal-icon-box">

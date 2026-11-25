@@ -297,22 +297,46 @@ const AppRoutes = () => {
       <Suspense fallback={<PageLoader />}>
         <Routes>
         <Route path="/" element={<Gateway />} />
-        <Route path="/unilms" element={<Gateway />} />
-        <Route path="/unilms/" element={<Gateway />} />
+        <Route path="/unilms" element={<Navigate to="/" replace />} />
+        <Route path="/unilms/" element={<Navigate to="/" replace />} />
 
-        {/* Legacy PHP Route Redirects */}
-        <Route path="/unilms/super_admin" element={<Navigate to="/unilms/superadmin/login" />} />
-        <Route path="/unilms/super-admin" element={<Navigate to="/unilms/superadmin/login" />} />
-        <Route path="/unilms/superadmin" element={<Navigate to="/unilms/superadmin/login" />} />
-        <Route path="/unilms/lms" element={<Navigate to="/unilms/lms/login" />} />
-        <Route path="/unilms/faculty" element={<Navigate to="/unilms/faculty/login" />} />
-        <Route path="/unilms/org" element={<Navigate to="/unilms/org/login" />} />
-        <Route path="/unilms/parent" element={<Navigate to="/unilms/parent/login" />} />
-        <Route path="/unilms/creator" element={<Navigate to="/unilms/creator/login" />} />
-        <Route path="/unilms/superadmin/login" element={<SuperAdminLogin />} />
-        <Route path="/unilms/super-admin/login" element={<Navigate to="/unilms/superadmin/login" replace />} />
-        <Route path="/unilms/super_admin/login" element={<Navigate to="/unilms/superadmin/login" replace />} />
-        <Route path="/unilms/lms/login" element={<LmsLogin />} />
+        {/* Clean Direct Portal Routes */}
+        <Route path="/org/login" element={<OrgLogin />} />
+        <Route path="/lms/login" element={<LmsLogin />} />
+        <Route path="/parent/login" element={<ParentLogin />} />
+        <Route path="/creator/login" element={<CreatorLogin />} />
+        <Route path="/superadmin/login" element={<SuperAdminLogin />} />
+        <Route path="/super-admin/login" element={<Navigate to="/superadmin/login" replace />} />
+        <Route path="/super_admin/login" element={<Navigate to="/superadmin/login" replace />} />
+        <Route path="/faculty/login" element={<Navigate to="/org/login" replace />} />
+
+        {/* Clean Portal Shortcuts */}
+        <Route path="/org" element={<Navigate to="/org/login" replace />} />
+        <Route path="/lms" element={<Navigate to="/lms/login" replace />} />
+        <Route path="/parent" element={<Navigate to="/parent/login" replace />} />
+        <Route path="/creator" element={<Navigate to="/creator/login" replace />} />
+        <Route path="/superadmin" element={<Navigate to="/superadmin/login" replace />} />
+        <Route path="/super_admin" element={<Navigate to="/superadmin/login" replace />} />
+        <Route path="/super-admin" element={<Navigate to="/superadmin/login" replace />} />
+        <Route path="/faculty" element={<Navigate to="/org/login" replace />} />
+
+        {/* Backward Compatibility: Redirect /unilms/ logins to clean URLs */}
+        <Route path="/unilms/super_admin" element={<Navigate to="/superadmin/login" replace />} />
+        <Route path="/unilms/super-admin" element={<Navigate to="/superadmin/login" replace />} />
+        <Route path="/unilms/superadmin" element={<Navigate to="/superadmin/login" replace />} />
+        <Route path="/unilms/lms" element={<Navigate to="/lms/login" replace />} />
+        <Route path="/unilms/faculty" element={<Navigate to="/org/login" replace />} />
+        <Route path="/unilms/org" element={<Navigate to="/org/login" replace />} />
+        <Route path="/unilms/parent" element={<Navigate to="/parent/login" replace />} />
+        <Route path="/unilms/creator" element={<Navigate to="/creator/login" replace />} />
+        <Route path="/unilms/superadmin/login" element={<Navigate to="/superadmin/login" replace />} />
+        <Route path="/unilms/super-admin/login" element={<Navigate to="/superadmin/login" replace />} />
+        <Route path="/unilms/super_admin/login" element={<Navigate to="/superadmin/login" replace />} />
+        <Route path="/unilms/lms/login" element={<Navigate to="/lms/login" replace />} />
+        <Route path="/unilms/org/login" element={<Navigate to="/org/login" replace />} />
+        <Route path="/unilms/parent/login" element={<Navigate to="/parent/login" replace />} />
+        <Route path="/unilms/creator/login" element={<Navigate to="/creator/login" replace />} />
+        <Route path="/unilms/faculty/login" element={<Navigate to="/org/login" replace />} />
         
         <Route element={<ProtectedRoute allowedRoles={['super_admin']} fallbackLogin="/unilms/superadmin/login" />}>
           <Route element={<SuperAdminLayout />}>

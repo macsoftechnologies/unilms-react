@@ -79,7 +79,7 @@ const SuperAdminLogin = () => {
         >
             {/* Back to Gateway */}
             <Link 
-                to="/unilms/" 
+                to="/" 
                 style={{ 
                     position: 'absolute', 
                     top: '24px', 

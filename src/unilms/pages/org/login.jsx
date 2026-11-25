@@ -81,9 +81,9 @@ const OrgLogin = () => {
         alignItems: 'center',
         justifyContent: 'center',
         position: 'relative',
-        padding: '30px 20px',
+        padding: '16px 20px',
         boxSizing: 'border-box',
-        overflowX: 'hidden',
+        overflow: 'hidden',
         fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         transition: 'background-color 0.25s ease'
       }}
@@ -93,17 +93,18 @@ const OrgLogin = () => {
           position: relative;
           z-index: 2;
           width: 100%;
-          max-width: 980px;
-          border-radius: 24px;
+          max-width: 960px;
+          border-radius: 20px;
           display: flex;
           overflow: hidden;
-          min-height: 580px;
+          max-height: 94vh;
           transition: all 0.25s ease;
         }
         @media (max-width: 860px) {
           .org-login-card {
             flex-direction: column;
-            max-width: 480px;
+            max-width: 460px;
+            max-height: none;
           }
           .org-brand-panel {
             display: none !important;
@@ -112,27 +113,27 @@ const OrgLogin = () => {
         .org-feature-item {
           display: flex;
           align-items: center;
-          gap: 12px;
-          font-size: 13px;
+          gap: 10px;
+          font-size: 12px;
           font-weight: 500;
           color: #E9D5FF;
         }
         .org-feature-item i {
           color: #A855F7;
-          font-size: 15px;
+          font-size: 13px;
           flex-shrink: 0;
         }
       ` }} />
 
       {/* Back to Gateway */}
       <Link 
-        to="/unilms/" 
+        to="/" 
         style={{ 
           position: 'absolute', 
-          top: '24px', 
-          left: '24px', 
-          width: '42px', 
-          height: '42px', 
+          top: '20px', 
+          left: '20px', 
+          width: '38px', 
+          height: '38px', 
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center', 
@@ -156,17 +157,17 @@ const OrgLogin = () => {
         onClick={toggleTheme}
         style={{
           position: 'absolute',
-          top: '24px',
-          right: '24px',
+          top: '20px',
+          right: '20px',
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
-          padding: '8px 16px',
+          padding: '7px 14px',
           borderRadius: '24px',
           border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.15)' : '1px solid #cbd5e1',
           background: isDarkMode ? '#151A24' : '#ffffff',
           color: isDarkMode ? '#F8FAFC' : '#1e293b',
-          fontSize: '13px',
+          fontSize: '12.5px',
           fontWeight: '600',
           cursor: 'pointer',
           boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
@@ -195,11 +196,11 @@ const OrgLogin = () => {
           style={{
             background: 'linear-gradient(135deg, #2E1065 0%, #4C1D95 50%, #6D28D9 100%)',
             color: 'white',
-            padding: '48px 40px',
+            padding: '30px 32px',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
-            width: '400px',
+            width: '360px',
             flexShrink: 0,
             position: 'relative',
             overflow: 'hidden'
@@ -212,32 +213,32 @@ const OrgLogin = () => {
               gap: '8px',
               background: 'rgba(255, 255, 255, 0.12)',
               border: '1px solid rgba(255, 255, 255, 0.2)',
-              padding: '6px 14px',
+              padding: '5px 12px',
               borderRadius: '20px',
-              fontSize: '12px',
+              fontSize: '11.5px',
               fontWeight: '600',
               color: '#E9D5FF',
-              marginBottom: '24px'
+              marginBottom: '16px'
             }}>
               <i className="fa-solid fa-building-columns"></i> Campus Admin &amp; ERP Suite
             </div>
 
             <h1 style={{
               fontFamily: "'Outfit', sans-serif",
-              fontSize: '27px',
+              fontSize: '23px',
               fontWeight: '800',
               lineHeight: 1.25,
-              margin: '0 0 12px 0',
+              margin: '0 0 8px 0',
               color: '#ffffff'
             }}>
               Central Administration &amp; Governance
             </h1>
 
-            <p style={{ fontSize: '13.5px', lineHeight: '1.6', color: '#DDD6FE', margin: '0 0 26px 0' }}>
+            <p style={{ fontSize: '12.5px', lineHeight: '1.5', color: '#DDD6FE', margin: '0 0 18px 0' }}>
               Integrated institutional operations: Department structures, timetable builder, fee collections, daybook ledgers, and platform RBAC settings.
             </p>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '13px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '9px' }}>
               <div className="org-feature-item">
                 <i className="fa-solid fa-circle-check"></i>
                 <span>Degree Programs, Cohorts &amp; Master Timetable</span>
@@ -252,7 +253,7 @@ const OrgLogin = () => {
               </div>
               <div className="org-feature-item">
                 <i className="fa-solid fa-circle-check"></i>
-                <span>Admissions, Enquiries &amp; Offer Letter Generation</span>
+                <span>Admissions, Enquiries &amp; Offer Generation</span>
               </div>
               <div className="org-feature-item">
                 <i className="fa-solid fa-circle-check"></i>
@@ -261,7 +262,7 @@ const OrgLogin = () => {
             </div>
           </div>
 
-          <div style={{ fontSize: '12px', color: '#C4B5FD', marginTop: '28px' }}>
+          <div style={{ fontSize: '11.5px', color: '#C4B5FD', marginTop: '16px' }}>
             {tenant?.name || 'Institution Portal'} • Multi-Campus ERP
           </div>
         </div>
@@ -270,7 +271,7 @@ const OrgLogin = () => {
         <div 
           style={{
             flex: 1,
-            padding: '44px 40px',
+            padding: '26px 32px',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
@@ -279,23 +280,23 @@ const OrgLogin = () => {
             transition: 'all 0.25s ease'
           }}
         >
-          <div style={{ marginBottom: '22px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+          <div style={{ marginBottom: '14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
               <div style={{
-                width: '30px',
-                height: '30px',
+                width: '28px',
+                height: '28px',
                 borderRadius: '8px',
                 background: isDarkMode ? 'rgba(168, 85, 247, 0.2)' : 'rgba(109, 40, 217, 0.1)',
                 color: isDarkMode ? '#C084FC' : '#7C3AED',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '14px'
+                fontSize: '13px'
               }}>
                 <i className="fa-solid fa-shield-halved"></i>
               </div>
               <span style={{
-                fontSize: '12px',
+                fontSize: '11.5px',
                 fontWeight: '700',
                 color: isDarkMode ? '#C084FC' : '#7C3AED',
                 textTransform: 'uppercase',
@@ -306,15 +307,15 @@ const OrgLogin = () => {
             </div>
             <h2 style={{
               fontFamily: "'Outfit', sans-serif",
-              fontSize: '26px',
+              fontSize: '22px',
               fontWeight: '800',
-              margin: '0 0 6px 0',
+              margin: '0 0 4px 0',
               color: isDarkMode ? '#FFFFFF' : '#0F172A',
               letterSpacing: '-0.3px'
             }}>
               Campus Admin Login
             </h2>
-            <div style={{ fontSize: '13.5px', color: isDarkMode ? '#94A3B8' : '#64748B' }}>
+            <div style={{ fontSize: '12.5px', color: isDarkMode ? '#94A3B8' : '#64748B' }}>
               Sign in to manage admissions, academics, finances and ERP operations
             </div>
           </div>
@@ -323,10 +324,10 @@ const OrgLogin = () => {
             <div style={{
               background: 'rgba(239, 68, 68, 0.12)',
               border: '1px solid rgba(239, 68, 68, 0.3)',
-              borderRadius: '10px',
-              padding: '10px 14px',
-              marginBottom: '16px',
-              fontSize: '13px',
+              borderRadius: '8px',
+              padding: '8px 12px',
+              marginBottom: '12px',
+              fontSize: '12.5px',
               color: '#ef4444',
               display: 'flex',
               alignItems: 'center',
@@ -515,13 +516,13 @@ const OrgLogin = () => {
               disabled={loading}
               style={{
                 width: '100%',
-                padding: '13px',
+                padding: '11px',
                 background: loading ? '#64748b' : 'linear-gradient(135deg, #6D28D9 0%, #4C1D95 100%)',
                 color: '#ffffff',
                 border: 'none',
-                borderRadius: '10px',
+                borderRadius: '8px',
                 fontFamily: "'Outfit', sans-serif",
-                fontSize: '15px',
+                fontSize: '14.5px',
                 fontWeight: '700',
                 cursor: loading ? 'not-allowed' : 'pointer',
                 boxShadow: isDarkMode ? '0 4px 16px rgba(109, 40, 217, 0.5)' : '0 6px 18px rgba(109, 40, 217, 0.3)',
@@ -533,19 +534,19 @@ const OrgLogin = () => {
               }}
             >
               <span>{loading ? 'Authenticating with Campus Server...' : 'Sign In to Admin ERP'}</span>
-              <i className={loading ? "fa-solid fa-spinner fa-spin" : "fa-solid fa-arrow-right"} style={{ fontSize: '13px' }}></i>
+              <i className={loading ? "fa-solid fa-spinner fa-spin" : "fa-solid fa-arrow-right"} style={{ fontSize: '12px' }}></i>
             </button>
           </form>
 
           <div style={{
             textAlign: 'center',
-            marginTop: '24px',
-            fontSize: '13px',
+            marginTop: '14px',
+            fontSize: '12px',
             color: isDarkMode ? '#94A3B8' : '#64748B'
           }}>
-            Need professor or student access?{' '}
-            <Link to="/unilms/faculty/login" style={{ color: isDarkMode ? '#C084FC' : '#7C3AED', textDecoration: 'none', fontWeight: '600' }}>
-              Faculty Portal &rarr;
+            Need student access?{' '}
+            <Link to="/lms/login" style={{ color: isDarkMode ? '#C084FC' : '#7C3AED', textDecoration: 'none', fontWeight: '600' }}>
+              Student LMS Portal &rarr;
             </Link>
           </div>
         </div>

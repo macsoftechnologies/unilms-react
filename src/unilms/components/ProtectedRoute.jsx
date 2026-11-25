@@ -25,18 +25,18 @@ export const ProtectedRoute = ({ allowedRoles = [], requiredPrivilege = null, fa
   // Not authenticated -> redirect to appropriate login
   if (!isAuthenticated) {
     let loginUrl = fallbackLogin;
-    if (location.pathname.startsWith('/unilms/superadmin')) {
-      loginUrl = '/unilms/superadmin/login';
-    } else if (location.pathname.startsWith('/unilms/lms')) {
-      loginUrl = '/unilms/lms/login';
-    } else if (location.pathname.startsWith('/unilms/faculty')) {
-      loginUrl = '/unilms/faculty/login';
-    } else if (location.pathname.startsWith('/unilms/parent')) {
-      loginUrl = '/unilms/parent/login';
-    } else if (location.pathname.startsWith('/unilms/creator')) {
-      loginUrl = '/unilms/creator/login';
-    } else if (location.pathname.startsWith('/unilms/org')) {
-      loginUrl = '/unilms/org/login';
+    if (location.pathname.startsWith('/superadmin') || location.pathname.startsWith('/unilms/superadmin')) {
+      loginUrl = '/superadmin/login';
+    } else if (location.pathname.startsWith('/lms') || location.pathname.startsWith('/unilms/lms')) {
+      loginUrl = '/lms/login';
+    } else if (location.pathname.startsWith('/faculty') || location.pathname.startsWith('/unilms/faculty')) {
+      loginUrl = '/org/login';
+    } else if (location.pathname.startsWith('/parent') || location.pathname.startsWith('/unilms/parent')) {
+      loginUrl = '/parent/login';
+    } else if (location.pathname.startsWith('/creator') || location.pathname.startsWith('/unilms/creator')) {
+      loginUrl = '/creator/login';
+    } else if (location.pathname.startsWith('/org') || location.pathname.startsWith('/unilms/org')) {
+      loginUrl = '/org/login';
     }
 
     return <Navigate to={loginUrl} state={{ from: location }} replace />;
