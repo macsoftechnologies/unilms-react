@@ -359,7 +359,7 @@ const OrgPlacementsOffers = () => {
               Campus Job Offers &amp; Letters
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Track placement offers, CTC packages, acceptance confirmations &amp; department metrics &bull; AY 2026&ndash;2027
+              Track placement offers, CTC packages, acceptance confirmations &amp; department metrics
             </p>
           </div>
         </div>

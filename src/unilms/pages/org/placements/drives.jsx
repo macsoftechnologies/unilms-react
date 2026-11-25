@@ -321,7 +321,7 @@ const OrgPlacementsDrives = () => {
               Campus Recruitment Drives
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Schedule and manage on-campus and virtual hiring drives, eligibility filters &amp; shortlists &bull; AY 2026&ndash;2027
+              Schedule and manage on-campus and virtual hiring drives, eligibility filters &amp; shortlists
             </p>
           </div>
         </div>

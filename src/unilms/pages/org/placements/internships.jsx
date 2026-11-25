@@ -316,7 +316,7 @@ const OrgPlacementsInternships = () => {
               Corporate Internships &amp; Milestone Roadmaps
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Structured sequential milestone roadmaps, stipend tracking &amp; verified certification &bull; AY 2026&ndash;2027
+              Structured sequential milestone roadmaps, stipend tracking &amp; verified certification
             </p>
           </div>
         </div>
