@@ -254,7 +254,7 @@ const OrgExaminationsApplications = () => {
               Student Examination Candidature &amp; Applications
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Review exam registrations, verify Module 03 fee clearance &amp; authorize admit cards &bull; AY 2026&ndash;2027
+              Review exam registrations, verify student fee dues clearance &amp; authorize examination admit cards
             </p>
           </div>
         </div>
@@ -410,7 +410,7 @@ const OrgExaminationsApplications = () => {
                 <th style={{ padding: '12px 14px', fontSize: '12px', color: 'var(--text-secondary)' }}>Candidate Name &amp; Roll</th>
                 <th style={{ padding: '12px 14px', fontSize: '12px', color: 'var(--text-secondary)' }}>Academic Program</th>
                 <th style={{ padding: '12px 14px', fontSize: '12px', color: 'var(--text-secondary)' }}>Exam Cycle</th>
-                <th style={{ padding: '12px 14px', fontSize: '12px', color: 'var(--text-secondary)', textAlign: 'center' }}>Module 03 Fee Clearance</th>
+                <th style={{ padding: '12px 14px', fontSize: '12px', color: 'var(--text-secondary)', textAlign: 'center' }}>Institutional Fee Clearance</th>
                 <th style={{ padding: '12px 14px', fontSize: '12px', color: 'var(--text-secondary)', textAlign: 'center' }}>Approval Status</th>
                 <th style={{ padding: '12px 14px', fontSize: '12px', color: 'var(--text-secondary)', textAlign: 'right' }}>Actions</th>
               </tr>

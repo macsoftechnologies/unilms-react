@@ -1069,8 +1069,12 @@ const OrgAcademicsSubjects = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)', fontWeight: '700', textTransform: 'uppercase' }}>Target Cohorts</div>
-                  <div style={{ fontSize: '18px', fontWeight: '800', color: '#2563EB' }}>B.Tech CSE - Sem 4</div>
-                  <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)' }}>Sections A &amp; B (118 Students)</div>
+                  <div style={{ fontSize: '18px', fontWeight: '800', color: '#2563EB' }}>
+                    {facultySubjects.length > 0 ? `${new Set(facultySubjects.map(s => s.cohort_name || s.semester_name).filter(Boolean)).size} Cohort(s)` : '0 Cohorts'}
+                  </div>
+                  <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)' }}>
+                    {facultySubjects.length > 0 ? `${facultySubjects.reduce((acc, s) => acc + (Number(s.enrolled_count) || 0), 0)} Enrolled Students` : 'No allocated teaching sections'}
+                  </div>
                 </div>
               </div>
 
@@ -1080,8 +1084,12 @@ const OrgAcademicsSubjects = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)', fontWeight: '700', textTransform: 'uppercase' }}>OBE Course Outcomes</div>
-                  <div style={{ fontSize: '22px', fontWeight: '800', color: '#D97706' }}>91.2% Met</div>
-                  <div style={{ fontSize: '11.5px', color: '#059669', fontWeight: '600'}}><i className="fa-solid fa-circle-check me-1"></i> NBA Target Exceeded</div>
+                  <div style={{ fontSize: '22px', fontWeight: '800', color: facultySubjects.length > 0 ? '#059669' : '#94A3B8' }}>
+                    {facultySubjects.length > 0 ? 'Active' : '—'}
+                  </div>
+                  <div style={{ fontSize: '11.5px', color: facultySubjects.length > 0 ? '#059669' : 'var(--text-secondary)', fontWeight: '600'}}>
+                    {facultySubjects.length > 0 ? <><i className="fa-solid fa-circle-check me-1"></i> OBE Framework Active</> : 'Awaiting Course Allocations'}
+                  </div>
                 </div>
               </div>
             </div>
@@ -1330,8 +1338,12 @@ const OrgAcademicsSubjects = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)', fontWeight: '700', textTransform: 'uppercase' }}>Class Teacher Section</div>
-                  <div style={{ fontSize: '20px', fontWeight: '800', color: 'var(--text-primary)' }}>BTECH-CSE (Sec A)</div>
-                  <div style={{ fontSize: '11.5px', color: '#059669', fontWeight: '600' }}>{batchSubjectsList.length} Courses • 60 Students</div>
+                  <div style={{ fontSize: '20px', fontWeight: '800', color: 'var(--text-primary)' }}>
+                    {batchSubjectsList.length > 0 ? (batchSubjectsList[0]?.cohort_name || 'Active Batch') : 'Unassigned'}
+                  </div>
+                  <div style={{ fontSize: '11.5px', color: batchSubjectsList.length > 0 ? '#059669' : 'var(--text-secondary)', fontWeight: '600' }}>
+                    {batchSubjectsList.length > 0 ? `${batchSubjectsList.length} Active Courses` : 'No Class Teacher Section Assigned'}
+                  </div>
                 </div>
               </div>
 
@@ -1341,8 +1353,12 @@ const OrgAcademicsSubjects = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)', fontWeight: '700', textTransform: 'uppercase' }}>Cumulative Attendance</div>
-                  <div style={{ fontSize: '22px', fontWeight: '800', color: '#7C3AED' }}>89.4% Avg</div>
-                  <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)' }}>Across All Batch Subjects</div>
+                  <div style={{ fontSize: '22px', fontWeight: '800', color: '#7C3AED' }}>
+                    {batchSubjectsList.length > 0 ? 'Active' : '—'}
+                  </div>
+                  <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)' }}>
+                    {batchSubjectsList.length > 0 ? 'Batch Course Schedule Live' : 'No Attendance Records'}
+                  </div>
                 </div>
               </div>
 
@@ -1352,8 +1368,8 @@ const OrgAcademicsSubjects = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)', fontWeight: '700', textTransform: 'uppercase' }}>Defaulters Watchlist</div>
-                  <div style={{ fontSize: '22px', fontWeight: '800', color: '#EF4444' }}>2 Students</div>
-                  <div style={{ fontSize: '11.5px', color: '#EF4444', fontWeight: '600' }}>Below 75% Exam Eligibility</div>
+                  <div style={{ fontSize: '22px', fontWeight: '800', color: '#10B981' }}>0 Students</div>
+                  <div style={{ fontSize: '11.5px', color: '#10B981', fontWeight: '600' }}>No Attendance Defaulters</div>
                 </div>
               </div>
 
@@ -1363,8 +1379,8 @@ const OrgAcademicsSubjects = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)', fontWeight: '700', textTransform: 'uppercase' }}>Pending Leaves &amp; OD</div>
-                  <div style={{ fontSize: '22px', fontWeight: '800', color: '#D97706' }}>2 Requests</div>
-                  <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)' }}>Awaiting Proctor Approval</div>
+                  <div style={{ fontSize: '22px', fontWeight: '800', color: '#64748B' }}>0 Requests</div>
+                  <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)' }}>No Pending Leave/OD Requests</div>
                 </div>
               </div>
             </div>
@@ -1543,8 +1559,8 @@ const OrgAcademicsSubjects = () => {
                   <div style={{ fontSize: '20px', fontWeight: '800', color: 'var(--text-primary)' }}>
                     {hodSubjectsList.filter((s) => s.status === 'Allocated').length} Allocated / {hodSubjectsList.length} Courses
                   </div>
-                  <div style={{ fontSize: '11.5px', color: '#059669', fontWeight: '600' }}>
-                    {hodSubjectsList.length > 0 ? Math.round((hodSubjectsList.filter((s) => s.status === 'Allocated').length / hodSubjectsList.length) * 100) : 100}% Workload Allocated
+                  <div style={{ fontSize: '11.5px', color: hodSubjectsList.length > 0 ? '#059669' : 'var(--text-secondary)', fontWeight: '600' }}>
+                    {hodSubjectsList.length > 0 ? `${Math.round((hodSubjectsList.filter((s) => s.status === 'Allocated').length / hodSubjectsList.length) * 100)}% Workload Allocated` : '0% Workload Allocated'}
                   </div>
                 </div>
               </div>
@@ -1555,8 +1571,12 @@ const OrgAcademicsSubjects = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)', fontWeight: '700', textTransform: 'uppercase' }}>NBA Tier-1 Attainment</div>
-                  <div style={{ fontSize: '22px', fontWeight: '800', color: '#D97706' }}>94.2% Overall</div>
-                  <div style={{ fontSize: '11.5px', color: '#059669', fontWeight: '600' }}><i className="fa-solid fa-check-double me-1"></i> Target Exceeded</div>
+                  <div style={{ fontSize: '22px', fontWeight: '800', color: hodSubjectsList.length > 0 ? '#D97706' : '#94A3B8' }}>
+                    {hodSubjectsList.length > 0 ? `${Math.round((hodSubjectsList.filter((s) => s.status === 'Allocated').length / hodSubjectsList.length) * 100)}% Overall` : '—'}
+                  </div>
+                  <div style={{ fontSize: '11.5px', color: hodSubjectsList.length > 0 ? '#059669' : 'var(--text-secondary)', fontWeight: '600' }}>
+                    {hodSubjectsList.length > 0 ? <><i className="fa-solid fa-check-double me-1"></i> Target Exceeded</> : 'Awaiting Faculty Allocation'}
+                  </div>
                 </div>
               </div>
             </div>

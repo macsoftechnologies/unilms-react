@@ -75,41 +75,14 @@ const OrgExaminationsInvigilation = () => {
       }
 
       // Load saved duties from PostgreSQL
-      if (dutiesRes?.data && Array.isArray(dutiesRes.data) && dutiesRes.data.length > 0) {
+      if (dutiesRes?.data && Array.isArray(dutiesRes.data)) {
         setDuties(dutiesRes.data);
-        return;
+      } else {
+        setDuties([]);
       }
-
-      // Initial baseline duties using real faculty and real schedules
-      const baseline = (schs.length > 0 ? schs : [1, 2, 3]).map((s, idx) => {
-        const staff = staffList.length > 0 ? staffList[idx % staffList.length] : null;
-        const staffName = staff ? `${staff.firstName || ''} ${staff.lastName || ''}`.trim() : `Faculty Invigilator ${idx + 1}`;
-        const staffRole = staff?.designation || 'Assistant Professor';
-        const staffDept = staff?.department?.name || 'Academic Faculty';
-        const subName = s?.subject?.name || (idx === 0 ? 'Cloud Architecture' : idx === 1 ? 'Data Structures' : 'Database Systems');
-        const venue = s?.hallRoomNo || s?.venue || `Hall ${101 + idx} (Block A)`;
-        const dateStr = s?.date ? new Date(s.date).toLocaleDateString() : `2026-12-${10 + idx}`;
-
-        return {
-          id: `duty-${idx + 1}`,
-          exam_schedule_id: s?.id || `sch-${idx}`,
-          exam_name: subName,
-          exam_date: dateStr,
-          hall: venue,
-          invigilator_name: staffName,
-          invigilator_role: staffRole,
-          invigilator_dept: staffDept,
-          sessions: 2,
-          charge_per_session: 750,
-          total_charge: 1500,
-          paid: idx % 2 === 0
-        };
-      });
-
-      setDuties(baseline);
-      apiClient.post('/tenants/settings/exam_invigilation', baseline).catch(console.error);
     } catch (err) {
       console.error('Failed to load invigilation data:', err);
+      setDuties([]);
       showToast('Error loading timetable duties', 'danger');
     } finally {
       setLoading(false);
@@ -268,7 +241,7 @@ const OrgExaminationsInvigilation = () => {
               Invigilation Rosters &amp; Squad Allocations
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Assign faculty examiners to exam halls, track sessions &amp; disburse invigilation honorarium &bull; AY 2026&ndash;2027
+              Assign faculty examiners to exam halls, track sessions &amp; disburse invigilation honorarium
             </p>
           </div>
         </div>
