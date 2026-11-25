@@ -15,12 +15,13 @@ const OrgFacultyDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [defaulterStudents, setDefaulterStudents] = useState([]);
   const [deptFacultyWorkload, setDeptFacultyWorkload] = useState([]);
+  const [facultyAllocations, setFacultyAllocations] = useState([]);
   const [stats, setStats] = useState({
-    totalAllocations: 3,
-    totalSessions: 3,
-    syllabusDeliveryPct: 50.0,
-    pendingLeaves: 1,
-    totalFaculty: 5,
+    totalAllocations: 0,
+    totalSessions: 0,
+    syllabusDeliveryPct: 0.0,
+    pendingLeaves: 0,
+    totalFaculty: 0,
     defaultersCount: 0,
   });
 
@@ -36,13 +37,17 @@ const OrgFacultyDashboard = () => {
       if (statsRes.status === 'fulfilled' && statsRes.value) {
         const s = statsRes.value.data || statsRes.value;
         setStats({
-          totalAllocations: s.totalAllocations || 3,
-          totalSessions: s.totalSessions || 3,
-          syllabusDeliveryPct: Number(s.syllabusDeliveryPct) || 50.0,
+          totalAllocations: s.totalAllocations || 0,
+          totalSessions: s.totalSessions || 0,
+          syllabusDeliveryPct: Number(s.syllabusDeliveryPct) || 0.0,
           pendingLeaves: s.pendingLeaves || 0,
-          totalFaculty: s.totalFaculty || 5,
+          totalFaculty: s.totalFaculty || 0,
           defaultersCount: s.defaultersCount || 0,
         });
+      }
+
+      if (allocRes.status === 'fulfilled' && Array.isArray(allocRes.value)) {
+        setFacultyAllocations(allocRes.value);
       }
 
       if (defaulterRes.status === 'fulfilled' && Array.isArray(defaulterRes.value)) {
@@ -631,116 +636,38 @@ const OrgFacultyDashboard = () => {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                  {/* Subject 1: CS402 */}
-                  <div className="subject-card" style={{ background: '#faf5ff', borderColor: '#e9d5ff' }}>
-                    <div className="subject-header-row">
-                      <div>
-                        <span style={{ fontSize: '11px', fontWeight: '700', color: '#6b21a8', background: '#ede9fe', padding: '3px 8px', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
-                          CS402 &bull; 4.00 CREDITS
-                        </span>
-                        <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#1f2937', margin: '8px 0 3px' }}>
-                          Cloud Architecture &amp; DevOps Microservices
-                        </h3>
-                        <div style={{ fontSize: '12.5px', color: 'var(--text-muted, #64748b)' }}>
-                          B.Tech CSE - Semester 4 &bull; 4 Course Outcomes (CO1-CO4)
+                  {facultyAllocations.length > 0 ? (
+                    facultyAllocations.map((alloc) => (
+                      <div key={alloc.id} className="subject-card" style={{ background: '#faf5ff', borderColor: '#e9d5ff' }}>
+                        <div className="subject-header-row">
+                          <div>
+                            <span style={{ fontSize: '11px', fontWeight: '700', color: '#6b21a8', background: '#ede9fe', padding: '3px 8px', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                              {alloc.subject?.code || 'COURSE'} &bull; {alloc.subject?.credits || 3.0} CREDITS
+                            </span>
+                            <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#1f2937', margin: '8px 0 3px' }}>
+                              {alloc.subject?.name || alloc.subject?.title || 'Academic Course'}
+                            </h3>
+                            <div style={{ fontSize: '12.5px', color: 'var(--text-muted, #64748b)' }}>
+                              {alloc.cohortName || alloc.semester_name || 'Active Cohort'} &bull; OBE Framework Active
+                            </div>
+                          </div>
+                          <div className="subject-action-btns">
+                            <Link to="/unilms/faculty/attendance" className="btn btn-outline" style={{ fontSize: '11.5px', padding: '5px 12px', borderRadius: '8px', border: '1px solid #d1d5db', background: '#fff', color: '#374151', textDecoration: 'none', fontWeight: '600' }} title="Mark Attendance">
+                              <i className="fa-solid fa-clipboard-user me-1 text-primary"></i> Attendance
+                            </Link>
+                            <Link to="/unilms/faculty/assignments" className="btn btn-outline" style={{ fontSize: '11.5px', padding: '5px 12px', borderRadius: '8px', border: '1px solid #d1d5db', background: '#fff', color: '#374151', textDecoration: 'none', fontWeight: '600' }} title="Assessments">
+                              <i className="fa-solid fa-file-pen me-1 text-warning"></i> Tasks
+                            </Link>
+                          </div>
                         </div>
                       </div>
-                      <div className="subject-action-btns">
-                        <Link to="/unilms/faculty/attendance" className="btn btn-outline" style={{ fontSize: '11.5px', padding: '5px 12px', borderRadius: '8px', border: '1px solid #d1d5db', background: '#fff', color: '#374151', textDecoration: 'none', fontWeight: '600' }} title="Mark Attendance">
-                          <i className="fa-solid fa-clipboard-user me-1 text-primary"></i> Attendance
-                        </Link>
-                        <Link to="/unilms/faculty/assignments" className="btn btn-outline" style={{ fontSize: '11.5px', padding: '5px 12px', borderRadius: '8px', border: '1px solid #d1d5db', background: '#fff', color: '#374151', textDecoration: 'none', fontWeight: '600' }} title="Assessments">
-                          <i className="fa-solid fa-file-pen me-1 text-warning"></i> Tasks
-                        </Link>
-                      </div>
+                    ))
+                  ) : (
+                    <div style={{ textAlign: 'center', padding: '24px 16px', color: 'var(--text-muted, #64748b)', fontSize: '13px' }}>
+                      <i className="fa-solid fa-book-open mb-2" style={{ fontSize: '28px', opacity: 0.35, display: 'block' }}></i>
+                      No teaching courses allocated yet.
                     </div>
-
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '12px', paddingTop: '10px', borderTop: '1px dashed #e9d5ff' }}>
-                      <span className="tag-pill" style={{ color: '#0284c7', background: '#e0f2fe' }}>
-                        <i className="fa-solid fa-users"></i> Peer Learning
-                      </span>
-                      <span className="tag-pill" style={{ color: '#059669', background: '#dcfce7' }}>
-                        <i className="fa-solid fa-diagram-project"></i> Project-Based (PBL)
-                      </span>
-                      <span className="tag-pill" style={{ color: '#d97706', background: '#fef3c7' }}>
-                        <i className="fa-solid fa-lightbulb"></i> Problem Solving
-                      </span>
-                      <span className="tag-pill" style={{ color: '#7c3aed', background: '#ede9fe' }}>
-                        <i className="fa-solid fa-chalkboard"></i> Blended Learning
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Subject 2: CS401 */}
-                  <div className="subject-card" style={{ background: '#f0f9ff', borderColor: '#bae6fd' }}>
-                    <div className="subject-header-row">
-                      <div>
-                        <span style={{ fontSize: '11px', fontWeight: '700', color: '#0369a1', background: '#e0f2fe', padding: '3px 8px', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
-                          CS401 &bull; 4.00 CREDITS
-                        </span>
-                        <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#1f2937', margin: '8px 0 3px' }}>
-                          Advanced Algorithms &amp; System Design
-                        </h3>
-                        <div style={{ fontSize: '12.5px', color: 'var(--text-muted, #64748b)' }}>
-                          B.Tech CSE - Semester 4 &bull; 4 Course Outcomes (CO1-CO4)
-                        </div>
-                      </div>
-                      <div className="subject-action-btns">
-                        <Link to="/unilms/faculty/attendance" className="btn btn-outline" style={{ fontSize: '11.5px', padding: '5px 12px', borderRadius: '8px', border: '1px solid #d1d5db', background: '#fff', color: '#374151', textDecoration: 'none', fontWeight: '600' }}>
-                          <i className="fa-solid fa-clipboard-user me-1 text-primary"></i> Attendance
-                        </Link>
-                        <Link to="/unilms/faculty/assignments" className="btn btn-outline" style={{ fontSize: '11.5px', padding: '5px 12px', borderRadius: '8px', border: '1px solid #d1d5db', background: '#fff', color: '#374151', textDecoration: 'none', fontWeight: '600' }}>
-                          <i className="fa-solid fa-file-pen me-1 text-warning"></i> Tasks
-                        </Link>
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '12px', paddingTop: '10px', borderTop: '1px dashed #bae6fd' }}>
-                      <span className="tag-pill" style={{ color: '#d97706', background: '#fef3c7' }}>
-                        <i className="fa-solid fa-lightbulb"></i> Problem Solving
-                      </span>
-                      <span className="tag-pill" style={{ color: '#0284c7', background: '#e0f2fe' }}>
-                        <i className="fa-solid fa-rotate"></i> Flipped Classroom
-                      </span>
-                      <span className="tag-pill" style={{ color: '#7c3aed', background: '#ede9fe' }}>
-                        <i className="fa-solid fa-trophy"></i> Hackathon Prep
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Subject 3: CS403 */}
-                  <div className="subject-card" style={{ background: '#f0fdf4', borderColor: '#bbf7d0' }}>
-                    <div className="subject-header-row">
-                      <div>
-                        <span style={{ fontSize: '11px', fontWeight: '700', color: '#15803d', background: '#dcfce7', padding: '3px 8px', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
-                          CS403 &bull; 3.00 CREDITS
-                        </span>
-                        <h3 style={{ fontSize: '16px', fontWeight: '800', color: '#1f2937', margin: '8px 0 3px' }}>
-                          Database Management Systems &amp; NoSQL
-                        </h3>
-                        <div style={{ fontSize: '12.5px', color: 'var(--text-muted, #64748b)' }}>
-                          B.Tech CSE - Semester 4 &bull; 4 Course Outcomes (CO1-CO4)
-                        </div>
-                      </div>
-                      <div className="subject-action-btns">
-                        <Link to="/unilms/faculty/attendance" className="btn btn-outline" style={{ fontSize: '11.5px', padding: '5px 12px', borderRadius: '8px', border: '1px solid #d1d5db', background: '#fff', color: '#374151', textDecoration: 'none', fontWeight: '600' }}>
-                          <i className="fa-solid fa-clipboard-user me-1 text-primary"></i> Attendance
-                        </Link>
-                        <Link to="/unilms/faculty/assignments" className="btn btn-outline" style={{ fontSize: '11.5px', padding: '5px 12px', borderRadius: '8px', border: '1px solid #d1d5db', background: '#fff', color: '#374151', textDecoration: 'none', fontWeight: '600' }}>
-                          <i className="fa-solid fa-file-pen me-1 text-warning"></i> Tasks
-                        </Link>
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '12px', paddingTop: '10px', borderTop: '1px dashed #bbf7d0' }}>
-                      <span className="tag-pill" style={{ color: '#059669', background: '#dcfce7' }}>
-                        <i className="fa-solid fa-diagram-project"></i> Project-Based (PBL)
-                      </span>
-                      <span className="tag-pill" style={{ color: '#0284c7', background: '#e0f2fe' }}>
-                        <i className="fa-solid fa-comments"></i> Peer Review
-                      </span>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
 
@@ -788,39 +715,30 @@ const OrgFacultyDashboard = () => {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {/* Period 2 */}
-                  <div className="schedule-item" style={{ background: '#f8fafc' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: '700', color: '#4f46e5' }}>
-                      <span>Period 2 (10:00 AM - 11:00 AM)</span>
-                      <span style={{ color: '#64748b', fontWeight: '600' }}><i className="fa-solid fa-location-dot me-1"></i> Lecture Hall 101</span>
+                  {facultyAllocations.length > 0 ? (
+                    facultyAllocations.slice(0, 2).map((alloc, idx) => (
+                      <div key={alloc.id || idx} className="schedule-item" style={{ background: '#f8fafc' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: '700', color: '#4f46e5' }}>
+                          <span>Period {idx + 1} ({idx === 0 ? '10:00 AM - 11:00 AM' : '02:00 PM - 03:00 PM'})</span>
+                          <span style={{ color: '#64748b', fontWeight: '600' }}><i className="fa-solid fa-location-dot me-1"></i> Lecture Hall {101 + idx}</span>
+                        </div>
+                        <div style={{ fontSize: '14.5px', fontWeight: '800', color: '#1f2937', marginTop: '4px' }}>
+                          {alloc.subject?.name || alloc.subject?.title || 'Academic Course'}
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', paddingTop: '8px', borderTop: '1px dashed #e2e8f0' }}>
+                          <span style={{ fontSize: '12px', color: 'var(--text-muted, #64748b)' }}>{alloc.cohortName || alloc.semester_name || 'Active Cohort'}</span>
+                          <Link to="/unilms/faculty/attendance" className="btn btn-primary" style={{ fontSize: '11px', padding: '5px 12px', borderRadius: '8px', background: '#4F46E5', color: '#ffffff', textDecoration: 'none', fontWeight: '600' }}>
+                            <i className="fa-solid fa-clipboard-user me-1"></i> Mark Attendance
+                          </Link>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div style={{ textAlign: 'center', padding: '24px 12px', color: 'var(--text-muted, #64748b)', fontSize: '12.5px' }}>
+                      <i className="fa-solid fa-calendar-xmark mb-2" style={{ fontSize: '24px', opacity: 0.35, display: 'block' }}></i>
+                      No lecture sessions scheduled for today.
                     </div>
-                    <div style={{ fontSize: '14.5px', fontWeight: '800', color: '#1f2937', marginTop: '4px' }}>
-                      Advanced Algorithms &amp; System Design
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', paddingTop: '8px', borderTop: '1px dashed #e2e8f0' }}>
-                      <span style={{ fontSize: '12px', color: 'var(--text-muted, #64748b)' }}>B.Tech CSE - Section A</span>
-                      <Link to="/unilms/faculty/attendance" className="btn btn-primary" style={{ fontSize: '11px', padding: '5px 12px', borderRadius: '8px', background: '#4F46E5', color: '#ffffff', textDecoration: 'none', fontWeight: '600' }}>
-                        <i className="fa-solid fa-clipboard-user me-1"></i> Mark Attendance
-                      </Link>
-                    </div>
-                  </div>
-
-                  {/* Period 4 */}
-                  <div className="schedule-item" style={{ background: '#f8fafc' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: '700', color: '#4f46e5' }}>
-                      <span>Period 4 (02:00 PM - 03:00 PM)</span>
-                      <span style={{ color: '#64748b', fontWeight: '600' }}><i className="fa-solid fa-location-dot me-1"></i> Cloud Lab 402</span>
-                    </div>
-                    <div style={{ fontSize: '14.5px', fontWeight: '800', color: '#1f2937', marginTop: '4px' }}>
-                      Cloud Architecture &amp; DevOps Microservices
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', paddingTop: '8px', borderTop: '1px dashed #e2e8f0' }}>
-                      <span style={{ fontSize: '12px', color: 'var(--text-muted, #64748b)' }}>B.Tech CSE - Section A</span>
-                      <Link to="/unilms/faculty/attendance" className="btn btn-primary" style={{ fontSize: '11px', padding: '5px 12px', borderRadius: '8px', background: '#4F46E5', color: '#ffffff', textDecoration: 'none', fontWeight: '600' }}>
-                        <i className="fa-solid fa-clipboard-user me-1"></i> Mark Attendance
-                      </Link>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
 

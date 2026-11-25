@@ -249,9 +249,11 @@ const FacultyTimetable = () => {
             </div>
             <div className="faculty-metric-info">
               <div className="faculty-metric-label">Assigned Cohorts</div>
-              <div className="faculty-metric-value" style={{ color: '#2563EB' }}>B.Tech CSE</div>
+              <div className="faculty-metric-value" style={{ color: '#2563EB' }}>
+                {scheduleSlots.length > 0 ? (scheduleSlots[0]?.cohort_name || 'Active Cohort') : '0 Cohorts'}
+              </div>
               <div className="faculty-metric-sub" style={{ color: 'var(--text-secondary, #64748b)' }}>
-                <span>Semester 4 (Batch 2026)</span>
+                <span>{scheduleSlots.length > 0 ? `${new Set(scheduleSlots.map(s => s.cohort_name || s.cohortId).filter(Boolean)).size} Teaching Section(s)` : 'No active teaching cohorts'}</span>
               </div>
             </div>
           </div>

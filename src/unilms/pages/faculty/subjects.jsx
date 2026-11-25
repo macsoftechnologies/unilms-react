@@ -219,12 +219,12 @@ const FacultySubjects = () => {
           </div>
           <h1 style={{ fontSize: '17px', fontWeight: '800', margin: '0 0 4px', color: '#ffffff', letterSpacing: '-0.2px', lineHeight: 1.3 }}>
             {activePersona === 'hod' && 'Department Curriculum & Faculty Allocation Matrix'}
-            {activePersona === 'class_teacher' && 'Class Teacher Batch Curriculum — B.Tech CSE (Section A)'}
+            {activePersona === 'class_teacher' && (batchCourses.length > 0 && batchCourses[0]?.cohort_name ? `Class Teacher Batch Curriculum — ${batchCourses[0].cohort_name}` : 'Class Teacher Batch Curriculum')}
             {activePersona === 'faculty' && 'My Allocated Teaching Courses & Coursework Workbench'}
           </h1>
           <div style={{ fontSize: '12px', color: '#cbd5e1', lineHeight: 1.4 }}>
-            {activePersona === 'hod' && 'Department of Computer Science & Engineering • Cross-faculty syllabus completion audit and AICTE teaching workloads'}
-            {activePersona === 'class_teacher' && 'Proctoring desk for Section A • Review all 5 semester subjects, faculty in-charge, and batch attendance health'}
+            {activePersona === 'hod' && 'Department Faculty Matrix • Cross-faculty syllabus completion audit and AICTE teaching workloads'}
+            {activePersona === 'class_teacher' && (batchCourses.length > 0 && batchCourses[0]?.cohort_name ? `Proctoring desk for ${batchCourses[0].cohort_name} • Review semester subjects, faculty in-charge, and batch attendance health` : 'Proctoring desk • Review semester subjects, faculty in-charge, and batch attendance health')}
             {activePersona === 'faculty' && 'Operational teaching suite • Take lecture attendance, enter continuous evaluation marks, assign tasks, and map course outcomes'}
           </div>
         </div>
@@ -643,7 +643,7 @@ const FacultySubjects = () => {
 
           <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
             <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '800', color: 'var(--text-primary, #1e293b)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <i className="fa-solid fa-book-open" style={{ color: '#059669' }}></i> Section A Semester Curriculum &amp; Teaching Faculty
+              <i className="fa-solid fa-book-open" style={{ color: '#059669' }}></i> {batchCourses.length > 0 && batchCourses[0]?.cohort_name ? `${batchCourses[0].cohort_name} Semester Curriculum & Teaching Faculty` : 'Batch Semester Curriculum & Teaching Faculty'}
             </h3>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
               <button
