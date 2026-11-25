@@ -16,15 +16,18 @@ const OrgSystemsSettings = () => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await apiClient.get('/tenants/branding');
-        const b = res.data || res;
-        if (b) {
+        const contactRes = await apiClient.get('/tenants/settings/org_contact_details').catch(() => null);
+        const contactData = contactRes?.data || contactRes;
+
+        const res = await apiClient.get('/tenants/branding').catch(() => null);
+        const b = res?.data || res;
+        if (b || contactData) {
           setFormData(prev => ({
             ...prev,
-            name: b.name || prev.name,
-            admin_email: b.settings?.contact_email || prev.admin_email,
-            org_phone: b.settings?.phone || prev.org_phone,
-            org_address: b.settings?.address || prev.org_address,
+            name: b?.name || prev.name,
+            admin_email: contactData?.admin_email || b?.adminEmail || b?.settings?.contact_email || prev.admin_email,
+            org_phone: contactData?.org_phone || b?.settings?.phone || prev.org_phone,
+            org_address: contactData?.org_address || b?.settings?.address || prev.org_address,
           }));
         }
       } catch (err) {
@@ -37,13 +40,10 @@ const OrgSystemsSettings = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await apiClient.patch('/tenants/settings', {
-        name: formData.name,
-        settings: {
-          contact_email: formData.admin_email,
-          phone: formData.org_phone,
-          address: formData.org_address,
-        }
+      await apiClient.post('/tenants/settings/org_contact_details', {
+        admin_email: formData.admin_email,
+        org_phone: formData.org_phone,
+        org_address: formData.org_address,
       });
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 3000);
@@ -109,17 +109,25 @@ const OrgSystemsSettings = () => {
         <div className="card" style={{ maxWidth: '640px', background: 'var(--card-bg, #ffffff)', border: '1px solid var(--border-color)', borderRadius: '14px', padding: '24px' }}>
           <form onSubmit={handleSubmit}>
             <div className="form-group" style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', fontSize: '13px' }}>
-                Organization Legal Name <span style={{ color: '#ef4444' }}>*</span>
-              </label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <label style={{ fontWeight: '600', fontSize: '13px', margin: 0 }}>
+                  Organization Legal Name <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <span style={{ fontSize: '11px', color: '#6366f1', background: 'rgba(99, 102, 241, 0.08)', padding: '2px 8px', borderRadius: '4px', fontWeight: '600' }}>
+                  <i className="fa-solid fa-lock me-1"></i> Managed by Super Admin
+                </span>
+              </div>
               <input 
                 type="text" 
                 value={formData.name} 
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
+                disabled
+                readOnly
                 className="form-control" 
-                required 
-                style={{ width: '100%', padding: '10px 14px', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '14px' }} 
+                style={{ width: '100%', padding: '10px 14px', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '14px', background: 'var(--bg-subtle, #f8fafc)', color: 'var(--text-secondary, #64748b)', cursor: 'not-allowed' }} 
               />
+              <small style={{ color: 'var(--text-muted, #94a3b8)', display: 'block', marginTop: '6px', fontSize: '12px' }}>
+                The legal institution name is bound to your enterprise subscription license and can only be amended by the Platform Super Administrator.
+              </small>
             </div>
             
             <div className="form-group" style={{ marginBottom: '20px' }}>

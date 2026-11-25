@@ -63,8 +63,28 @@ if (typeof Date !== 'undefined' && !Date.__unilms_date_patched) {
   };
 }
 
+export const getCurrentAcademicYear = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const startYear = now.getMonth() >= 5 ? year : year - 1;
+  return `${startYear}-${startYear + 1}`;
+};
+
+export const getAcademicYearOptions = (pastYears = 2, futureYears = 1) => {
+  const currentAY = getCurrentAcademicYear();
+  const [curStart] = currentAY.split('-').map(Number);
+  const options = [];
+  for (let i = futureYears; i >= -pastYears; i--) {
+    const y = curStart + i;
+    options.push(`${y}-${y + 1}`);
+  }
+  return options;
+};
+
 export default {
   formatDate,
-  formatDateTime
+  formatDateTime,
+  getCurrentAcademicYear,
+  getAcademicYearOptions
 };
 

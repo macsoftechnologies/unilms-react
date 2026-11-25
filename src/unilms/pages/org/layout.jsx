@@ -59,7 +59,6 @@ const OrgLayout = () => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [showPalette, setShowPalette] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
 
   const currentUser = useMemo(() => {
     try {
@@ -1168,19 +1167,6 @@ const OrgLayout = () => {
                   <i className="fa-solid fa-bars"></i>
                 </button>
                 <h1 id="page-title">{getPageTitle()}</h1>
-              </div>
-
-              {/* Global Search Bar */}
-              <div className="topbar-search">
-                <i className="fa-solid fa-magnifying-glass"></i>
-                <input
-                  type="text"
-                  placeholder="Search anything..."
-                  id="globalSearchInput"
-                  autoComplete="off"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
               </div>
 
               {/* Persona Switcher for Faculty: Render ONLY the roles the faculty member actually holds */}
