@@ -1458,8 +1458,77 @@ const OrgLayout = () => {
 
                       <div style={{ margin: '8px 0', borderTop: '1px solid rgba(0,0,0,0.06)' }}></div>
 
-                      {/* Settings & Sign out */}
+                      {/* Navigation Links for Admin / Faculty */}
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                        {isOrgAdmin && (
+                          <>
+                            <Link
+                              to="/unilms/org/mis/dashboard"
+                              onClick={() => setShowUserDropdown(false)}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                padding: '7px 10px',
+                                borderRadius: '8px',
+                                textDecoration: 'none',
+                                color: 'var(--text-muted)',
+                                fontSize: '12px',
+                                fontWeight: '600'
+                              }}
+                              onMouseEnter={(e) => { e.currentTarget.style.color = '#4F46E5'; e.currentTarget.style.background = 'rgba(79, 70, 229, 0.06)'; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'none'; }}
+                            >
+                              <i className="fa-solid fa-chart-pie" style={{ width: '16px', color: '#4F46E5' }}></i>
+                              <span>Institutional MIS &amp; Cockpit</span>
+                            </Link>
+
+                            <Link
+                              to="/unilms/org/mis/reports"
+                              onClick={() => setShowUserDropdown(false)}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                padding: '7px 10px',
+                                borderRadius: '8px',
+                                textDecoration: 'none',
+                                color: 'var(--text-muted)',
+                                fontSize: '12px',
+                                fontWeight: '600'
+                              }}
+                              onMouseEnter={(e) => { e.currentTarget.style.color = '#4F46E5'; e.currentTarget.style.background = 'rgba(79, 70, 229, 0.06)'; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'none'; }}
+                            >
+                              <i className="fa-solid fa-table-list" style={{ width: '16px', color: '#059669' }}></i>
+                              <span>Cross-Module MIS Reports</span>
+                            </Link>
+
+                            <Link
+                              to="/unilms/org/admissions/joining_analytics"
+                              onClick={() => setShowUserDropdown(false)}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                padding: '7px 10px',
+                                borderRadius: '8px',
+                                textDecoration: 'none',
+                                color: 'var(--text-muted)',
+                                fontSize: '12px',
+                                fontWeight: '600'
+                              }}
+                              onMouseEnter={(e) => { e.currentTarget.style.color = '#4F46E5'; e.currentTarget.style.background = 'rgba(79, 70, 229, 0.06)'; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'none'; }}
+                            >
+                              <i className="fa-solid fa-filter-circle-dollar" style={{ width: '16px', color: '#D97706' }}></i>
+                              <span>Admission ➔ Joining Funnel</span>
+                            </Link>
+
+                            <div style={{ margin: '6px 0', borderTop: '1px solid rgba(0,0,0,0.06)' }}></div>
+                          </>
+                        )}
+
                         <Link
                           to="/unilms/org/systems/settings"
                           onClick={() => setShowUserDropdown(false)}
@@ -1474,8 +1543,8 @@ const OrgLayout = () => {
                             fontSize: '12px',
                             fontWeight: '600'
                           }}
-                          onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-main)'}
-                          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
+                          onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--text-main)'; e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'none'; }}
                         >
                           <i className="fa-solid fa-gear" style={{ width: '16px' }}></i>
                           <span>College Settings</span>
