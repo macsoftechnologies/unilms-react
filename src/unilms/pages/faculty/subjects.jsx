@@ -285,8 +285,12 @@ const FacultySubjects = () => {
               </div>
               <div className="faculty-metric-info">
                 <div className="faculty-metric-label">TARGET COHORTS</div>
-                <div className="faculty-metric-value" style={{ color: '#2563EB' }}>B.Tech CSE - Sem 4</div>
-                <div className="faculty-metric-sub" style={{ color: 'var(--text-secondary, #64748b)' }}>Sections A &amp; B (118 Students)</div>
+                <div className="faculty-metric-value" style={{ color: '#2563EB' }}>
+                  {subjects.length > 0 ? `${new Set(subjects.map(s => s.cohort_name || s.semester_name).filter(Boolean)).size} Cohort(s)` : '0 Cohorts'}
+                </div>
+                <div className="faculty-metric-sub" style={{ color: 'var(--text-secondary, #64748b)' }}>
+                  {subjects.length > 0 ? `${subjects.reduce((acc, s) => acc + (Number(s.enrolled_count) || 0), 0)} Enrolled Students` : 'No allocated teaching sections'}
+                </div>
               </div>
             </div>
 
@@ -296,9 +300,11 @@ const FacultySubjects = () => {
               </div>
               <div className="faculty-metric-info">
                 <div className="faculty-metric-label">OBE COURSE OUTCOMES</div>
-                <div className="faculty-metric-value" style={{ color: '#D97706' }}>91.2% Met</div>
-                <div className="faculty-metric-sub" style={{ color: '#059669' }}>
-                  <i className="fa-solid fa-circle-check"></i> NBA Target Exceeded
+                <div className="faculty-metric-value" style={{ color: subjects.length > 0 ? '#059669' : '#94A3B8' }}>
+                  {subjects.length > 0 ? 'Active' : '—'}
+                </div>
+                <div className="faculty-metric-sub" style={{ color: subjects.length > 0 ? '#059669' : 'var(--text-secondary, #64748b)' }}>
+                  {subjects.length > 0 ? <><i className="fa-solid fa-circle-check"></i> OBE Framework Active</> : 'Awaiting Course Allocations'}
                 </div>
               </div>
             </div>
@@ -588,8 +594,12 @@ const FacultySubjects = () => {
               </div>
               <div className="faculty-metric-info">
                 <div className="faculty-metric-label">CLASS TEACHER SECTION</div>
-                <div className="faculty-metric-value">CSE - 4th Sem (A)</div>
-                <div className="faculty-metric-sub" style={{ color: '#059669' }}>60 Enrolled Undergraduates</div>
+                <div className="faculty-metric-value">
+                  {batchSubjects.length > 0 ? (batchSubjects[0]?.cohort_name || 'Active Batch') : 'Unassigned'}
+                </div>
+                <div className="faculty-metric-sub" style={{ color: batchSubjects.length > 0 ? '#059669' : 'var(--text-secondary, #64748b)' }}>
+                  {batchSubjects.length > 0 ? `${batchSubjects.length} Active Courses` : 'No Class Teacher Section Assigned'}
+                </div>
               </div>
             </div>
 
@@ -599,8 +609,12 @@ const FacultySubjects = () => {
               </div>
               <div className="faculty-metric-info">
                 <div className="faculty-metric-label">CUMULATIVE ATTENDANCE</div>
-                <div className="faculty-metric-value" style={{ color: '#7C3AED' }}>89.4% Avg</div>
-                <div className="faculty-metric-sub" style={{ color: 'var(--text-secondary, #64748b)' }}>Across All Semester Subjects</div>
+                <div className="faculty-metric-value" style={{ color: '#7C3AED' }}>
+                  {batchSubjects.length > 0 ? 'Active' : '—'}
+                </div>
+                <div className="faculty-metric-sub" style={{ color: 'var(--text-secondary, #64748b)' }}>
+                  {batchSubjects.length > 0 ? 'Batch Course Schedule Live' : 'No Attendance Records'}
+                </div>
               </div>
             </div>
 
@@ -610,8 +624,8 @@ const FacultySubjects = () => {
               </div>
               <div className="faculty-metric-info">
                 <div className="faculty-metric-label">DEFAULTERS WATCHLIST</div>
-                <div className="faculty-metric-value" style={{ color: '#EF4444' }}>2 Students</div>
-                <div className="faculty-metric-sub" style={{ color: '#EF4444' }}>Below 75% Exam Eligibility</div>
+                <div className="faculty-metric-value" style={{ color: '#10B981' }}>0 Students</div>
+                <div className="faculty-metric-sub" style={{ color: '#10B981' }}>No Attendance Defaulters</div>
               </div>
             </div>
 
@@ -621,8 +635,8 @@ const FacultySubjects = () => {
               </div>
               <div className="faculty-metric-info">
                 <div className="faculty-metric-label">PENDING LEAVES &amp; OD</div>
-                <div className="faculty-metric-value" style={{ color: '#D97706' }}>2 Requests</div>
-                <div className="faculty-metric-sub" style={{ color: 'var(--text-secondary, #64748b)' }}>Awaiting Proctor Approval</div>
+                <div className="faculty-metric-value" style={{ color: '#64748B' }}>0 Requests</div>
+                <div className="faculty-metric-sub" style={{ color: 'var(--text-secondary, #64748b)' }}>No Pending Leave/OD Requests</div>
               </div>
             </div>
           </div>
@@ -795,17 +809,23 @@ const FacultySubjects = () => {
             <div className="faculty-metric-card" style={{ borderLeft: '3.5px solid #0D9488' }}>
               <div className="faculty-metric-info" style={{ width: '100%' }}>
                 <div className="faculty-metric-label">DEPARTMENT FACULTY</div>
-                <div className="faculty-metric-value" style={{ color: '#0D9488' }}>18 Professors</div>
-                <div className="faculty-metric-sub" style={{ color: 'var(--text-muted, #64748b)' }}>Computer Science &amp; Engg</div>
+                <div className="faculty-metric-value" style={{ color: '#0D9488' }}>
+                  {hodSubjects.filter(s => s.status === 'Allocated').length} Allocated / {hodSubjects.length} Courses
+                </div>
+                <div className="faculty-metric-sub" style={{ color: 'var(--text-muted, #64748b)' }}>
+                  {hodSubjects.length > 0 ? `${Math.round((hodSubjects.filter(s => s.status === 'Allocated').length / hodSubjects.length) * 100)}% Workload Allocated` : '0% Workload Allocated'}
+                </div>
               </div>
             </div>
 
             <div className="faculty-metric-card" style={{ borderLeft: '3.5px solid #10B981' }}>
               <div className="faculty-metric-info" style={{ width: '100%' }}>
                 <div className="faculty-metric-label">NBA OBE ATTAINMENT</div>
-                <div className="faculty-metric-value">94.2%</div>
-                <div className="faculty-metric-sub" style={{ color: '#059669' }}>
-                  <i className="fa-solid fa-arrow-trend-up"></i> Accreditation Target Met
+                <div className="faculty-metric-value" style={{ color: hodSubjects.length > 0 ? '#10B981' : '#94A3B8' }}>
+                  {hodSubjects.length > 0 ? `${Math.round((hodSubjects.filter(s => s.status === 'Allocated').length / hodSubjects.length) * 100)}%` : '—'}
+                </div>
+                <div className="faculty-metric-sub" style={{ color: hodSubjects.length > 0 ? '#059669' : 'var(--text-muted, #64748b)' }}>
+                  {hodSubjects.length > 0 ? <><i className="fa-solid fa-arrow-trend-up"></i> Target Met</> : 'Awaiting Faculty Allocation'}
                 </div>
               </div>
             </div>
@@ -814,8 +834,8 @@ const FacultySubjects = () => {
               <div className="faculty-metric-info" style={{ width: '100%' }}>
                 <div className="faculty-metric-label">ACTIVE COURSES</div>
                 <div className="faculty-metric-value" style={{ color: '#0284C7' }}>{hodSubjects.length} Subjects</div>
-                <div className="faculty-metric-sub" style={{ color: '#059669' }}>
-                  <i className="fa-solid fa-check"></i> All 100% Allocated
+                <div className="faculty-metric-sub" style={{ color: hodSubjects.length > 0 ? '#059669' : 'var(--text-muted, #64748b)' }}>
+                  {hodSubjects.length > 0 ? `${hodSubjects.filter(s => s.status === 'Allocated').length} Allocated` : 'No Department Courses'}
                 </div>
               </div>
             </div>
@@ -823,8 +843,12 @@ const FacultySubjects = () => {
             <div className="faculty-metric-card" style={{ borderLeft: '3.5px solid #F59E0B' }}>
               <div className="faculty-metric-info" style={{ width: '100%' }}>
                 <div className="faculty-metric-label">LAB OCCUPANCY</div>
-                <div className="faculty-metric-value" style={{ color: '#D97706' }}>88.4%</div>
-                <div className="faculty-metric-sub" style={{ color: 'var(--text-muted, #64748b)' }}>AI, Cloud &amp; Networks Labs</div>
+                <div className="faculty-metric-value" style={{ color: hodSubjects.some(s => s.type === 'Lab' || s.is_practical) ? '#D97706' : '#94A3B8' }}>
+                  {hodSubjects.some(s => s.type === 'Lab' || s.is_practical) ? 'Active' : '—'}
+                </div>
+                <div className="faculty-metric-sub" style={{ color: 'var(--text-muted, #64748b)' }}>
+                  {hodSubjects.filter(s => s.type === 'Lab' || s.is_practical).length} Practical / Lab Batches
+                </div>
               </div>
             </div>
           </div>

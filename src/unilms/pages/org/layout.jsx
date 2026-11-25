@@ -73,7 +73,7 @@ const OrgLayout = () => {
   }, [user, location.pathname]);
 
   const userRole = (currentUser?.role || localStorage.getItem('org_user_role') || 'admin').toLowerCase();
-  const isFaculty = path.includes('/faculty') || userRole === 'faculty' || path.startsWith('/unilms/faculty');
+  const isFaculty = path.startsWith('/unilms/faculty') || path.startsWith('/faculty') || userRole === 'faculty';
   const [currPersona, setCurrPersona] = useState(() => localStorage.getItem('faculty_persona') || 'faculty');
 
   // Dynamic Verified Faculty Privileges (isClassTeacher, isHOD)

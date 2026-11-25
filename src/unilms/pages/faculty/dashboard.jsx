@@ -585,9 +585,11 @@ const OrgFacultyDashboard = () => {
               </div>
               <div className="faculty-metric-info">
                 <div className="faculty-metric-label">TARGET COHORTS</div>
-                <div className="faculty-metric-value" style={{ color: '#2563EB' }}>B.Tech CSE - Sem 4</div>
+                <div className="faculty-metric-value" style={{ color: '#2563EB' }}>
+                  {stats.totalAllocations > 0 ? `${stats.totalAllocations} Teaching Sections` : '0 Cohorts'}
+                </div>
                 <div className="faculty-metric-sub" style={{ color: 'var(--text-muted, #64748b)' }}>
-                  <span>Section A (60 Students)</span>
+                  <span>{stats.totalAllocations > 0 ? 'Active Assigned Cohorts' : 'No Allocated Sections'}</span>
                 </div>
               </div>
             </div>
@@ -875,9 +877,9 @@ const OrgFacultyDashboard = () => {
               </div>
               <div className="faculty-metric-info">
                 <div className="faculty-metric-label">CUMULATIVE ATTENDANCE</div>
-                <div className="faculty-metric-value" style={{ color: '#7C3AED' }}>89.4% Avg</div>
+                <div className="faculty-metric-value" style={{ color: '#7C3AED' }}>Active</div>
                 <div className="faculty-metric-sub" style={{ color: 'var(--text-muted, #64748b)' }}>
-                  <span>Across All 5 Semester Subjects</span>
+                  <span>Batch Schedule Live</span>
                 </div>
               </div>
             </div>
@@ -889,9 +891,11 @@ const OrgFacultyDashboard = () => {
               </div>
               <div className="faculty-metric-info">
                 <div className="faculty-metric-label">DEFAULTERS WATCHLIST</div>
-                <div className="faculty-metric-value" style={{ color: '#EF4444' }}>2 Students</div>
-                <div className="faculty-metric-sub" style={{ color: '#EF4444' }}>
-                  <span>Below 75% Exam Eligibility</span>
+                <div className="faculty-metric-value" style={{ color: defaulterStudents.length > 0 ? '#EF4444' : '#10B981' }}>
+                  {defaulterStudents.length} Students
+                </div>
+                <div className="faculty-metric-sub" style={{ color: defaulterStudents.length > 0 ? '#EF4444' : '#10B981' }}>
+                  <span>{defaulterStudents.length > 0 ? 'Below 75% Exam Eligibility' : 'No Attendance Defaulters'}</span>
                 </div>
               </div>
             </div>
@@ -1043,10 +1047,10 @@ const OrgFacultyDashboard = () => {
             <div className="faculty-metric-card" style={{ borderLeft: '3.5px solid #10B981' }}>
               <div className="faculty-metric-info" style={{ width: '100%' }}>
                 <div className="faculty-metric-label">NBA OBE ATTAINMENT</div>
-                <div className="faculty-metric-value">94.2%</div>
-                <div className="faculty-metric-sub" style={{ color: '#059669' }}>
+                <div className="faculty-metric-value">{deptFacultyWorkload.length > 0 ? 'Active' : '—'}</div>
+                <div className="faculty-metric-sub" style={{ color: deptFacultyWorkload.length > 0 ? '#059669' : 'var(--text-muted, #64748b)' }}>
                   <i className="fa-solid fa-arrow-trend-up"></i>
-                  <span>Accreditation Target Met</span>
+                  <span>{deptFacultyWorkload.length > 0 ? 'Accreditation Framework Live' : 'Awaiting Faculty Allocation'}</span>
                 </div>
               </div>
             </div>
@@ -1055,10 +1059,10 @@ const OrgFacultyDashboard = () => {
             <div className="faculty-metric-card" style={{ borderLeft: '3.5px solid #0284C7' }}>
               <div className="faculty-metric-info" style={{ width: '100%' }}>
                 <div className="faculty-metric-label">ACTIVE COURSES</div>
-                <div className="faculty-metric-value" style={{ color: '#0284C7' }}>24 Subjects</div>
+                <div className="faculty-metric-value" style={{ color: '#0284C7' }}>{stats.totalAllocations} Subjects</div>
                 <div className="faculty-metric-sub" style={{ color: '#059669' }}>
                   <i className="fa-solid fa-check"></i>
-                  <span>All 100% Allocated</span>
+                  <span>{stats.totalAllocations > 0 ? 'Allocated' : 'No Allocated Subjects'}</span>
                 </div>
               </div>
             </div>
