@@ -5,7 +5,7 @@ import { useTenant } from '../../context/TenantContext';
 
 const ParentLogin = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
   const { tenant } = useTenant();
   const [orgCode, setOrgCode] = useState(tenant?.code || localStorage.getItem('unilms_tenant_code') || '');
   const [identifier, setIdentifier] = useState('');
@@ -58,6 +58,22 @@ const ParentLogin = () => {
         role: 'parent',
       });
       if (res.success) {
+        const returnedRole = (res.user?.role || '').toLowerCase().trim();
+        if (returnedRole !== 'parent') {
+          logout();
+          if (returnedRole === 'student') {
+            setError('Student account detected. Please sign in via the Student LMS Portal at /lms/login.');
+          } else if (returnedRole === 'admin' || returnedRole === 'campus_admin') {
+            setError('Administrator account detected. Please sign in via the Organization Admin Portal at /org/login.');
+          } else if (returnedRole === 'faculty') {
+            setError('Faculty account detected. Please sign in via the Faculty Portal at /org/login.');
+          } else if (returnedRole === 'super_admin' || returnedRole === 'superadmin') {
+            setError('Super Admin account detected. Please sign in via the Super Admin Portal at /superadmin/login.');
+          } else {
+            setError('Access denied. This portal is strictly reserved for Parents.');
+          }
+          return;
+        }
         navigate('/unilms/parent/dashboard');
       } else {
         setError(res.error || 'Authentication failed. Please check mobile/roll number and password.');

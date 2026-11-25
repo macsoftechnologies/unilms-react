@@ -357,7 +357,7 @@ const AppRoutes = () => {
             <Route path="/unilms/super_admin/:path" element={<SuperAdminRedirect />} />
           </Route>
         </Route>
-        <Route element={<ProtectedRoute allowedRoles={['admin', 'campus_admin', 'super_admin']} fallbackLogin="/unilms/org/login" />}>
+        <Route element={<ProtectedRoute allowedRoles={['admin', 'campus_admin']} fallbackLogin="/unilms/org/login" />}>
           <Route element={<ExecutiveAnalyticsLayout />}>
             <Route path="/unilms/analytics" element={<OrgMisDashboard />} />
             <Route path="/unilms/analytics/dashboard" element={<OrgMisDashboard />} />
@@ -369,7 +369,7 @@ const AppRoutes = () => {
             <Route path="/unilms/analytics/reports" element={<OrgMisReports />} />
           </Route>
         </Route>
-        <Route element={<ProtectedRoute allowedRoles={['student', 'admin', 'campus_admin', 'super_admin']} fallbackLogin="/unilms/lms/login" />}>
+        <Route element={<ProtectedRoute allowedRoles={['student']} fallbackLogin="/unilms/lms/login" />}>
           <Route element={<LmsCareerLayout />}>
             <Route path="/unilms/lms/learn" element={<LmsLearnIndex />} />
             <Route path="/unilms/lms/career" element={<LmsCareerIndex />} />
@@ -412,7 +412,7 @@ const AppRoutes = () => {
         <Route path="/unilms/faculty/login" element={<OrgFacultyLogin />} />
 
         {/* Dedicated Faculty Workspace Routes (Protected for Faculty and Admin) */}
-        <Route element={<ProtectedRoute allowedRoles={['faculty', 'admin', 'campus_admin', 'super_admin']} fallbackLogin="/unilms/faculty/login" />}>
+        <Route element={<ProtectedRoute allowedRoles={['faculty', 'admin', 'campus_admin']} fallbackLogin="/unilms/faculty/login" />}>
           <Route element={<OrgLayout />}>
             <Route path="/unilms/faculty/dashboard" element={<FacultyDashboard />} />
             <Route path="/unilms/faculty/subjects" element={<FacultySubjects />} />
@@ -451,7 +451,7 @@ const AppRoutes = () => {
         </Route>
 
         {/* HOD Leadership Workspace (Strictly Guarded for HODs) */}
-        <Route element={<ProtectedRoute allowedRoles={['faculty', 'admin', 'campus_admin', 'super_admin']} requiredPrivilege="hod" fallbackLogin="/unilms/faculty/login" />}>
+        <Route element={<ProtectedRoute allowedRoles={['faculty', 'admin', 'campus_admin']} requiredPrivilege="hod" fallbackLogin="/unilms/faculty/login" />}>
           <Route element={<OrgLayout />}>
             <Route path="/unilms/faculty/allocations" element={<FacultyAllocations />} />
             <Route path="/unilms/org/faculty/allocations" element={<OrgFacultyAllocations />} />
@@ -459,7 +459,7 @@ const AppRoutes = () => {
         </Route>
 
         {/* Class Teacher Proctoring Workspace (Strictly Guarded for Assigned Class Teachers) */}
-        <Route element={<ProtectedRoute allowedRoles={['faculty', 'admin', 'campus_admin', 'super_admin']} requiredPrivilege="class_teacher" fallbackLogin="/unilms/faculty/login" />}>
+        <Route element={<ProtectedRoute allowedRoles={['faculty', 'admin', 'campus_admin']} requiredPrivilege="class_teacher" fallbackLogin="/unilms/faculty/login" />}>
           <Route element={<OrgLayout />}>
             <Route path="/unilms/faculty/class_teacher_monitor" element={<FacultyClassTeacherMonitor />} />
             <Route path="/unilms/org/faculty/class_teacher_monitor" element={<FacultyClassTeacherMonitor />} />
@@ -467,7 +467,7 @@ const AppRoutes = () => {
         </Route>
 
         {/* Institutional ERP Administrative Desks (Protected by Role & Access Groups via OrgLayout RBAC) */}
-        <Route element={<ProtectedRoute allowedRoles={['admin', 'campus_admin', 'super_admin', 'staff', 'faculty']} fallbackLogin="/unilms/org/login" />}>
+        <Route element={<ProtectedRoute allowedRoles={['admin', 'campus_admin', 'staff', 'faculty']} fallbackLogin="/unilms/org/login" />}>
           <Route element={<OrgLayout />}>
           <Route path="/unilms/org/academics" element={<OrgAcademicsDashboard />} />
           <Route path="/unilms/org/academics/academic_years" element={<OrgAcademicsAcademicYears />} />
@@ -693,7 +693,7 @@ const AppRoutes = () => {
         </Route>
       </Route>
         <Route path="/unilms/org/login" element={<OrgLogin />} />
-        <Route element={<ProtectedRoute allowedRoles={['parent', 'admin', 'campus_admin', 'super_admin']} fallbackLogin="/unilms/parent/login" />}>
+        <Route element={<ProtectedRoute allowedRoles={['parent']} fallbackLogin="/unilms/parent/login" />}>
           <Route element={<ParentLayout />}>
             <Route path="/unilms/parent/homework" element={<ParentAssignments />} />
             <Route path="/unilms/parent/attendance" element={<ParentAttendance />} />
@@ -704,7 +704,7 @@ const AppRoutes = () => {
           </Route>
         </Route>
         <Route path="/unilms/parent/login" element={<ParentLogin />} />
-        <Route element={<ProtectedRoute allowedRoles={['faculty', 'admin', 'campus_admin', 'super_admin']} fallbackLogin="/unilms/creator/login" />}>
+        <Route element={<ProtectedRoute allowedRoles={['faculty', 'admin', 'campus_admin']} fallbackLogin="/unilms/creator/login" />}>
           <Route element={<CreatorLayout />}>
             <Route path="/unilms/creator/builder" element={<CreatorBuilder />} />
             <Route path="/unilms/creator/courses" element={<CreatorCourses />} />

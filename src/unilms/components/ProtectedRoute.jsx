@@ -47,11 +47,31 @@ export const ProtectedRoute = ({ allowedRoles = [], requiredPrivilege = null, fa
   const isCampusAdmin = userRole === 'campus_admin' || userRole === 'admin';
 
   // 1. Check general role authorization
-  if (allowedRoles.length > 0 && !isSuperAdmin) {
+  if (allowedRoles.length > 0) {
     const normalizedAllowed = allowedRoles.map((r) => r.toLowerCase().trim());
-    const isAuthorized = normalizedAllowed.includes(userRole) || (isCampusAdmin && normalizedAllowed.includes('admin'));
+    const isAuthorized = normalizedAllowed.includes(userRole)
+      || (isCampusAdmin && (normalizedAllowed.includes('admin') || normalizedAllowed.includes('campus_admin')))
+      || (isSuperAdmin && (normalizedAllowed.includes('super_admin') || normalizedAllowed.includes('superadmin')));
 
     if (!isAuthorized) {
+      const getHomePortal = () => {
+        if (isSuperAdmin) return '/unilms/superadmin/dashboard';
+        if (isCampusAdmin) return '/unilms/org/admissions/dashboard';
+        if (userRole === 'faculty') return '/unilms/faculty/dashboard';
+        if (userRole === 'student') return '/unilms/lms/dashboard';
+        if (userRole === 'parent') return '/unilms/parent/dashboard';
+        return '/unilms';
+      };
+
+      const getRoleLabel = () => {
+        if (isSuperAdmin) return 'Platform Super Administrator';
+        if (isCampusAdmin) return 'Institution Administrator';
+        if (userRole === 'faculty') return 'Faculty Member';
+        if (userRole === 'student') return 'Student';
+        if (userRole === 'parent') return 'Parent / Guardian';
+        return userRole || 'Unauthorized';
+      };
+
       return (
         <div style={{
           padding: '60px 20px',
@@ -71,30 +91,51 @@ export const ProtectedRoute = ({ allowedRoles = [], requiredPrivilege = null, fa
             Access Restricted
           </h2>
           <p style={{ color: '#6B7280', fontSize: '15px', lineHeight: '1.6', marginBottom: '24px' }}>
-            Your account role (<strong>{userRole || 'unauthorized'}</strong>) does not have permission to access this administrative desk.
+            You are logged in as a <strong>{getRoleLabel()}</strong>. This portal is strictly restricted to authorized accounts: <code>{normalizedAllowed.join(', ')}</code>.
           </p>
-          <a
-            href={userRole === 'faculty' ? '/unilms/faculty/dashboard' : '/unilms'}
-            style={{
-              display: 'inline-block',
-              padding: '10px 24px',
-              background: '#4F46E5',
-              color: '#fff',
-              borderRadius: '10px',
-              fontWeight: '600',
-              textDecoration: 'none',
-              fontSize: '14px'
-            }}
-          >
-            {userRole === 'faculty' ? 'Return to Faculty Workbench' : 'Return to Gateway'}
-          </a>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <a
+              href={getHomePortal()}
+              style={{
+                display: 'inline-block',
+                padding: '10px 24px',
+                background: '#4F46E5',
+                color: '#fff',
+                borderRadius: '10px',
+                fontWeight: '600',
+                textDecoration: 'none',
+                fontSize: '14px'
+              }}
+            >
+              Return to Your Dashboard
+            </a>
+            <button
+              onClick={() => {
+                localStorage.clear();
+                window.location.href = '/unilms';
+              }}
+              style={{
+                display: 'inline-block',
+                padding: '10px 20px',
+                background: '#F1F5F9',
+                color: '#475569',
+                border: '1px solid #CBD5E1',
+                borderRadius: '10px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                fontSize: '14px'
+              }}
+            >
+              Sign Out
+            </button>
+          </div>
         </div>
       );
     }
   }
 
   // 2. Check granular faculty privilege requirements (e.g. HOD or Class Teacher specific routes)
-  if (requiredPrivilege && !isSuperAdmin && !isCampusAdmin) {
+  if (requiredPrivilege && !isCampusAdmin) {
     let privs = {};
     try {
       const cached = localStorage.getItem('unilms_privileges');

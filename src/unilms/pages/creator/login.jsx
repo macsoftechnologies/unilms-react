@@ -5,7 +5,7 @@ import { useTenant } from '../../context/TenantContext';
 
 const CreatorLogin = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
   const { tenant } = useTenant();
   const [orgCode, setOrgCode] = useState(tenant?.code || localStorage.getItem('unilms_tenant_code') || '');
   const [email, setEmail] = useState('');
@@ -58,6 +58,17 @@ const CreatorLogin = () => {
         role: 'creator',
       });
       if (res.success) {
+        const returnedRole = (res.user?.role || '').toLowerCase().trim();
+        if (returnedRole === 'student') {
+          logout();
+          setError('Student account detected. Please sign in via the Student LMS Portal at /lms/login.');
+          return;
+        }
+        if (returnedRole === 'parent') {
+          logout();
+          setError('Parent account detected. Please sign in via the Parent Portal at /parent/login.');
+          return;
+        }
         navigate('/unilms/creator/courses');
       } else {
         setError(res.error || 'Authentication failed. Please verify email and password.');

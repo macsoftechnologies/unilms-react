@@ -5,7 +5,7 @@ import { useTenant } from '../../context/TenantContext';
 
 const OrgLogin = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
   const { tenant } = useTenant();
   const [orgCode, setOrgCode] = useState(tenant?.code || localStorage.getItem('unilms_tenant_code') || '');
   const [employeeCode, setEmployeeCode] = useState('');
@@ -58,7 +58,27 @@ const OrgLogin = () => {
         role: 'campus_admin',
       });
       if (res.success) {
-        navigate('/unilms/org/admissions/dashboard');
+        const returnedRole = (res.user?.role || '').toLowerCase().trim();
+        if (returnedRole === 'student') {
+          logout();
+          setError('Student account detected. Please sign in via the Student LMS Portal at /lms/login.');
+          return;
+        }
+        if (returnedRole === 'parent') {
+          logout();
+          setError('Parent account detected. Please sign in via the Parent Portal at /parent/login.');
+          return;
+        }
+        if (returnedRole === 'super_admin' || returnedRole === 'superadmin') {
+          logout();
+          setError('Super Admin account detected. Please sign in via the Super Admin Portal at /superadmin/login.');
+          return;
+        }
+        if (returnedRole === 'faculty') {
+          navigate('/unilms/faculty/dashboard');
+        } else {
+          navigate('/unilms/org/admissions/dashboard');
+        }
       } else {
         setError(res.error || 'Authentication failed. Please verify employee code and password.');
       }

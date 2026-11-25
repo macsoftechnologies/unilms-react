@@ -107,11 +107,12 @@ export const AuthProvider = ({ children }) => {
 
   const hasRole = (requiredRoles) => {
     if (!role) return false;
-    if (role === 'super_admin') return true;
+    const normalizedRole = role.toLowerCase().trim();
     if (Array.isArray(requiredRoles)) {
-      return requiredRoles.includes(role);
+      const normalizedReqs = requiredRoles.map((r) => r.toLowerCase().trim());
+      return normalizedReqs.includes(normalizedRole);
     }
-    return role === requiredRoles;
+    return normalizedRole === requiredRoles.toLowerCase().trim();
   };
 
   return (

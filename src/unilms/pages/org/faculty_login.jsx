@@ -5,7 +5,7 @@ import { useTenant } from '../../context/TenantContext';
 
 const OrgFacultyLogin = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
   const { tenant, currentTenant } = useTenant();
   const [orgCode, setOrgCode] = useState(currentTenant?.code || tenant?.code || localStorage.getItem('unilms_tenant_code') || '');
   const [employeeCode, setEmployeeCode] = useState('');
@@ -58,8 +58,24 @@ const OrgFacultyLogin = () => {
         role: 'faculty',
       });
       if (res.success) {
-        localStorage.setItem('org_user_role', 'faculty');
-        localStorage.setItem('org_user_name', res.user?.name || 'Prof. Marcus Vance');
+        const returnedRole = (res.user?.role || '').toLowerCase().trim();
+        if (returnedRole === 'student') {
+          logout();
+          setError('Student account detected. Please sign in via the Student LMS Portal at /lms/login.');
+          return;
+        }
+        if (returnedRole === 'parent') {
+          logout();
+          setError('Parent account detected. Please sign in via the Parent Portal at /parent/login.');
+          return;
+        }
+        if (returnedRole === 'super_admin' || returnedRole === 'superadmin') {
+          logout();
+          setError('Super Admin account detected. Please sign in via the Super Admin Portal at /superadmin/login.');
+          return;
+        }
+        localStorage.setItem('org_user_role', returnedRole || 'faculty');
+        localStorage.setItem('org_user_name', res.user?.name || employeeCode);
         localStorage.setItem('org_user_email', res.user?.email || employeeCode);
         localStorage.setItem('faculty_persona', 'faculty');
         navigate('/unilms/faculty/dashboard');
