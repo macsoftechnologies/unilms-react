@@ -1059,7 +1059,9 @@ const OrgAcademicsSubjects = () => {
                   <div style={{ fontSize: '22px', fontWeight: '800', color: '#059669' }}>
                     {facultySubjects.reduce((acc, s) => acc + (Number(s.credits) || 0), 0).toFixed(1)} Credits
                   </div>
-                  <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)' }}>Complies with AICTE Norms</div>
+                  <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)' }}>
+                    {facultySubjects.length > 0 ? 'Complies with AICTE Norms' : 'No active teaching load'}
+                  </div>
                 </div>
               </div>
 
@@ -1571,11 +1573,15 @@ const OrgAcademicsSubjects = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)', fontWeight: '700', textTransform: 'uppercase' }}>NBA Tier-1 Attainment</div>
-                  <div style={{ fontSize: '22px', fontWeight: '800', color: hodSubjectsList.length > 0 ? '#D97706' : '#94A3B8' }}>
-                    {hodSubjectsList.length > 0 ? `${Math.round((hodSubjectsList.filter((s) => s.status === 'Allocated').length / hodSubjectsList.length) * 100)}% Overall` : '—'}
+                  <div style={{ fontSize: '22px', fontWeight: '800', color: hodSubjectsList.length > 0 && hodSubjectsList.some(s => s.status === 'Allocated') ? '#D97706' : '#94A3B8' }}>
+                    {hodSubjectsList.length > 0 && hodSubjectsList.some(s => s.status === 'Allocated') ? `${Math.round((hodSubjectsList.filter((s) => s.status === 'Allocated').length / hodSubjectsList.length) * 100)}% Overall` : '—'}
                   </div>
-                  <div style={{ fontSize: '11.5px', color: hodSubjectsList.length > 0 ? '#059669' : 'var(--text-secondary)', fontWeight: '600' }}>
-                    {hodSubjectsList.length > 0 ? <><i className="fa-solid fa-check-double me-1"></i> Target Exceeded</> : 'Awaiting Faculty Allocation'}
+                  <div style={{ fontSize: '11.5px', color: hodSubjectsList.some(s => s.status === 'Allocated') ? '#059669' : 'var(--text-secondary)', fontWeight: '600' }}>
+                    {hodSubjectsList.some(s => s.status === 'Allocated') ? (
+                      Math.round((hodSubjectsList.filter((s) => s.status === 'Allocated').length / hodSubjectsList.length) * 100) >= 75
+                        ? <><i className="fa-solid fa-circle-check me-1"></i> NBA Target Met</>
+                        : <><i className="fa-solid fa-clock me-1"></i> Attainment In Progress</>
+                    ) : 'Awaiting Faculty Allocation'}
                   </div>
                 </div>
               </div>

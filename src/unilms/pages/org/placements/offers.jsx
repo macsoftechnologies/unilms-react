@@ -107,7 +107,8 @@ const OrgPlacementsOffers = () => {
   // KPI Calculations
   const totalOffers = offers.length;
   const acceptedOffers = offers.filter(o => o.status === 'Accepted').length;
-  const highestCtc = offers.reduce((max, o) => (o.ctc > max ? o.ctc : max), 0);
+  const topOffer = offers.length > 0 ? offers.reduce((max, o) => (Number(o.ctc) > Number(max?.ctc || 0) ? o : max), offers[0]) : null;
+  const highestCtc = topOffer ? Number(topOffer.ctc || 0) : 0;
   const dreamOffersCount = offers.filter(o => o.ctc >= 1000000).length;
 
   // Filtered List
@@ -442,7 +443,9 @@ const OrgPlacementsOffers = () => {
           <div>
             <div style={{ fontSize: '12px', color: '#64748B', fontWeight: '600', textTransform: 'uppercase' }}>Highest CTC</div>
             <div style={{ fontSize: '24px', fontWeight: '800', color: '#1E293B' }}>₹{(highestCtc / 100000).toFixed(1)} LPA</div>
-            <div style={{ fontSize: '11px', color: '#DC2626', fontWeight: '600' }}>Amazon SDE-1</div>
+            <div style={{ fontSize: '11px', color: topOffer ? '#DC2626' : '#64748B', fontWeight: '600' }}>
+              {topOffer ? `${topOffer.company_name} • ${topOffer.job_role || 'Selected Offer'}` : 'No offers recorded'}
+            </div>
           </div>
         </div>
 

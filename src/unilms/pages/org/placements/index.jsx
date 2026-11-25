@@ -153,7 +153,7 @@ const OrgPlacementsIndex = () => {
               Placement &amp; Career Services Hub
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Comprehensive overview of corporate hiring partners, recruitment drives, job offers &bull; AY 2026&ndash;2027
+              Comprehensive overview of corporate hiring partners, recruitment drives, and student job offers
             </p>
           </div>
         </div>

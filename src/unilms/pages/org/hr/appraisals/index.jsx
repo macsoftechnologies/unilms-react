@@ -76,9 +76,11 @@ const OrgHrAppraisalsIndex = () => {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
+  const currentAcademicYear = `AY ${new Date().getFullYear()}-${(new Date().getFullYear() + 1).toString().slice(-2)}`;
+
   const [formData, setFormData] = useState({
     employee_id: '',
-    appraisal_period: 'AY 2025-26 (Annual)',
+    appraisal_period: `${currentAcademicYear} (Annual)`,
     recommendation: 'Salary Increment (10%)',
     self_rating: 8.0,
     hod_rating: 8.5,
@@ -95,7 +97,7 @@ const OrgHrAppraisalsIndex = () => {
   const openAddModal = () => {
     setFormData({
       employee_id: '',
-      appraisal_period: 'AY 2025-26 (Annual)',
+      appraisal_period: `${currentAcademicYear} (Annual)`,
       recommendation: 'Salary Increment (10%)',
       self_rating: 8.0,
       hod_rating: 8.5,
@@ -253,8 +255,8 @@ const OrgHrAppraisalsIndex = () => {
               <div style={{ fontSize: '24px', fontWeight: '800', color: '#1E293B', marginTop: '4px' }}>
                 {appraisals.length} Reviews
               </div>
-              <div style={{ fontSize: '12px', color: '#10B981', marginTop: '4px', fontWeight: '600' }}>
-                100% Committee Ratified
+              <div style={{ fontSize: '12px', color: appraisals.length > 0 ? '#10B981' : 'var(--text-muted, #64748b)', marginTop: '4px', fontWeight: '600' }}>
+                {appraisals.length > 0 ? '100% Committee Ratified' : 'Awaiting Submissions'}
               </div>
             </div>
             <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'rgba(79, 70, 229, 0.1)', color: '#4F46E5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>
@@ -285,10 +287,10 @@ const OrgHrAppraisalsIndex = () => {
                 Promotion & Increments
               </div>
               <div style={{ fontSize: '24px', fontWeight: '800', color: '#059669', marginTop: '4px' }}>
-                {appraisals.length} Recommended
+                {appraisals.filter(a => String(a.recommendation || '').toLowerCase().includes('increment') || String(a.recommendation || '').toLowerCase().includes('promotion')).length} Recommended
               </div>
               <div style={{ fontSize: '12px', color: 'var(--text-muted, #64748b)', marginTop: '4px' }}>
-                Positive Growth Rating
+                {appraisals.length > 0 ? 'Positive Growth Rating' : 'Awaiting Recommendations'}
               </div>
             </div>
             <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'rgba(5, 150, 105, 0.1)', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>
@@ -305,7 +307,7 @@ const OrgHrAppraisalsIndex = () => {
                 {appraisals.length > 0 ? (appraisals[0].appraisal_period || 'Active Cycle') : 'Not Scheduled'}
               </div>
               <div style={{ fontSize: '12px', color: appraisals.length > 0 ? '#059669' : 'var(--text-muted, #64748b)', marginTop: '4px', fontWeight: '600' }}>
-                {appraisals.length > 0 ? 'Cycle Finalized' : 'Awaiting Review Cycle'}
+                {appraisals.length > 0 ? 'Cycle Active' : 'Awaiting Review Cycle'}
               </div>
             </div>
             <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'rgba(124, 58, 237, 0.1)', color: '#7C3AED', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>

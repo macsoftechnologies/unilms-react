@@ -274,7 +274,9 @@ const FacultySubjects = () => {
               </div>
               <div className="faculty-metric-info">
                 <div className="faculty-metric-label">WEEKLY TEACHING CREDITS</div>
-                <div className="faculty-metric-value" style={{ color: '#059669' }}>35.0 Credits</div>
+                <div className="faculty-metric-value" style={{ color: '#059669' }}>
+                  {subjects.reduce((acc, s) => acc + (Number(s.credits) || 0), 0).toFixed(1)} Credits
+                </div>
                 <div className="faculty-metric-sub" style={{ color: 'var(--text-secondary, #64748b)' }}>Complies with AICTE Norms</div>
               </div>
             </div>
