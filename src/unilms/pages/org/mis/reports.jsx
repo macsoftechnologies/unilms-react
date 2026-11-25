@@ -100,8 +100,37 @@ const OrgMisReports = () => {
         data = [];
       }
       return data.filter(r => r.dept.toLowerCase().includes(term));
+    } else if (activeCategory === 'faculty') {
+      if (liveDepts.length > 0) {
+        data = liveDepts.map((d) => {
+          const professors = d._count?.professors || 0;
+          const associates = d._count?.associates || 0;
+          const assistants = d._count?.faculty || 0;
+          const totalFaculty = professors + associates + assistants;
+          const studentsCount = d._count?.students || 0;
+          const sfr = totalFaculty > 0 ? (studentsCount / totalFaculty).toFixed(1) : '—';
+          return {
+            dept: d.name,
+            professors,
+            associates,
+            assistants,
+            totalFaculty,
+            students: studentsCount,
+            sfr: totalFaculty > 0 ? `1 : ${sfr}` : '—',
+            status: totalFaculty > 0 && Number(sfr) <= 20 ? 'Compliant' : 'Review Required'
+          };
+        });
+      } else {
+        data = [];
+      }
+      return data.filter(r => r.dept.toLowerCase().includes(term));
     } else {
-      return NAAC_METRICS_DATA.filter(r => r.criterion.toLowerCase().includes(term) || r.description.toLowerCase().includes(term));
+      return liveDepts.length > 0 ? [
+        { criterion: 'Criterion 1: Curricular Aspects', metricCode: '1.1.2 & 1.2.1', description: 'Percentage of syllabus revised & CBCS implementation', value: 'NEP-2020 / CBCS Active', status: 'Compliant' },
+        { criterion: 'Criterion 2: Teaching-Learning', metricCode: '2.1.1 & 2.2.2', description: 'Enrolment percentage & Student-Full time Teacher ratio', value: 'SFR Tracked via ERP', status: 'Compliant' },
+        { criterion: 'Criterion 2: Evaluation Process', metricCode: '2.6.2 & 2.6.3', description: 'Attainment of Program Outcomes & Pass percentage', value: 'OBE CO-PO Attainment Active', status: 'Compliant' },
+        { criterion: 'Criterion 6: Governance & Leadership', metricCode: '6.2.2 & 6.3.2', description: 'Implementation of e-governance ERP across operations', value: 'UniLMS ERP Digitized', status: 'Compliant' }
+      ].filter(r => r.criterion.toLowerCase().includes(term) || r.description.toLowerCase().includes(term)) : [];
     }
   }, [activeCategory, searchTerm, liveDepts]);
 
@@ -135,9 +164,14 @@ const OrgMisReports = () => {
       rows = currentData.map(r => [
         `"${r.dept}"`, r.appeared, r.passed, `${r.passPct}%`, r.distinction, r.firstClass, r.backlogs, `${r.backlogPct}%`
       ]);
+    } else if (activeCategory === 'faculty') {
+      headers = ['Department', 'Professors', 'Associate Professors', 'Assistant Professors', 'Total Faculty', 'Enrolled Students', 'Student-Faculty Ratio (SFR)', 'Audit Status'];
+      rows = currentData.map(r => [
+        `"${r.dept}"`, r.professors, r.associates, r.assistants, r.totalFaculty, r.students, `"${r.sfr}"`, r.status
+      ]);
     } else {
       headers = ['Accreditation Criterion', 'Metric Code', 'Description', 'Institutional Attainment', 'Audit Status'];
-      rows = NAAC_METRICS_DATA.map(r => [
+      rows = currentData.map(r => [
         `"${r.criterion}"`, `"${r.metricCode}"`, `"${r.description}"`, `"${r.value}"`, r.status
       ]);
     }
@@ -461,14 +495,14 @@ const OrgMisReports = () => {
         )}
 
         {/* Tab 4: NAAC SSR Metrics */}
-        {(activeCategory === 'naac' || activeCategory === 'faculty') && (
+        {activeCategory === 'naac' && (
           <div className="table-responsive">
             <table className="table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid var(--border-color)', textAlign: 'left', color: 'var(--text-muted)', background: 'rgba(0,0,0,0.02)' }}>
                   <th style={{ padding: '12px 14px' }}>Accreditation Criterion</th>
                   <th style={{ padding: '12px 14px' }}>Metric Code</th>
-                  <th style={{ padding: '12px 14px' }}>Quantitative & Qualitative Description</th>
+                  <th style={{ padding: '12px 14px' }}>Quantitative &amp; Qualitative Description</th>
                   <th style={{ padding: '12px 14px' }}>Institutional Attainment Value</th>
                   <th style={{ padding: '12px 14px', textAlign: 'right' }}>Compliance Status</th>
                 </tr>
@@ -487,6 +521,50 @@ const OrgMisReports = () => {
                       <td style={{ padding: '12px 14px', fontWeight: '700', color: 'var(--text-main)' }}>{row.value}</td>
                       <td style={{ padding: '12px 14px', textAlign: 'right' }}>
                         <span style={{ background: '#DCFCE7', color: '#16A34A', padding: '3px 8px', borderRadius: '8px', fontWeight: '800', fontSize: '11px' }}>
+                          {row.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Tab 5: Faculty Cadre & SFR Ratios */}
+        {activeCategory === 'faculty' && (
+          <div className="table-responsive">
+            <table className="table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+              <thead>
+                <tr style={{ borderBottom: '2px solid var(--border-color)', textAlign: 'left', color: 'var(--text-muted)', background: 'rgba(0,0,0,0.02)' }}>
+                  <th style={{ padding: '12px 14px' }}>Department</th>
+                  <th style={{ padding: '12px 14px' }}>Professors</th>
+                  <th style={{ padding: '12px 14px' }}>Assoc. Prof</th>
+                  <th style={{ padding: '12px 14px' }}>Asst. Prof</th>
+                  <th style={{ padding: '12px 14px' }}>Total Faculty</th>
+                  <th style={{ padding: '12px 14px' }}>Enrolled Students</th>
+                  <th style={{ padding: '12px 14px' }}>SFR Ratio</th>
+                  <th style={{ padding: '12px 14px', textAlign: 'right' }}>Statutory Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <TableSkeletonLoader columns={8} rows={pageSize || 5} />
+                ) : paginatedItems.length === 0 ? (
+                  <tr><td colSpan="8" style={{ padding: '30px', textAlign: 'center', color: 'var(--text-muted)' }}>No faculty cadre records found. Configure academic departments and faculty staff.</td></tr>
+                ) : (
+                  paginatedItems.map((row, idx) => (
+                    <tr key={idx} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                      <td style={{ padding: '12px 14px', fontWeight: '800', color: 'var(--text-main)' }}>{row.dept}</td>
+                      <td style={{ padding: '12px 14px' }}>{row.professors}</td>
+                      <td style={{ padding: '12px 14px' }}>{row.associates}</td>
+                      <td style={{ padding: '12px 14px' }}>{row.assistants}</td>
+                      <td style={{ padding: '12px 14px', fontWeight: '700', color: '#4F46E5' }}>{row.totalFaculty}</td>
+                      <td style={{ padding: '12px 14px', fontWeight: '700' }}>{row.students}</td>
+                      <td style={{ padding: '12px 14px', fontWeight: '800', color: '#059669' }}>{row.sfr}</td>
+                      <td style={{ padding: '12px 14px', textAlign: 'right' }}>
+                        <span style={{ background: row.status === 'Compliant' ? '#DCFCE7' : '#FEF3C7', color: row.status === 'Compliant' ? '#16A34A' : '#D97706', padding: '3px 8px', borderRadius: '8px', fontWeight: '800', fontSize: '11px' }}>
                           {row.status}
                         </span>
                       </td>

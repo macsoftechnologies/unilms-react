@@ -351,7 +351,9 @@ const OrgAdmissionsJoiningAnalytics = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {funnelStages.length > 0 ? (
                 funnelStages.map((st, idx) => {
-                  const widthPct = Math.max(16, st.pctOfTotal);
+                  const safePct = totalLeads > 0 && st.count > 0 ? parseFloat(((st.count / totalLeads) * 100).toFixed(1)) : 0;
+                  const widthPct = Math.max(16, safePct);
+                  const velocityDisplay = st.count > 0 ? st.velocity : '—';
                   return (
                     <div key={st.stage} style={{ background: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '14px 16px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
@@ -361,12 +363,12 @@ const OrgAdmissionsJoiningAnalytics = () => {
                           </span>
                           <div>
                             <div style={{ fontWeight: '800', fontSize: '13.5px', color: 'var(--text-main)' }}>{st.name}</div>
-                            <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Avg Velocity: {st.velocity}</div>
+                            <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Avg Velocity: {velocityDisplay}</div>
                           </div>
                         </div>
                         <div style={{ textAlign: 'right' }}>
                           <div style={{ fontWeight: '800', fontSize: '15px', color: st.accentColor }}>{st.count.toLocaleString()}</div>
-                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>{st.pctOfTotal}% of pipeline</div>
+                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>{safePct}% of pipeline</div>
                         </div>
                       </div>
 
@@ -376,7 +378,7 @@ const OrgAdmissionsJoiningAnalytics = () => {
                       </div>
 
                       {/* Stage Drop-off indicator */}
-                      {st.dropCount > 0 && (
+                      {st.dropCount > 0 && totalLeads > 0 && (
                         <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11.5px', color: '#DC2626', background: 'rgba(239, 68, 68, 0.08)', padding: '4px 10px', borderRadius: '6px' }}>
                           <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
                             <i className="fa-solid fa-arrow-down-long"></i> Stage Drop-off

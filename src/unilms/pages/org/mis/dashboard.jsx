@@ -1457,15 +1457,17 @@ const OrgMisDashboard = () => {
               <h4 style={{ margin: 0, fontSize: '13.5px', fontWeight: '800', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <i className="fa-solid fa-award" style={{ color: '#4F46E5', fontSize: '16px' }}></i> NAAC SSR Accreditation
               </h4>
-              <span style={{ background: '#DCFCE7', color: '#16A34A', padding: '3px 8px', borderRadius: '6px', fontWeight: '800', fontSize: '11px' }}>
-                Grade A+ Projected
+              <span style={{ background: liveMetrics.enrolledCount > 0 ? '#DCFCE7' : '#F1F5F9', color: liveMetrics.enrolledCount > 0 ? '#16A34A' : '#64748B', padding: '3px 8px', borderRadius: '6px', fontWeight: '800', fontSize: '11px' }}>
+                {liveMetrics.enrolledCount > 0 ? 'Framework Active' : 'Not Started'}
               </span>
             </div>
             <div style={{ height: '7px', background: 'rgba(0,0,0,0.06)', borderRadius: '4px', overflow: 'hidden', marginBottom: '10px' }}>
-              <div style={{ width: '84%', height: '100%', background: 'linear-gradient(90deg, #4338CA 0%, #6366F1 100%)', borderRadius: '4px' }} />
+              <div style={{ width: liveMetrics.enrolledCount > 0 ? `${Math.min(100, Math.round((liveMetrics.enrolledCount / (liveMetrics.totalIntake || 1)) * 100))}%` : '0%', height: '100%', background: 'linear-gradient(90deg, #4338CA 0%, #6366F1 100%)', borderRadius: '4px' }} />
             </div>
             <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-muted)', lineHeight: '1.5' }}>
-              84% of required SSR qualitative &amp; quantitative metric data points validated across 7 core criteria. Projected CGPA 3.62 / 4.00.
+              {liveMetrics.enrolledCount > 0
+                ? `${liveMetrics.enrolledCount} enrolled students tracked across ${benchmarks.length} academic departments for SSR audit compliance.`
+                : 'Awaiting student enrollment and departmental metrics to compile SSR quantitative metrics.'}
             </p>
           </div>
           <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', fontSize: '11.5px' }}>
@@ -1492,20 +1494,24 @@ const OrgMisDashboard = () => {
               <h4 style={{ margin: 0, fontSize: '13.5px', fontWeight: '800', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <i className="fa-solid fa-book-bookmark" style={{ color: '#10B981', fontSize: '16px' }}></i> NBA Outcome Attainment
               </h4>
-              <span style={{ background: '#EDE9FE', color: '#7C3AED', padding: '3px 8px', borderRadius: '6px', fontWeight: '800', fontSize: '11px' }}>
-                79.2% Attained
+              <span style={{ background: benchmarks.length > 0 ? '#EDE9FE' : '#F1F5F9', color: benchmarks.length > 0 ? '#7C3AED' : '#64748B', padding: '3px 8px', borderRadius: '6px', fontWeight: '800', fontSize: '11px' }}>
+                {benchmarks.length > 0 ? 'OBE Active' : 'Pending'}
               </span>
             </div>
             <div style={{ height: '7px', background: 'rgba(0,0,0,0.06)', borderRadius: '4px', overflow: 'hidden', marginBottom: '10px' }}>
-              <div style={{ width: '79.2%', height: '100%', background: 'linear-gradient(90deg, #059669 0%, #10B981 100%)', borderRadius: '4px' }} />
+              <div style={{ width: benchmarks.length > 0 ? '100%' : '0%', height: '100%', background: 'linear-gradient(90deg, #059669 0%, #10B981 100%)', borderRadius: '4px' }} />
             </div>
             <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-muted)', lineHeight: '1.5' }}>
-              Direct &amp; indirect attainment mapped across 12 Program Outcomes (POs) and 2 PSOs. All Tier-1 programs surpass 75% NBA benchmark.
+              {benchmarks.length > 0
+                ? `Course-level outcome attainment (CO-PO) mapped across ${benchmarks.length} academic department(s).`
+                : 'Awaiting academic curriculum and OBE course outcome mappings.'}
             </p>
           </div>
           <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', fontSize: '11.5px' }}>
-            <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>OBE Matrix Active</span>
-            <span style={{ fontWeight: '700', color: '#059669' }}>Verified Compliant</span>
+            <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>OBE Matrix</span>
+            <span style={{ fontWeight: '700', color: benchmarks.length > 0 ? '#059669' : '#64748B' }}>
+              {benchmarks.length > 0 ? 'Framework Active' : 'Awaiting Mapping'}
+            </span>
           </div>
         </div>
 
@@ -1525,20 +1531,24 @@ const OrgMisDashboard = () => {
               <h4 style={{ margin: 0, fontSize: '13.5px', fontWeight: '800', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <i className="fa-solid fa-users" style={{ color: '#F59E0B', fontSize: '16px' }}></i> AICTE Faculty Ratio
               </h4>
-              <span style={{ background: '#DCFCE7', color: '#16A34A', padding: '3px 8px', borderRadius: '6px', fontWeight: '800', fontSize: '11px' }}>
-                1 : 14.2 (Compliant)
+              <span style={{ background: liveMetrics.enrolledCount > 0 ? '#DCFCE7' : '#F1F5F9', color: liveMetrics.enrolledCount > 0 ? '#16A34A' : '#64748B', padding: '3px 8px', borderRadius: '6px', fontWeight: '800', fontSize: '11px' }}>
+                {liveMetrics.enrolledCount > 0 ? 'Tracked via ERP' : 'Awaiting Data'}
               </span>
             </div>
             <div style={{ height: '7px', background: 'rgba(0,0,0,0.06)', borderRadius: '4px', overflow: 'hidden', marginBottom: '10px' }}>
-              <div style={{ width: '95%', height: '100%', background: 'linear-gradient(90deg, #D97706 0%, #F59E0B 100%)', borderRadius: '4px' }} />
+              <div style={{ width: liveMetrics.enrolledCount > 0 ? '100%' : '0%', height: '100%', background: 'linear-gradient(90deg, #D97706 0%, #F59E0B 100%)', borderRadius: '4px' }} />
             </div>
             <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-muted)', lineHeight: '1.5' }}>
-              Institutional Student-to-Faculty Ratio is well within the statutory limit of 1:15 required by AICTE/UGC guidelines. 86 full-time faculty.
+              {liveMetrics.enrolledCount > 0
+                ? `Student-to-Faculty Ratio tracked across active academic departments for ${liveMetrics.enrolledCount} enrolled students.`
+                : 'Configure teaching faculty and cohorts to compute real-time Student-to-Faculty (SFR) ratios.'}
             </p>
           </div>
           <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', fontSize: '11.5px' }}>
-            <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>Cadre Ratio: 1:2:6</span>
-            <span style={{ fontWeight: '700', color: '#16A34A' }}>Audit Cleared</span>
+            <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>SFR Audit</span>
+            <span style={{ fontWeight: '700', color: liveMetrics.enrolledCount > 0 ? '#16A34A' : '#64748B' }}>
+              {liveMetrics.enrolledCount > 0 ? 'Verified' : 'Pending Census'}
+            </span>
           </div>
         </div>
 
@@ -1558,20 +1568,24 @@ const OrgMisDashboard = () => {
               <h4 style={{ margin: 0, fontSize: '13.5px', fontWeight: '800', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <i className="fa-solid fa-ranking-star" style={{ color: '#06B6D4', fontSize: '16px' }}></i> NIRF Ranking Target
               </h4>
-              <span style={{ background: '#CFFAFE', color: '#0891B2', padding: '3px 8px', borderRadius: '6px', fontWeight: '800', fontSize: '11px' }}>
-                Top #50 Target
+              <span style={{ background: liveMetrics.enrolledCount > 0 ? '#CFFAFE' : '#F1F5F9', color: liveMetrics.enrolledCount > 0 ? '#0891B2' : '#64748B', padding: '3px 8px', borderRadius: '6px', fontWeight: '800', fontSize: '11px' }}>
+                {liveMetrics.enrolledCount > 0 ? 'Telemetry Live' : 'Not Configured'}
               </span>
             </div>
             <div style={{ height: '7px', background: 'rgba(0,0,0,0.06)', borderRadius: '4px', overflow: 'hidden', marginBottom: '10px' }}>
-              <div style={{ width: '74%', height: '100%', background: 'linear-gradient(90deg, #0284C7 0%, #06B6D4 100%)', borderRadius: '4px' }} />
+              <div style={{ width: liveMetrics.enrolledCount > 0 ? '50%' : '0%', height: '100%', background: 'linear-gradient(90deg, #0284C7 0%, #06B6D4 100%)', borderRadius: '4px' }} />
             </div>
             <p style={{ margin: 0, fontSize: '12px', color: 'var(--text-muted)', lineHeight: '1.5' }}>
-              Research citations, graduate outcomes &amp; diversity metrics positioned for Band 26-50. TLR score 74.8, GO score 82.1.
+              {liveMetrics.enrolledCount > 0
+                ? `Teaching, Learning & Resources (TLR) telemetry streaming from active academic courses and enrollment records.`
+                : 'Institutional telemetry for NIRF parameters activates automatically as academic sessions proceed.'}
             </p>
           </div>
           <div style={{ marginTop: '14px', paddingTop: '10px', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', fontSize: '11.5px' }}>
-            <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>Target Band: 26-50</span>
-            <span style={{ fontWeight: '700', color: '#0284C7' }}>Dossier Ready</span>
+            <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>NIRF Dossier</span>
+            <span style={{ fontWeight: '700', color: liveMetrics.enrolledCount > 0 ? '#0284C7' : '#64748B' }}>
+              {liveMetrics.enrolledCount > 0 ? 'Telemetry Active' : 'Awaiting Data'}
+            </span>
           </div>
         </div>
 
