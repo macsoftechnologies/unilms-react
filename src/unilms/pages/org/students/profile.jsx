@@ -130,26 +130,42 @@ const OrgStudentsProfile = () => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginTop: '24px', paddingTop: '22px', borderTop: '1px solid var(--border-color, #e2e8f0)' }}>
           <div style={{ background: 'rgba(99, 102, 241, 0.05)', border: '1px solid rgba(99, 102, 241, 0.15)', borderRadius: '12px', padding: '16px 20px' }}>
             <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '700', letterSpacing: '0.5px' }}>Attendance Rate</div>
-            <div style={{ fontSize: '24px', fontWeight: '800', color: '#4f46e5', marginTop: '4px' }}>88.5%</div>
-            <div style={{ fontSize: '12px', color: '#059669', marginTop: '2px', fontWeight: '600' }}>42 / 48 Lectures Attended</div>
+            <div style={{ fontSize: '24px', fontWeight: '800', color: student.attendance_pct ? '#4f46e5' : '#94a3b8', marginTop: '4px' }}>
+              {student.attendance_pct ? `${student.attendance_pct}%` : '—'}
+            </div>
+            <div style={{ fontSize: '12px', color: student.attendance_pct ? '#059669' : 'var(--text-muted)', marginTop: '2px', fontWeight: '600' }}>
+              {student.attendance_summary || 'No Attendance Records'}
+            </div>
           </div>
 
           <div style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.15)', borderRadius: '12px', padding: '16px 20px' }}>
             <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '700', letterSpacing: '0.5px' }}>Cumulative GPA</div>
-            <div style={{ fontSize: '24px', fontWeight: '800', color: '#059669', marginTop: '4px' }}>8.64 / 10</div>
-            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>Total 46 Earned Credits</div>
+            <div style={{ fontSize: '24px', fontWeight: '800', color: student.cgpa ? '#059669' : '#94a3b8', marginTop: '4px' }}>
+              {student.cgpa ? `${student.cgpa} / 10` : '—'}
+            </div>
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
+              {student.total_credits ? `Total ${student.total_credits} Earned Credits` : 'Awaiting Grading'}
+            </div>
           </div>
 
           <div style={{ background: 'rgba(245, 158, 11, 0.05)', border: '1px solid rgba(245, 158, 11, 0.15)', borderRadius: '12px', padding: '16px 20px' }}>
             <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '700', letterSpacing: '0.5px' }}>Active Backlogs</div>
-            <div style={{ fontSize: '24px', fontWeight: '800', color: '#d97706', marginTop: '4px' }}>0</div>
-            <div style={{ fontSize: '12px', color: '#059669', marginTop: '2px', fontWeight: '600' }}>All registered courses cleared</div>
+            <div style={{ fontSize: '24px', fontWeight: '800', color: (Number(student.backlogs_count) || 0) > 0 ? '#ef4444' : '#10b981', marginTop: '4px' }}>
+              {student.backlogs_count !== undefined ? student.backlogs_count : 0}
+            </div>
+            <div style={{ fontSize: '12px', color: (Number(student.backlogs_count) || 0) > 0 ? '#ef4444' : '#059669', marginTop: '2px', fontWeight: '600' }}>
+              {(Number(student.backlogs_count) || 0) > 0 ? 'Remedial coursework required' : 'All registered courses cleared'}
+            </div>
           </div>
 
           <div style={{ background: 'rgba(59, 130, 246, 0.05)', border: '1px solid rgba(59, 130, 246, 0.15)', borderRadius: '12px', padding: '16px 20px' }}>
             <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: '700', letterSpacing: '0.5px' }}>Fee Balance Due</div>
-            <div style={{ fontSize: '24px', fontWeight: '800', color: '#2563eb', marginTop: '4px' }}>₹0.00</div>
-            <div style={{ fontSize: '12px', color: '#059669', marginTop: '2px', fontWeight: '600' }}>Paid: ₹1,25,000 / ₹1,25,000</div>
+            <div style={{ fontSize: '24px', fontWeight: '800', color: '#2563eb', marginTop: '4px' }}>
+              {student.fee_balance !== undefined ? `₹${Number(student.fee_balance).toLocaleString('en-IN')}` : '₹0.00'}
+            </div>
+            <div style={{ fontSize: '12px', color: (Number(student.fee_balance) || 0) > 0 ? '#d97706' : '#059669', marginTop: '2px', fontWeight: '600' }}>
+              {(Number(student.fee_balance) || 0) > 0 ? 'Dues Outstanding' : 'All Term Fees Cleared'}
+            </div>
           </div>
         </div>
       </div>
@@ -273,30 +289,26 @@ const OrgStudentsProfile = () => {
               </tr>
             </thead>
             <tbody>
-              <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
-                <td style={{ padding: '14px 16px', fontWeight: '700', color: '#6366f1' }}>CS301</td>
-                <td style={{ padding: '14px 16px', fontWeight: '600' }}>Data Structures & Algorithms</td>
-                <td style={{ padding: '14px 16px' }}>4</td>
-                <td style={{ padding: '14px 16px', fontWeight: '700' }}>28 / 30</td>
-                <td style={{ padding: '14px 16px', color: '#059669', fontWeight: '700' }}>92.0%</td>
-                <td style={{ padding: '14px 16px' }}><span className="badge" style={{ background: '#dcfce7', color: '#15803d', fontWeight: '800' }}>A+</span></td>
-              </tr>
-              <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
-                <td style={{ padding: '14px 16px', fontWeight: '700', color: '#6366f1' }}>CS302</td>
-                <td style={{ padding: '14px 16px', fontWeight: '600' }}>Database Management Systems</td>
-                <td style={{ padding: '14px 16px' }}>4</td>
-                <td style={{ padding: '14px 16px', fontWeight: '700' }}>26 / 30</td>
-                <td style={{ padding: '14px 16px', color: '#059669', fontWeight: '700' }}>87.5%</td>
-                <td style={{ padding: '14px 16px' }}><span className="badge" style={{ background: '#dcfce7', color: '#15803d', fontWeight: '800' }}>A</span></td>
-              </tr>
-              <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
-                <td style={{ padding: '14px 16px', fontWeight: '700', color: '#6366f1' }}>CS303</td>
-                <td style={{ padding: '14px 16px', fontWeight: '600' }}>Operating Systems & Shell Scripting</td>
-                <td style={{ padding: '14px 16px' }}>3</td>
-                <td style={{ padding: '14px 16px', fontWeight: '700' }}>27 / 30</td>
-                <td style={{ padding: '14px 16px', color: '#059669', fontWeight: '700' }}>86.0%</td>
-                <td style={{ padding: '14px 16px' }}><span className="badge" style={{ background: '#dcfce7', color: '#15803d', fontWeight: '800' }}>A</span></td>
-              </tr>
+              {Array.isArray(student.courses) && student.courses.length > 0 ? (
+                student.courses.map((c, idx) => (
+                  <tr key={idx} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                    <td style={{ padding: '14px 16px', fontWeight: '700', color: '#6366f1' }}>{c.code}</td>
+                    <td style={{ padding: '14px 16px', fontWeight: '600' }}>{c.title}</td>
+                    <td style={{ padding: '14px 16px' }}>{c.credits}</td>
+                    <td style={{ padding: '14px 16px', fontWeight: '700' }}>{c.internalMarks || '—'}</td>
+                    <td style={{ padding: '14px 16px', color: '#059669', fontWeight: '700' }}>{c.attendancePct ? `${c.attendancePct}%` : '—'}</td>
+                    <td style={{ padding: '14px 16px' }}>
+                      <span className="badge" style={{ background: '#dcfce7', color: '#15803d', fontWeight: '800' }}>{c.grade || '—'}</span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" style={{ textAlign: 'center', padding: '28px', color: 'var(--text-muted)' }}>
+                    No enrolled course records found for this student.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
 </div>
@@ -322,14 +334,28 @@ const OrgStudentsProfile = () => {
               </tr>
             </thead>
             <tbody>
-              <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
-                <td style={{ padding: '14px 16px', fontWeight: '700' }}>INV-2024-0081</td>
-                <td style={{ padding: '14px 16px' }}>Semester 3 Tuition & Lab Fees</td>
-                <td style={{ padding: '14px 16px', fontWeight: '700' }}>₹1,25,000</td>
-                <td style={{ padding: '14px 16px' }}>2024-07-15</td>
-                <td style={{ padding: '14px 16px' }}>Net Banking (HDFC)</td>
-                <td style={{ padding: '14px 16px' }}><span className="badge" style={{ background: '#dcfce7', color: '#15803d', fontWeight: '800' }}>Paid</span></td>
-              </tr>
+              {Array.isArray(student.invoices) && student.invoices.length > 0 ? (
+                student.invoices.map((inv, idx) => (
+                  <tr key={idx} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                    <td style={{ padding: '14px 16px', fontWeight: '700' }}>{inv.invoice_number || inv.invoiceNumber}</td>
+                    <td style={{ padding: '14px 16px' }}>{inv.description || 'Tuition & Academic Fees'}</td>
+                    <td style={{ padding: '14px 16px', fontWeight: '700' }}>₹{Number(inv.amount || 0).toLocaleString('en-IN')}</td>
+                    <td style={{ padding: '14px 16px' }}>{inv.payment_date || inv.paymentDate || '—'}</td>
+                    <td style={{ padding: '14px 16px' }}>{inv.payment_mode || inv.paymentMode || '—'}</td>
+                    <td style={{ padding: '14px 16px' }}>
+                      <span className="badge" style={{ background: inv.status === 'Paid' ? '#dcfce7' : '#fee2e2', color: inv.status === 'Paid' ? '#15803d' : '#dc2626', fontWeight: '800' }}>
+                        {inv.status || 'Pending'}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" style={{ textAlign: 'center', padding: '28px', color: 'var(--text-muted)' }}>
+                    No fee invoices or transactions recorded yet.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
 </div>
@@ -345,19 +371,23 @@ const OrgStudentsProfile = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxWidth: '500px', fontSize: '14px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-muted)' }}>Registered Guardian:</span>
-              <span style={{ fontWeight: '700' }}>{student.parent_name || 'Ramesh Verma'}</span>
+              <span style={{ fontWeight: '700' }}>{student.parent_name || '—'}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-muted)' }}>Contact Mobile:</span>
-              <span style={{ fontWeight: '600' }}>{student.parent_phone || '+91 98765 00001'}</span>
+              <span style={{ fontWeight: '600' }}>{student.parent_phone || '—'}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-muted)' }}>Portal Status:</span>
-              <span className="badge" style={{ background: '#dcfce7', color: '#15803d', fontWeight: '700' }}>Active & Synced</span>
+              <span className="badge" style={{ background: student.parent_phone ? '#dcfce7' : '#f1f5f9', color: student.parent_phone ? '#15803d' : '#64748b', fontWeight: '700' }}>
+                {student.parent_phone ? 'Active & Synced' : 'Awaiting Guardian Setup'}
+              </span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-muted)' }}>SMS Alerts:</span>
-              <span style={{ fontWeight: '600', color: '#059669' }}>Enabled (Daily Attendance & Marks)</span>
+              <span style={{ fontWeight: '600', color: student.parent_phone ? '#059669' : '#64748b' }}>
+                {student.parent_phone ? 'Enabled (Daily Attendance & Marks)' : 'Disabled (No Phone Registered)'}
+              </span>
             </div>
           </div>
         </div>

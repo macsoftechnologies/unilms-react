@@ -103,7 +103,10 @@ const OrgAdmissionsCategories = () => {
     }
   };
 
-  const totalSeatsRepresented = categories.reduce((acc, c) => acc + c.enrolled_count, 0);
+  const totalSeatsRepresented = categories.reduce((acc, c) => acc + (Number(c.enrolled_count) || 0), 0);
+  const totalReservedQuota = categories
+    .filter(c => !['GEN', 'GENERAL', 'OPEN'].includes((c.code || '').toUpperCase()))
+    .reduce((acc, c) => acc + (Number(c.quota_percentage) || 0), 0);
 
   return (
     <div className="categories-page-container">
@@ -241,7 +244,7 @@ const OrgAdmissionsCategories = () => {
             </div>
             <div className="faculty-metric-info">
               <div className="faculty-metric-label">Reserved Quota</div>
-              <div className="faculty-metric-value" style={{ color: '#2563EB' }}>59.5%</div>
+              <div className="faculty-metric-value" style={{ color: '#2563EB' }}>{totalReservedQuota > 0 ? `${totalReservedQuota.toFixed(1)}%` : '0.0%'}</div>
               <div className="faculty-metric-sub" style={{ color: 'var(--text-secondary, #64748b)' }}>
                 <span>Central &amp; state mandates</span>
               </div>
