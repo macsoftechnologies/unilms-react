@@ -1,0 +1,323 @@
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../../components';
+import apiClient from '../../../services/api';
+
+const initialLocations = [
+  { id: 1, name: 'Main Silicon Campus', type: 'Campus', capacity: 0 },
+  { id: 2, name: 'Academic Block A - Computing & AI', type: 'Building', capacity: 0 },
+  { id: 3, name: 'Floor 2 - Computer Science & Engineering', type: 'Floor', capacity: 0 },
+  { id: 4, name: 'Room 201 - Data Science Seminar Hall', type: 'Room', capacity: 90 },
+  { id: 5, name: 'Lab 208 - High Performance Computing Lab', type: 'Lab', capacity: 50 },
+  { id: 6, name: 'Mechanical & Robotics Block B', type: 'Building', capacity: 0 },
+  { id: 7, name: 'Administrative Block & Deanery', type: 'Building', capacity: 0 }
+];
+
+const OrgAdministrationLocations = () => {
+  const [locations, setLocations] = useState(initialLocations);
+  const [editingId, setEditingId] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch locations from PostgreSQL
+  useEffect(() => {
+    let isMounted = true;
+    const fetchLocations = async () => {
+      try {
+        setLoading(true);
+        const res = await apiClient.get('/tenants/settings/org_locations');
+        const list = Array.isArray(res) ? res : (res?.data && Array.isArray(res.data) ? res.data : []);
+        if (isMounted && list.length > 0) {
+          setLocations(list);
+        }
+      } catch (err) {
+        console.warn('Could not load locations from database, using institutional baseline:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+    fetchLocations();
+    return () => { isMounted = false; };
+  }, []);
+
+  const {
+    currentPage,
+    setCurrentPage,
+    pageSize,
+    setPageSize,
+    paginatedItems: paginatedLocations,
+    totalItems
+  } = useTablePagination(locations, 10);
+
+  const [formData, setFormData] = useState({
+    name: '',
+    type: 'Building',
+    capacity: 0
+  });
+
+  const handleEdit = (l) => {
+    setEditingId(l.id);
+    setFormData({
+      name: l.name,
+      type: l.type,
+      capacity: l.capacity
+    });
+  };
+
+  const handleReset = () => {
+    setEditingId(null);
+    setFormData({
+      name: '',
+      type: 'Building',
+      capacity: 0
+    });
+  };
+
+  const persistLocations = async (updatedList) => {
+    setLocations(updatedList);
+    try {
+      await apiClient.post('/tenants/settings/org_locations', updatedList);
+    } catch (err) {
+      console.error('Failed to persist locations to PostgreSQL:', err);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    let updated;
+    if (editingId) {
+      updated = locations.map(l => l.id === editingId ? { ...l, ...formData, capacity: Number(formData.capacity) } : l);
+    } else {
+      const newLoc = {
+        id: Date.now(),
+        name: formData.name,
+        type: formData.type,
+        capacity: Number(formData.capacity)
+      };
+      updated = [...locations, newLoc];
+    }
+    persistLocations(updated);
+    handleReset();
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm('Delete this location?')) {
+      const updated = locations.filter(l => l.id !== id);
+      persistLocations(updated);
+      if (editingId === id) handleReset();
+    }
+  };
+
+  return (
+    <>
+      {/* Top Header Card matching Reference UI (Image 1 & 2) */}
+      <div
+        style={{
+          background: 'var(--card-bg, #fff)',
+          border: '1px solid var(--border-color)',
+          borderRadius: '16px',
+          padding: 'clamp(16px, 3vw, 22px) clamp(18px, 3vw, 26px)',
+          marginBottom: '20px',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '16px'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div
+            style={{
+              width: '46px',
+              height: '46px',
+              minWidth: '46px',
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, #059669, #047857)',
+              color: '#fff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '22px',
+              boxShadow: '0 4px 14px rgba(5, 150, 105, 0.3)'
+            }}
+          >
+            <i className="fa-solid fa-map-location-dot"></i>
+          </div>
+          <div>
+            <h2 style={{ fontSize: '20px', fontWeight: '800', margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
+              Campus Locations &amp; Facilities
+            </h2>
+            <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
+              Manage Campuses, Buildings, Floors, Laboratories, and Lecture Rooms &bull; AY 2026&ndash;2027
+            </p>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <Link
+            to="/unilms/org/administration"
+            className="btn btn-outline"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontWeight: '700', fontSize: '13px', padding: '10px 18px', borderRadius: '10px', textDecoration: 'none', border: '1px solid var(--border-color)', background: 'var(--card-bg, #fff)', color: 'var(--text-primary)', whiteSpace: 'nowrap' }}
+          >
+            <i className="fa-solid fa-sitemap" style={{ color: '#059669' }}></i>
+            <span>Admin Setup</span>
+          </Link>
+          <Link
+            to="/unilms/org/administration/lecture_halls"
+            className="btn btn-primary"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontWeight: '700', fontSize: '13px', padding: '10px 18px', borderRadius: '10px', background: 'linear-gradient(135deg, #059669 0%, #047857 100%)', color: '#fff', textDecoration: 'none', boxShadow: '0 4px 14px rgba(5, 150, 105, 0.25)', whiteSpace: 'nowrap' }}
+          >
+            <i className="fa-solid fa-chalkboard"></i>
+            <span>Lecture Halls</span>
+          </Link>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))', gap: '24px' }}>
+        {/* Form Column */}
+        <div>
+          <div className="card" style={{ background: 'var(--card-bg, #fff)', border: '1px solid var(--border-color)', borderRadius: '14px', padding: '22px' }}>
+            <h2 style={{ marginTop: 0, fontSize: '17px', fontWeight: '700', marginBottom: '16px', color: 'var(--text-primary)' }}>
+              {editingId ? 'Edit Location' : 'Add New Location'}
+            </h2>
+            <form onSubmit={handleSubmit}>
+              <div className="form-group" style={{ marginBottom: '16px' }}>
+                <label style={{ fontSize: '13px', fontWeight: '600', marginBottom: '6px', display: 'block' }}>Location Name *</label>
+                <input 
+                  type="text" 
+                  value={formData.name} 
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
+                  className="form-control" 
+                  required 
+                  placeholder="e.g. Block A / Room 101" 
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid var(--border-color)' }}
+                />
+              </div>
+              
+              <div className="form-group" style={{ marginBottom: '16px' }}>
+                <label style={{ fontSize: '13px', fontWeight: '600', marginBottom: '6px', display: 'block' }}>Type *</label>
+                <select 
+                  value={formData.type} 
+                  onChange={(e) => setFormData({ ...formData, type: e.target.value })} 
+                  className="form-control" 
+                  required
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid var(--border-color)' }}
+                >
+                  <option value="Campus">Campus</option>
+                  <option value="Building">Building</option>
+                  <option value="Floor">Floor</option>
+                  <option value="Room">Room / Classroom</option>
+                  <option value="Lab">Laboratory</option>
+                </select>
+              </div>
+              
+              <div className="form-group" style={{ marginBottom: '20px' }}>
+                <label style={{ fontSize: '13px', fontWeight: '600', marginBottom: '6px', display: 'block' }}>Capacity (For Rooms/Labs)</label>
+                <input 
+                  type="number" 
+                  min="0" 
+                  value={formData.capacity} 
+                  onChange={(e) => setFormData({ ...formData, capacity: e.target.value })} 
+                  className="form-control" 
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid var(--border-color)' }}
+                />
+              </div>
+              
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button 
+                  type="submit" 
+                  className="btn btn-primary" 
+                  style={{ flex: 1, background: '#7C3AED', color: '#fff', border: 'none', padding: '10px', borderRadius: '6px', fontWeight: '600', cursor: 'pointer' }}
+                >
+                  <i className="fa-solid fa-save" style={{ marginRight: '6px' }}></i> {editingId ? 'Update' : 'Save Location'}
+                </button>
+                {editingId && (
+                  <button 
+                    type="button" 
+                    onClick={handleReset} 
+                    className="btn btn-outline"
+                    style={{ padding: '10px 16px', borderRadius: '6px' }}
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
+            </form>
+          </div>
+        </div>
+        
+        {/* Table Column */}
+        <div>
+          <div className="card" style={{ background: 'var(--card-bg, #fff)', border: '1px solid var(--border-color)', borderRadius: '14px', padding: '20px', overflowX: 'auto' }}>
+            <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ borderBottom: '2px solid var(--border-color)', textAlign: 'left' }}>
+                  <th style={{ padding: '12px 14px', fontSize: '12px', color: 'var(--text-secondary)' }}>Location Name</th>
+                  <th style={{ padding: '12px 14px', fontSize: '12px', color: 'var(--text-secondary)' }}>Type</th>
+                  <th style={{ padding: '12px 14px', fontSize: '12px', color: 'var(--text-secondary)' }}>Capacity</th>
+                  <th style={{ padding: '12px 14px', fontSize: '12px', color: 'var(--text-secondary)', textAlign: 'right' }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <TableSkeletonLoader columns={4} rows={pageSize || 5} />
+                ) : paginatedLocations.length > 0 ? (
+                  paginatedLocations.map((l) => (
+                    <tr key={l.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                      <td style={{ padding: '12px 14px', fontWeight: '600', color: 'var(--text-primary)' }}>
+                        {l.name}
+                      </td>
+                      <td style={{ padding: '12px 14px' }}>
+                        <span className="badge" style={{ background: 'rgba(5, 150, 105, 0.1)', color: '#059669', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '600' }}>
+                          {l.type}
+                        </span>
+                      </td>
+                      <td style={{ padding: '12px 14px', fontSize: '13px' }}>
+                        {l.capacity > 0 ? `${l.capacity} Seats` : '—'}
+                      </td>
+                      <td style={{ padding: '12px 14px', textAlign: 'right' }}>
+                        <button 
+                          type="button" 
+                          className="btn btn-outline" 
+                          style={{ padding: '4px 10px', fontSize: '12px', marginRight: '6px', cursor: 'pointer' }} 
+                          onClick={() => handleEdit(l)}
+                        >
+                          Edit
+                        </button>
+                        <button 
+                          type="button" 
+                          className="btn-icon text-danger" 
+                          style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '13px' }} 
+                          onClick={() => handleDelete(l.id)}
+                          title="Delete"
+                        >
+                          <i className="fa-solid fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)' }}>
+                      No campus locations found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+            <TablePagination
+              currentPage={currentPage}
+              totalItems={totalItems}
+              pageSize={pageSize}
+              onPageChange={setCurrentPage}
+              onPageSizeChange={setPageSize}
+              itemName="locations"
+            />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default OrgAdministrationLocations;
