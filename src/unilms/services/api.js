@@ -14,18 +14,19 @@ export const getActiveTenantIdentifier = () => {
     } catch {}
   }
 
-  const hostname = window.location.hostname;
+  const hostname = window.location.hostname.toLowerCase();
   
   if (
     hostname !== 'localhost' &&
     hostname !== '127.0.0.1' &&
-    !hostname.endsWith('.internal') &&
-    !hostname.startsWith('unilms.com') &&
-    !hostname.startsWith('www.unilms.com')
+    !hostname.endsWith('.internal')
   ) {
     const parts = hostname.split('.');
     if (parts.length >= 3) {
-      return parts[0].toUpperCase();
+      const sub = parts[0];
+      if (!['www', 'api', 'app', 'superadmin', 'admin', 'stage', 'dev'].includes(sub)) {
+        return sub.toUpperCase();
+      }
     }
   }
 
