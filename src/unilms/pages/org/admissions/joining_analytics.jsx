@@ -349,45 +349,53 @@ const OrgAdmissionsJoiningAnalytics = () => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              {funnelStages.map((st, idx) => {
-                const widthPct = Math.max(16, st.pctOfTotal);
-                return (
-                  <div key={st.stage} style={{ background: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '14px 16px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span style={{ width: '28px', height: '28px', borderRadius: '8px', background: st.gradient, color: '#fff', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', boxShadow: `0 2px 8px ${st.accentColor}50` }}>
-                          0{st.stage}
-                        </span>
-                        <div>
-                          <div style={{ fontWeight: '800', fontSize: '13.5px', color: 'var(--text-main)' }}>{st.name}</div>
-                          <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Avg Velocity: {st.velocity}</div>
+              {funnelStages.length > 0 ? (
+                funnelStages.map((st, idx) => {
+                  const widthPct = Math.max(16, st.pctOfTotal);
+                  return (
+                    <div key={st.stage} style={{ background: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '14px 16px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <span style={{ width: '28px', height: '28px', borderRadius: '8px', background: st.gradient, color: '#fff', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', boxShadow: `0 2px 8px ${st.accentColor}50` }}>
+                            0{st.stage}
+                          </span>
+                          <div>
+                            <div style={{ fontWeight: '800', fontSize: '13.5px', color: 'var(--text-main)' }}>{st.name}</div>
+                            <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Avg Velocity: {st.velocity}</div>
+                          </div>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ fontWeight: '800', fontSize: '15px', color: st.accentColor }}>{st.count.toLocaleString()}</div>
+                          <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>{st.pctOfTotal}% of pipeline</div>
                         </div>
                       </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontWeight: '800', fontSize: '15px', color: st.accentColor }}>{st.count.toLocaleString()}</div>
-                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '600' }}>{st.pctOfTotal}% of pipeline</div>
-                      </div>
-                    </div>
 
-                    {/* Progress Bar */}
-                    <div style={{ height: '10px', background: 'rgba(0, 0, 0, 0.08)', borderRadius: '5px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', position: 'relative' }}>
-                      <div style={{ width: `${widthPct}%`, height: '100%', background: st.gradient, borderRadius: '5px', transition: 'width 0.6s ease' }} />
-                    </div>
-
-                    {/* Stage Drop-off indicator */}
-                    {st.dropCount > 0 && (
-                      <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11.5px', color: '#DC2626', background: 'rgba(239, 68, 68, 0.08)', padding: '4px 10px', borderRadius: '6px' }}>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
-                          <i className="fa-solid fa-arrow-down-long"></i> Stage Drop-off
-                        </span>
-                        <span style={{ fontWeight: '800' }}>
-                          -{st.dropCount.toLocaleString()} candidates ({st.dropPct}% loss)
-                        </span>
+                      {/* Progress Bar */}
+                      <div style={{ height: '10px', background: 'rgba(0, 0, 0, 0.08)', borderRadius: '5px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', position: 'relative' }}>
+                        <div style={{ width: `${widthPct}%`, height: '100%', background: st.gradient, borderRadius: '5px', transition: 'width 0.6s ease' }} />
                       </div>
-                    )}
-                  </div>
-                );
-              })}
+
+                      {/* Stage Drop-off indicator */}
+                      {st.dropCount > 0 && (
+                        <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11.5px', color: '#DC2626', background: 'rgba(239, 68, 68, 0.08)', padding: '4px 10px', borderRadius: '6px' }}>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '600' }}>
+                            <i className="fa-solid fa-arrow-down-long"></i> Stage Drop-off
+                          </span>
+                          <span style={{ fontWeight: '800' }}>
+                            -{st.dropCount.toLocaleString()} candidates ({st.dropPct}% loss)
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              ) : (
+                <div style={{ textAlign: 'center', padding: '36px 16px', color: 'var(--text-muted)' }}>
+                  <i className="fa-solid fa-filter mb-2" style={{ fontSize: '32px', opacity: 0.35, display: 'block' }}></i>
+                  <div style={{ fontWeight: '700', fontSize: '14px', color: 'var(--text-main)', marginBottom: '4px' }}>No Funnel Pipeline Data</div>
+                  <div style={{ fontSize: '12px' }}>Capture leads, applications, and admission offers to view the 7-stage conversion funnel.</div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -561,33 +569,41 @@ const OrgAdmissionsJoiningAnalytics = () => {
             Academic Program Sanctioned Seat Quota vs Final Enrollment
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {programCapacities.map((prog, idx) => (
-              <div key={idx} style={{ background: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '14px 18px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <div style={{ fontWeight: '800', fontSize: '13.5px', color: 'var(--text-main)' }}>
-                    {prog.program}
+            {programCapacities.length > 0 ? (
+              programCapacities.map((prog, idx) => (
+                <div key={idx} style={{ background: 'var(--bg-main)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '14px 18px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <div style={{ fontWeight: '800', fontSize: '13.5px', color: 'var(--text-main)' }}>
+                      {prog.program}
+                    </div>
+                    <span style={{
+                      background: prog.color === '#10B981' ? '#DCFCE7' : prog.color === '#EF4444' ? '#FEE2E2' : '#FEF3C7',
+                      color: prog.color === '#10B981' ? '#16A34A' : prog.color === '#EF4444' ? '#DC2626' : '#D97706',
+                      padding: '3px 10px',
+                      borderRadius: '12px',
+                      fontWeight: '800',
+                      fontSize: '11.5px'
+                    }}>
+                      {prog.status}
+                    </span>
                   </div>
-                  <span style={{
-                    background: prog.color === '#10B981' ? '#DCFCE7' : prog.color === '#EF4444' ? '#FEE2E2' : '#FEF3C7',
-                    color: prog.color === '#10B981' ? '#16A34A' : prog.color === '#EF4444' ? '#DC2626' : '#D97706',
-                    padding: '3px 10px',
-                    borderRadius: '12px',
-                    fontWeight: '800',
-                    fontSize: '11.5px'
-                  }}>
-                    {prog.status}
-                  </span>
+                  <div style={{ height: '8px', background: 'rgba(0,0,0,0.08)', borderRadius: '4px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', marginBottom: '8px' }}>
+                    <div style={{ width: `${prog.pct}%`, height: '100%', background: prog.color, borderRadius: '4px' }} />
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-muted)' }}>
+                    <span>Sanctioned Seats: <strong>{prog.intake}</strong></span>
+                    <span>Offers Released: <strong>{prog.offers}</strong></span>
+                    <span style={{ fontWeight: '700', color: prog.color }}>Joined: {prog.joined} ({prog.pct}%)</span>
+                  </div>
                 </div>
-                <div style={{ height: '8px', background: 'rgba(0,0,0,0.08)', borderRadius: '4px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', marginBottom: '8px' }}>
-                  <div style={{ width: `${prog.pct}%`, height: '100%', background: prog.color, borderRadius: '4px' }} />
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-muted)' }}>
-                  <span>Sanctioned Seats: <strong>{prog.intake}</strong></span>
-                  <span>Offers Released: <strong>{prog.offers}</strong></span>
-                  <span style={{ fontWeight: '700', color: prog.color }}>Joined: {prog.joined} ({prog.pct}%)</span>
-                </div>
+              ))
+            ) : (
+              <div style={{ textAlign: 'center', padding: '36px 16px', color: 'var(--text-muted)' }}>
+                <i className="fa-solid fa-graduation-cap mb-2" style={{ fontSize: '32px', opacity: 0.35, display: 'block' }}></i>
+                <div style={{ fontWeight: '700', fontSize: '14px', color: 'var(--text-main)', marginBottom: '4px' }}>No Program Capacity Quota Configured</div>
+                <div style={{ fontSize: '12px' }}>Set up academic programs with sanctioned intake capacity to view branch quota utilization.</div>
               </div>
-            ))}
+            )}
           </div>
         </div>
       )}
