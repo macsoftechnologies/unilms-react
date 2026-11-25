@@ -110,7 +110,7 @@ const SuperAdminOrgForm = () => {
             if (isEdit) {
                 await superAdminService.updateOrganization(editId, {
                     name,
-                    domain: domain || `${code.toLowerCase()}.unilms.com`,
+                    domain: domain || `${code.toLowerCase()}.unilms.in`,
                     adminEmail,
                     planId: selectedPlanId,
                     cms_enabled: cmsEnabled,
@@ -122,7 +122,7 @@ const SuperAdminOrgForm = () => {
                 await superAdminService.createOrganization({
                     name,
                     code,
-                    domain: domain || `${code.toLowerCase()}.unilms.com`,
+                    domain: domain || `${code.toLowerCase()}.unilms.in`,
                     adminEmail,
                     adminPassword: adminPassword || 'Password@123',
                     planId: selectedPlanId,

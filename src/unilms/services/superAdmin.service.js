@@ -24,7 +24,7 @@ class SuperAdminService {
     const payload = {
       name: orgData.name,
       code,
-      domain: orgData.domain || `${code.toLowerCase()}.unilms.com`,
+      domain: orgData.domain || `${code.toLowerCase()}.unilms.in`,
       adminEmail: orgData.adminEmail || `admin@${code.toLowerCase()}.edu`,
       adminPassword: orgData.adminPassword || 'Password@123',
       planId: Number(orgData.planId) || 2,

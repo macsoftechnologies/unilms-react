@@ -347,7 +347,7 @@ const CreatorLogin = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required 
                 autoFocus 
-                placeholder="creator@unilms.com"
+                placeholder="creator@unilms.in"
                 style={{
                   width: '100%',
                   padding: '12px 14px 12px 40px',
