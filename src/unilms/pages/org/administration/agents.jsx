@@ -3,43 +3,10 @@ import { Link } from 'react-router-dom';
 import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../../components';
 import apiClient from '../../../services/api';
 
-const initialAgents = [
-  {
-    id: 1,
-    name: 'Apex Global Outreach & Career Point',
-    phone: '9811223344',
-    email: 'admissions@careerpoint.in',
-    commission_rate: 5.0,
-    status: 'Active'
-  },
-  {
-    id: 2,
-    name: 'South-India Academic Consultants',
-    phone: '9845012399',
-    email: 'info@siac-edu.org',
-    commission_rate: 4.5,
-    status: 'Active'
-  },
-  {
-    id: 3,
-    name: 'International Student Pathway Ltd',
-    phone: '9789012388',
-    email: 'global@isp-pathways.com',
-    commission_rate: 6.0,
-    status: 'Active'
-  },
-  {
-    id: 4,
-    name: 'North-East Edu Connect',
-    phone: '9123456711',
-    email: 'contact@neconnect.in',
-    commission_rate: 3.5,
-    status: 'Inactive'
-  }
-];
+const initialAgents = [];
 
 const OrgAdministrationAgents = () => {
-  const [agents, setAgents] = useState(initialAgents);
+  const [agents, setAgents] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -51,11 +18,11 @@ const OrgAdministrationAgents = () => {
         setLoading(true);
         const res = await apiClient.get('/tenants/settings/org_agents');
         const list = Array.isArray(res) ? res : (res?.data && Array.isArray(res.data) ? res.data : []);
-        if (isMounted && list.length > 0) {
+        if (isMounted) {
           setAgents(list);
         }
       } catch (err) {
-        console.warn('Could not load agents from database, using institutional baseline:', err);
+        console.warn('Could not load agents from database:', err);
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -181,7 +148,7 @@ const OrgAdministrationAgents = () => {
               Admission Agents &amp; Counselors
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Manage partner agencies, counselors, and track referral commissions &bull; AY 2026&ndash;2027
+              Manage partner agencies, counselors, and track referral commissions
             </p>
           </div>
         </div>

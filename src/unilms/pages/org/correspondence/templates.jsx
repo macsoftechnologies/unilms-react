@@ -161,7 +161,7 @@ const OrgCorrespondenceTemplates = () => {
               Communication &amp; Circular Templates
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Standardized SMS, email, and notice board templates for institutional correspondence &bull; AY 2026&ndash;2027
+              Standardized SMS, email, and notice board templates for institutional correspondence
             </p>
           </div>
         </div>

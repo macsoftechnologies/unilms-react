@@ -11,35 +11,9 @@ const REPORT_CATEGORIES = [
   { id: 'faculty', label: 'Faculty Cadre & SFR Ratios', icon: 'fa-solid fa-users-gear' }
 ];
 
-const ADMISSION_REPORTS_DATA = [
-  { dept: 'B.Tech Computer Science & Engineering', sanctioned: 120, apps: 640, offers: 145, enrolled: 120, general: 60, obc: 32, scSt: 18, girlsPct: 38.5, yieldPct: 82.7 },
-  { dept: 'B.Sc Data Science & AI', sanctioned: 60, apps: 380, offers: 72, enrolled: 58, general: 30, obc: 16, scSt: 8, girlsPct: 42.0, yieldPct: 80.5 },
-  { dept: 'B.Tech Electronics & Communication', sanctioned: 120, apps: 420, offers: 138, enrolled: 104, general: 54, obc: 28, scSt: 14, girlsPct: 32.0, yieldPct: 75.3 },
-  { dept: 'MBA in Finance & Marketing', sanctioned: 120, apps: 390, offers: 118, enrolled: 84, general: 44, obc: 22, scSt: 12, girlsPct: 46.5, yieldPct: 71.1 },
-  { dept: 'BBA in Digital Marketing', sanctioned: 60, apps: 280, offers: 64, enrolled: 46, general: 24, obc: 12, scSt: 6, girlsPct: 52.0, yieldPct: 71.8 },
-  { dept: 'B.Tech Mechanical Engineering', sanctioned: 60, apps: 190, offers: 56, enrolled: 34, general: 18, obc: 10, scSt: 4, girlsPct: 12.0, yieldPct: 60.7 },
-  { dept: 'B.Tech Civil Engineering', sanctioned: 60, apps: 140, offers: 48, enrolled: 22, general: 12, obc: 6, scSt: 2, girlsPct: 14.5, yieldPct: 45.8 }
-];
-
-const FINANCE_REPORTS_DATA = [
-  { dept: 'Computer Science & Engineering', billed: '₹4,80,00,000', collected: '₹4,39,20,000', outstanding: '₹40,80,000', recoveryPct: 91.5, defaulters: 12 },
-  { dept: 'Data Science & Artificial Intelligence', billed: '₹2,32,00,000', collected: '₹2,04,16,000', outstanding: '₹27,84,000', recoveryPct: 88.0, defaulters: 6 },
-  { dept: 'Electronics & Communication', billed: '₹3,64,00,000', collected: '₹3,06,48,800', outstanding: '₹57,51,200', recoveryPct: 84.2, defaulters: 18 },
-  { dept: 'MBA in Finance & Marketing', billed: '₹2,52,00,000', collected: '₹1,99,08,000', outstanding: '₹52,92,000', recoveryPct: 79.0, defaulters: 16 },
-  { dept: 'BBA in Digital Marketing', billed: '₹1,15,00,000', collected: '₹87,97,500', outstanding: '₹27,02,500', recoveryPct: 76.5, defaulters: 9 },
-  { dept: 'Mechanical Engineering', billed: '₹1,19,00,000', collected: '₹84,49,000', outstanding: '₹34,51,000', recoveryPct: 71.0, defaulters: 14 },
-  { dept: 'Civil Engineering', billed: '₹77,00,000', collected: '₹50,05,000', outstanding: '₹26,95,000', recoveryPct: 65.0, defaulters: 11 }
-];
-
-const ACADEMIC_REPORTS_DATA = [
-  { dept: 'Computer Science & Engineering', appeared: 480, passed: 452, passPct: 94.2, distinction: 210, firstClass: 180, backlogs: 28, backlogPct: 5.8 },
-  { dept: 'Data Science & Artificial Intelligence', appeared: 232, passed: 213, passPct: 91.8, distinction: 94, firstClass: 92, backlogs: 19, backlogPct: 8.2 },
-  { dept: 'Electronics & Communication', appeared: 416, passed: 366, passPct: 88.0, distinction: 142, firstClass: 168, backlogs: 50, backlogPct: 12.0 },
-  { dept: 'MBA in Finance & Marketing', appeared: 168, passed: 155, passPct: 92.5, distinction: 62, firstClass: 74, backlogs: 13, backlogPct: 7.7 },
-  { dept: 'BBA in Digital Marketing', appeared: 92, passed: 79, passPct: 86.4, distinction: 28, firstClass: 38, backlogs: 13, backlogPct: 14.1 },
-  { dept: 'Mechanical Engineering', appeared: 136, passed: 106, passPct: 78.0, distinction: 32, firstClass: 54, backlogs: 30, backlogPct: 22.0 },
-  { dept: 'Civil Engineering', appeared: 88, passed: 64, passPct: 72.5, distinction: 18, firstClass: 32, backlogs: 24, backlogPct: 27.5 }
-];
+const ADMISSION_REPORTS_DATA = [];
+const FINANCE_REPORTS_DATA = [];
+const ACADEMIC_REPORTS_DATA = [];
 
 const NAAC_METRICS_DATA = [
   { criterion: 'Criterion 1: Curricular Aspects', metricCode: '1.1.2 & 1.2.1', description: 'Percentage of syllabus revised & CBCS implementation', value: '100% CBCS / NEP-2020 Compliant', status: 'Compliant' },
@@ -80,50 +54,50 @@ const OrgMisReports = () => {
     let data = [];
     if (activeCategory === 'admissions') {
       if (liveDepts.length > 0) {
-        data = liveDepts.map((d, i) => ({
+        data = liveDepts.map((d) => ({
           dept: d.name,
-          sanctioned: 60 + i * 30,
-          apps: 250 + i * 130,
-          offers: 70 + i * 25,
-          enrolled: 55 + i * 22,
-          general: 30 + i * 10,
-          obc: 15 + i * 6,
-          scSt: 10 + i * 4,
-          girlsPct: 35.0 + (i * 4.2),
-          yieldPct: 78.0 + (i * 2.1)
+          sanctioned: Number(d.intake) || 60,
+          apps: 0,
+          offers: 0,
+          enrolled: 0,
+          general: 0,
+          obc: 0,
+          scSt: 0,
+          girlsPct: 0.0,
+          yieldPct: 0.0
         }));
       } else {
-        data = ADMISSION_REPORTS_DATA;
+        data = [];
       }
       return data.filter(r => r.dept.toLowerCase().includes(term));
     } else if (activeCategory === 'finance') {
       if (liveDepts.length > 0) {
-        data = liveDepts.map((d, i) => ({
+        data = liveDepts.map((d) => ({
           dept: d.name,
-          billed: `₹${(2 + i * 1.2).toFixed(2)} Cr`,
-          collected: `₹${(1.8 + i * 1.1).toFixed(2)} Cr`,
-          outstanding: `₹${(0.2 + i * 0.1).toFixed(2)} Cr`,
-          recoveryPct: 88.0 + i * 1.5,
-          defaulters: 8 + i * 3
+          billed: '₹0.00',
+          collected: '₹0.00',
+          outstanding: '₹0.00',
+          recoveryPct: 0.0,
+          defaulters: 0
         }));
       } else {
-        data = FINANCE_REPORTS_DATA;
+        data = [];
       }
       return data.filter(r => r.dept.toLowerCase().includes(term));
     } else if (activeCategory === 'academics') {
       if (liveDepts.length > 0) {
-        data = liveDepts.map((d, i) => ({
+        data = liveDepts.map((d) => ({
           dept: d.name,
-          appeared: 200 + i * 80,
-          passed: 185 + i * 75,
-          passPct: 91.5 + (i * 1.2),
-          distinction: 80 + i * 30,
-          firstClass: 70 + i * 25,
-          backlogs: 15 + i * 5,
-          backlogPct: 7.5 + (i * 0.5)
+          appeared: 0,
+          passed: 0,
+          passPct: 0.0,
+          distinction: 0,
+          firstClass: 0,
+          backlogs: 0,
+          backlogPct: 0.0
         }));
       } else {
-        data = ACADEMIC_REPORTS_DATA;
+        data = [];
       }
       return data.filter(r => r.dept.toLowerCase().includes(term));
     } else {
@@ -144,21 +118,21 @@ const OrgMisReports = () => {
   const downloadCSV = () => {
     let headers = [];
     let rows = [];
-    let filename = `Apex_University_Report_${activeCategory}_${session}.csv`;
+    let filename = `Institutional_Report_${activeCategory}_${session}.csv`;
 
     if (activeCategory === 'admissions') {
       headers = ['Academic Department', 'Sanctioned Intake', 'Applications', 'Offers', 'Enrolled', 'General Quota', 'OBC', 'SC/ST', 'Female Ratio %', 'Yield %'];
-      rows = ADMISSION_REPORTS_DATA.map(r => [
+      rows = currentData.map(r => [
         `"${r.dept}"`, r.sanctioned, r.apps, r.offers, r.enrolled, r.general, r.obc, r.scSt, `${r.girlsPct}%`, `${r.yieldPct}%`
       ]);
     } else if (activeCategory === 'finance') {
       headers = ['Department', 'Billed Fee', 'Collected Fee', 'Outstanding', 'Recovery %', 'Active Defaulters'];
-      rows = FINANCE_REPORTS_DATA.map(r => [
+      rows = currentData.map(r => [
         `"${r.dept}"`, `"${r.billed}"`, `"${r.collected}"`, `"${r.outstanding}"`, `${r.recoveryPct}%`, r.defaulters
       ]);
     } else if (activeCategory === 'academics') {
       headers = ['Department', 'Students Appeared', 'Passed', 'Pass Rate %', 'Distinction', 'First Class', 'Backlogs Count', 'Backlog %'];
-      rows = ACADEMIC_REPORTS_DATA.map(r => [
+      rows = currentData.map(r => [
         `"${r.dept}"`, r.appeared, r.passed, `${r.passPct}%`, r.distinction, r.firstClass, r.backlogs, `${r.backlogPct}%`
       ]);
     } else {

@@ -3,18 +3,10 @@ import { Link } from 'react-router-dom';
 import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../../components';
 import apiClient from '../../../services/api';
 
-const initialLocations = [
-  { id: 1, name: 'Main Silicon Campus', type: 'Campus', capacity: 0 },
-  { id: 2, name: 'Academic Block A - Computing & AI', type: 'Building', capacity: 0 },
-  { id: 3, name: 'Floor 2 - Computer Science & Engineering', type: 'Floor', capacity: 0 },
-  { id: 4, name: 'Room 201 - Data Science Seminar Hall', type: 'Room', capacity: 90 },
-  { id: 5, name: 'Lab 208 - High Performance Computing Lab', type: 'Lab', capacity: 50 },
-  { id: 6, name: 'Mechanical & Robotics Block B', type: 'Building', capacity: 0 },
-  { id: 7, name: 'Administrative Block & Deanery', type: 'Building', capacity: 0 }
-];
+const initialLocations = [];
 
 const OrgAdministrationLocations = () => {
-  const [locations, setLocations] = useState(initialLocations);
+  const [locations, setLocations] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -26,11 +18,11 @@ const OrgAdministrationLocations = () => {
         setLoading(true);
         const res = await apiClient.get('/tenants/settings/org_locations');
         const list = Array.isArray(res) ? res : (res?.data && Array.isArray(res.data) ? res.data : []);
-        if (isMounted && list.length > 0) {
+        if (isMounted) {
           setLocations(list);
         }
       } catch (err) {
-        console.warn('Could not load locations from database, using institutional baseline:', err);
+        console.warn('Could not load locations from database:', err);
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -148,7 +140,7 @@ const OrgAdministrationLocations = () => {
               Campus Locations &amp; Facilities
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Manage Campuses, Buildings, Floors, Laboratories, and Lecture Rooms &bull; AY 2026&ndash;2027
+              Manage Campuses, Buildings, Floors, Laboratories, and Lecture Rooms
             </p>
           </div>
         </div>

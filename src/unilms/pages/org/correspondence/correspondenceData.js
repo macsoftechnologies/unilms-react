@@ -2,43 +2,8 @@
 import apiClient from '../../../services/api';
 
 export const initialNotifications = [];
-
-export const initialTemplates = [
-  {
-    id: 1,
-    name: 'Fee Due Final Reminder',
-    type: 'Fee Reminder',
-    body_text: 'Dear {name}, your semester tuition fee is overdue. Please settle your dues via the student portal.',
-    created_at: '2026-08-01 10:00:00'
-  },
-  {
-    id: 2,
-    name: 'Examination Schedule Announcement',
-    type: 'Exam Alert',
-    body_text: 'Dear {name}, the terminal examination schedule has been officially published on your dashboard.',
-    created_at: '2026-08-01 10:00:00'
-  },
-  {
-    id: 3,
-    name: 'Annual Convocation Invitation',
-    type: 'Festival',
-    body_text: 'Warm greetings from University Management on the auspicious occasion of our Annual Convocation.',
-    created_at: '2026-08-01 10:00:00'
-  }
-];
-
-export const initialFestivals = [
-  {
-    id: 1,
-    festival_name: 'Diwali Institutional Greetings',
-    audience: 'All',
-    template_id: 3,
-    template_name: 'Annual Convocation Invitation',
-    send_date: '2026-11-01',
-    status: 'Sent',
-    created_at: '2026-10-25 10:00:00'
-  }
-];
+export const initialTemplates = [];
+export const initialFestivals = [];
 
 // Clean in-memory caches synced with PostgreSQL PlatformSetting
 let _cachedNotifications = null;

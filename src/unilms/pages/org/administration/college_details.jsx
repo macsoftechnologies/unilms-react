@@ -6,13 +6,13 @@ import apiClient from '../../../services/api';
 const OrgAdministrationCollegeDetails = () => {
   const { currentTenant } = useTenant();
   const initialDetails = {
-    name: currentTenant?.name || 'Organization 1',
-    affiliation: 'Autonomous University System',
-    naac_grade: 'A++',
-    contact_email: 'admin@org1.unilms.edu',
-    contact_phone: '+91 98765 43210',
-    logo_url: '',
-    address: 'Campus Main Boulevard, Institutional District',
+    name: currentTenant?.name || '',
+    affiliation: '',
+    naac_grade: '',
+    contact_email: currentTenant?.contactEmail || '',
+    contact_phone: currentTenant?.contactPhone || '',
+    logo_url: currentTenant?.logoUrl || '',
+    address: currentTenant?.address || '',
   };
   const [details, setDetails] = useState(initialDetails);
   const [loading, setLoading] = useState(false);
@@ -27,13 +27,13 @@ const OrgAdministrationCollegeDetails = () => {
         const data = (res && res.data) ? res.data : res;
         if (data) {
           const live = {
-            name: data.name || initialDetails.name,
-            affiliation: data.affiliation || initialDetails.affiliation,
-            naac_grade: data.naacGrade || initialDetails.naac_grade,
-            contact_email: data.contactEmail || data.email || initialDetails.contact_email,
-            contact_phone: data.contactPhone || data.phone || initialDetails.contact_phone,
-            logo_url: data.logoUrl || initialDetails.logo_url,
-            address: data.address || initialDetails.address
+            name: data.name || currentTenant?.name || '',
+            affiliation: data.affiliation || '',
+            naac_grade: data.naacGrade || '',
+            contact_email: data.contactEmail || data.email || currentTenant?.contactEmail || '',
+            contact_phone: data.contactPhone || data.phone || currentTenant?.contactPhone || '',
+            logo_url: data.logoUrl || currentTenant?.logoUrl || '',
+            address: data.address || currentTenant?.address || ''
           };
           setDetails(live);
           setFormData(live);
@@ -45,7 +45,7 @@ const OrgAdministrationCollegeDetails = () => {
       }
     };
     fetchTenantDetails();
-  }, []);
+  }, [currentTenant]);
 
   const handleEditClick = () => {
     setFormData(details);
@@ -129,7 +129,7 @@ const OrgAdministrationCollegeDetails = () => {
               Institutional Profile &amp; Accreditation Details
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Manage official institutional information, AICTE/UGC codes, logo, and contact channels &bull; AY 2026&ndash;2027
+              Manage official institutional information, AICTE/UGC codes, logo, and contact channels
             </p>
           </div>
         </div>
@@ -176,13 +176,18 @@ const OrgAdministrationCollegeDetails = () => {
                   {details.name}
                 </h2>
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-                  <span className="badge" style={{ background: 'rgba(124, 58, 237, 0.12)', color: '#7C3AED', fontWeight: '700', fontSize: '12px', padding: '3px 8px', borderRadius: '6px' }}>
-                    {details.affiliation}
-                  </span>
+                  {details.affiliation && (
+                    <span className="badge" style={{ background: 'rgba(124, 58, 237, 0.12)', color: '#7C3AED', fontWeight: '700', fontSize: '12px', padding: '3px 8px', borderRadius: '6px' }}>
+                      {details.affiliation}
+                    </span>
+                  )}
                   {details.naac_grade && (
                     <span className="badge" style={{ background: 'rgba(16, 185, 129, 0.12)', color: '#059669', fontWeight: '700', fontSize: '12px', padding: '3px 8px', borderRadius: '6px' }}>
                       {details.naac_grade}
                     </span>
+                  )}
+                  {!details.affiliation && !details.naac_grade && (
+                    <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Awaiting affiliation &amp; accreditation setup</span>
                   )}
                 </div>
               </div>
@@ -204,8 +209,8 @@ const OrgAdministrationCollegeDetails = () => {
               <div style={{ fontSize: '11.5px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: '4px' }}>
                 <i className="fa-solid fa-envelope" style={{ color: '#7C3AED', marginRight: '6px' }}></i> Official Contact Email
               </div>
-              <strong style={{ fontSize: '14px', color: 'var(--text-primary)', wordBreak: 'break-all' }}>
-                {details.contact_email}
+              <strong style={{ fontSize: '14px', color: details.contact_email ? 'var(--text-primary)' : 'var(--text-secondary)', wordBreak: 'break-all' }}>
+                {details.contact_email || 'Not Configured'}
               </strong>
             </div>
 
@@ -213,8 +218,8 @@ const OrgAdministrationCollegeDetails = () => {
               <div style={{ fontSize: '11.5px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: '4px' }}>
                 <i className="fa-solid fa-phone" style={{ color: '#7C3AED', marginRight: '6px' }}></i> Official Contact Phone
               </div>
-              <strong style={{ fontSize: '14px', color: 'var(--text-primary)' }}>
-                {details.contact_phone}
+              <strong style={{ fontSize: '14px', color: details.contact_phone ? 'var(--text-primary)' : 'var(--text-secondary)' }}>
+                {details.contact_phone || 'Not Configured'}
               </strong>
             </div>
 
@@ -222,8 +227,8 @@ const OrgAdministrationCollegeDetails = () => {
               <div style={{ fontSize: '11.5px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: '4px' }}>
                 <i className="fa-solid fa-award" style={{ color: '#7C3AED', marginRight: '6px' }}></i> Approval Code / NAAC
               </div>
-              <strong style={{ fontSize: '14px', color: 'var(--text-primary)' }}>
-                {details.naac_grade}
+              <strong style={{ fontSize: '14px', color: details.naac_grade ? 'var(--text-primary)' : 'var(--text-secondary)' }}>
+                {details.naac_grade || 'Not Configured'}
               </strong>
             </div>
 
@@ -231,8 +236,8 @@ const OrgAdministrationCollegeDetails = () => {
               <div style={{ fontSize: '11.5px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: '4px' }}>
                 <i className="fa-solid fa-certificate" style={{ color: '#7C3AED', marginRight: '6px' }}></i> Affiliated University
               </div>
-              <strong style={{ fontSize: '14px', color: 'var(--text-primary)' }}>
-                {details.affiliation}
+              <strong style={{ fontSize: '14px', color: details.affiliation ? 'var(--text-primary)' : 'var(--text-secondary)' }}>
+                {details.affiliation || 'Not Configured'}
               </strong>
             </div>
 
@@ -240,8 +245,8 @@ const OrgAdministrationCollegeDetails = () => {
               <div style={{ fontSize: '11.5px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: '4px' }}>
                 <i className="fa-solid fa-location-dot" style={{ color: '#7C3AED', marginRight: '6px' }}></i> Campus Physical Address
               </div>
-              <div style={{ fontSize: '13.5px', color: 'var(--text-primary)', fontWeight: '600', lineHeight: '1.5' }}>
-                {details.address}
+              <div style={{ fontSize: '13.5px', color: details.address ? 'var(--text-primary)' : 'var(--text-secondary)', fontWeight: '600', lineHeight: '1.5' }}>
+                {details.address || 'Not Configured'}
               </div>
             </div>
           </div>

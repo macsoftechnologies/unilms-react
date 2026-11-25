@@ -284,7 +284,7 @@ const OrgPlacementsCompanies = () => {
               Partners &amp; Recruiting Companies
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Manage campus hiring partners, signed MOUs, HR representatives &amp; enterprise contacts &bull; AY 2026&ndash;2027
+              Manage campus hiring partners, signed MOUs, HR representatives &amp; enterprise contacts
             </p>
           </div>
         </div>

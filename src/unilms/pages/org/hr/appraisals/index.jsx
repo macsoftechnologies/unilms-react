@@ -216,7 +216,7 @@ const OrgHrAppraisalsIndex = () => {
                 Staff Performance Appraisals
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Manage faculty self-assessments, HOD evaluations, ratings &amp; promotion recommendations &bull; AY 2026&ndash;2027
+                Manage faculty self-assessments, HOD evaluations, ratings &amp; promotion recommendations
               </p>
             </div>
           </div>
@@ -301,11 +301,11 @@ const OrgHrAppraisalsIndex = () => {
               <div style={{ fontSize: '12px', color: 'var(--text-muted, #64748b)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 Current Review Cycle
               </div>
-              <div style={{ fontSize: '22px', fontWeight: '800', color: '#7C3AED', marginTop: '4px' }}>
-                AY 2025-26
+              <div style={{ fontSize: '22px', fontWeight: '800', color: appraisals.length > 0 ? '#7C3AED' : '#94A3B8', marginTop: '4px' }}>
+                {appraisals.length > 0 ? (appraisals[0].appraisal_period || 'Active Cycle') : 'Not Scheduled'}
               </div>
-              <div style={{ fontSize: '12px', color: '#059669', marginTop: '4px', fontWeight: '600' }}>
-                Cycle Finalized
+              <div style={{ fontSize: '12px', color: appraisals.length > 0 ? '#059669' : 'var(--text-muted, #64748b)', marginTop: '4px', fontWeight: '600' }}>
+                {appraisals.length > 0 ? 'Cycle Finalized' : 'Awaiting Review Cycle'}
               </div>
             </div>
             <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: 'rgba(124, 58, 237, 0.1)', color: '#7C3AED', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>

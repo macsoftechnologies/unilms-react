@@ -3,17 +3,10 @@ import { Link } from 'react-router-dom';
 import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../../components';
 import apiClient from '../../../services/api';
 
-const initialHolidays = [
-  { id: 1, title: 'Republic Day', start_date: '2026-01-26', end_date: '2026-01-26', type: 'Public' },
-  { id: 2, title: 'Maha Shivaratri', start_date: '2026-02-15', end_date: '2026-02-15', type: 'Restricted' },
-  { id: 3, title: 'Holi & Spring Break', start_date: '2026-03-03', end_date: '2026-03-04', type: 'Institutional' },
-  { id: 4, title: 'Ugadi Festival', start_date: '2026-03-19', end_date: '2026-03-19', type: 'Public' },
-  { id: 5, title: 'Independence Day', start_date: '2026-08-15', end_date: '2026-08-15', type: 'Public' },
-  { id: 6, title: 'Diwali & Deepavali Holidays', start_date: '2026-11-08', end_date: '2026-11-10', type: 'Institutional' }
-];
+const initialHolidays = [];
 
 const OrgAdministrationHolidays = () => {
-  const [holidays, setHolidays] = useState(initialHolidays);
+  const [holidays, setHolidays] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -25,11 +18,11 @@ const OrgAdministrationHolidays = () => {
         setLoading(true);
         const res = await apiClient.get('/tenants/settings/org_holidays');
         const list = Array.isArray(res) ? res : (res?.data && Array.isArray(res.data) ? res.data : []);
-        if (isMounted && list.length > 0) {
+        if (isMounted) {
           setHolidays(list);
         }
       } catch (err) {
-        console.warn('Could not load holidays from database, using institutional baseline:', err);
+        console.warn('Could not load holidays from database:', err);
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -148,7 +141,7 @@ const OrgAdministrationHolidays = () => {
               Academic Calendar &amp; Holidays
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Define public, institutional, and restricted holidays across the academic year &bull; AY 2026&ndash;2027
+              Define public, institutional, and restricted holidays across the academic year
             </p>
           </div>
         </div>

@@ -3,41 +3,10 @@ import { Link } from 'react-router-dom';
 import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../../components';
 import apiClient from '../../../services/api';
 
-const initialHalls = [
-  {
-    id: 1,
-    name: 'Room 101 - Alan Turing Smart Hall',
-    hall_type: 'Lecture Hall',
-    capacity: 75
-  },
-  {
-    id: 2,
-    name: 'Lab 204 - Advanced AI & Cloud Computing Lab',
-    hall_type: 'Lab',
-    capacity: 45
-  },
-  {
-    id: 3,
-    name: 'Ramanujan Seminar Hall (Block B)',
-    hall_type: 'Seminar Hall',
-    capacity: 120
-  },
-  {
-    id: 4,
-    name: 'Sir CV Raman Main Auditorium',
-    hall_type: 'Auditorium',
-    capacity: 450
-  },
-  {
-    id: 5,
-    name: 'Lab 108 - Robotics & IoT Prototyping Lab',
-    hall_type: 'Lab',
-    capacity: 35
-  }
-];
+const initialHalls = [];
 
 const OrgAdministrationLectureHalls = () => {
-  const [halls, setHalls] = useState(initialHalls);
+  const [halls, setHalls] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingHall, setEditingHall] = useState(null);
@@ -51,11 +20,11 @@ const OrgAdministrationLectureHalls = () => {
         setLoading(true);
         const res = await apiClient.get('/tenants/settings/org_lecture_halls');
         const list = Array.isArray(res) ? res : (res?.data && Array.isArray(res.data) ? res.data : []);
-        if (isMounted && list.length > 0) {
+        if (isMounted) {
           setHalls(list);
         }
       } catch (err) {
-        console.warn('Could not load lecture halls from database, using institutional baseline:', err);
+        console.warn('Could not load lecture halls from database:', err);
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -191,7 +160,7 @@ const OrgAdministrationLectureHalls = () => {
               Lecture Halls &amp; Campus Infrastructure
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Smart classrooms, computer labs, seminar halls, and auditoriums for timetable &amp; exam seating &bull; AY 2026&ndash;2027
+              Smart classrooms, computer labs, seminar halls, and auditoriums for timetable &amp; exam seating
             </p>
           </div>
         </div>

@@ -161,7 +161,7 @@ const OrgCorrespondenceFestivals = () => {
               Festival Greetings &amp; Broadcast Campaigns
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Schedule automated wishes, celebratory messages &amp; festival circulars &bull; AY 2026&ndash;2027
+              Schedule automated wishes, celebratory messages &amp; festival circulars
             </p>
           </div>
         </div>

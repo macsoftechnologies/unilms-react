@@ -559,6 +559,10 @@ const AppRoutes = () => {
           <Route path="/unilms/org/examinations/reports" element={<OrgExaminationsReports />} />
           <Route path="/unilms/org/examinations/schedules" element={<OrgExaminationsSchedules />} />
           <Route path="/unilms/org/examinations/set_papers" element={<OrgExaminationsSetPapers />} />
+          <Route path="/unilms/org/fees/dashboard" element={<Navigate to="/unilms/org/fees/matrix" replace />} />
+          <Route path="/unilms/org/fees" element={<Navigate to="/unilms/org/fees/matrix" replace />} />
+          <Route path="/org/fees/dashboard" element={<Navigate to="/unilms/org/fees/matrix" replace />} />
+          <Route path="/org/fees" element={<Navigate to="/unilms/org/fees/matrix" replace />} />
           <Route path="/unilms/org/fees/matrix" element={<OrgFeesMatrix />} />
           <Route path="/unilms/org/fees/invoicing" element={<OrgFeesInvoicing />} />
           <Route path="/unilms/org/fees/collections" element={<OrgFeesCollections />} />

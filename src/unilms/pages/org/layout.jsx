@@ -501,7 +501,7 @@ const OrgLayout = () => {
     { id: 'admissions', label: 'Admissions', path: '/unilms/org/admissions/dashboard', icon: 'fa-solid fa-user-plus', bg: '#EDE9FE', color: '#7C3AED', groupKeywords: ['admission', 'crm', 'leads'] },
     { id: 'academics', label: 'Academics', path: '/unilms/org/academics/dashboard', icon: 'fa-solid fa-building-columns', bg: '#E0F2FE', color: '#0284C7', groupKeywords: ['academic', 'faculty allocation', 'curriculum'] },
     { id: 'examinations', label: 'Examinations', path: '/unilms/org/examinations', icon: 'fa-solid fa-file-pen', bg: '#D1FAE5', color: '#059669', groupKeywords: ['exam', 'marks processing', 'evaluation'] },
-    { id: 'fees', label: 'Fees', path: '/unilms/org/fees/dashboard', icon: 'fa-solid fa-indian-rupee-sign', bg: '#FEF3C7', color: '#D97706', groupKeywords: ['fee', 'student accounts'] },
+    { id: 'fees', label: 'Fees', path: '/unilms/org/fees/matrix', icon: 'fa-solid fa-indian-rupee-sign', bg: '#FEF3C7', color: '#D97706', groupKeywords: ['fee', 'student accounts'] },
     { id: 'hr', label: 'HR & Payroll', path: '/unilms/org/hr/employees', icon: 'fa-solid fa-users', bg: '#FCE7F3', color: '#DB2777', groupKeywords: ['hr', 'payroll', 'staff'] },
     { id: 'accounts', label: 'Accounts', path: '/unilms/org/accounts', icon: 'fa-solid fa-credit-card', bg: '#E0E7FF', color: '#4F46E5', groupKeywords: ['account', 'finance', 'ledger'] },
     { id: 'placements', label: 'Placements', path: '/unilms/org/placements', icon: 'fa-solid fa-briefcase', bg: '#FFEDD5', color: '#EA580C', groupKeywords: ['placement', 'corporate', 'drive'] },

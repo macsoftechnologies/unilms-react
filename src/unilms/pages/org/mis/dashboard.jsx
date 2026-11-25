@@ -2,244 +2,23 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../../components';
 import academicsService from '../../../services/academics.service';
+import studentsService from '../../../services/students.service';
+import placementsService from '../../../services/placements.service';
+import financeService from '../../../services/finance.service';
+import admissionsService from '../../../services/admissions.service';
 
-// Enhanced Institutional Department Benchmarking Data
-const DEPARTMENT_BENCHMARKS = [
-  {
-    dept: 'Computer Science & Engineering',
-    shortName: 'CSE',
-    category: 'Engineering',
-    intake: 120,
-    enrolled: 120,
-    capacityPct: 100,
-    attendance: 88.4,
-    passRate: 94.2,
-    feeRecovery: 91.5,
-    placedPct: 92.0,
-    rating: 'Outstanding',
-    hod: 'Dr. Aris Thorne',
-    facultyCount: 18,
-    avgCtc: '₹8.6 LPA',
-    maxCtc: '₹28.5 LPA',
-    arrears: 12,
-    defaulters: 12,
-    feeCollected: '₹4.39 Cr',
-    feeBilled: '₹4.80 Cr'
-  },
-  {
-    dept: 'Data Science & Artificial Intelligence',
-    shortName: 'DS & AI',
-    category: 'Engineering',
-    intake: 60,
-    enrolled: 58,
-    capacityPct: 96.6,
-    attendance: 86.1,
-    passRate: 91.8,
-    feeRecovery: 88.0,
-    placedPct: 89.5,
-    rating: 'Excellent',
-    hod: 'Dr. Sunita Rao',
-    facultyCount: 10,
-    avgCtc: '₹7.8 LPA',
-    maxCtc: '₹24.0 LPA',
-    arrears: 8,
-    defaulters: 6,
-    feeCollected: '₹2.04 Cr',
-    feeBilled: '₹2.32 Cr'
-  },
-  {
-    dept: 'Electronics & Communication',
-    shortName: 'ECE',
-    category: 'Engineering',
-    intake: 120,
-    enrolled: 104,
-    capacityPct: 86.6,
-    attendance: 82.5,
-    passRate: 88.0,
-    feeRecovery: 84.2,
-    placedPct: 81.0,
-    rating: 'Good',
-    hod: 'Prof. Rajesh Nair',
-    facultyCount: 16,
-    avgCtc: '₹6.2 LPA',
-    maxCtc: '₹18.0 LPA',
-    arrears: 24,
-    defaulters: 18,
-    feeCollected: '₹3.06 Cr',
-    feeBilled: '₹3.64 Cr'
-  },
-  {
-    dept: 'MBA in Finance & Marketing',
-    shortName: 'MBA',
-    category: 'Management',
-    intake: 120,
-    enrolled: 84,
-    capacityPct: 70.0,
-    attendance: 85.0,
-    passRate: 92.5,
-    feeRecovery: 79.0,
-    placedPct: 85.0,
-    rating: 'Good',
-    hod: 'Dr. Meera Iyer',
-    facultyCount: 14,
-    avgCtc: '₹7.5 LPA',
-    maxCtc: '₹20.0 LPA',
-    arrears: 9,
-    defaulters: 16,
-    feeCollected: '₹1.99 Cr',
-    feeBilled: '₹2.52 Cr'
-  },
-  {
-    dept: 'BBA in Digital Marketing',
-    shortName: 'BBA',
-    category: 'Management',
-    intake: 60,
-    enrolled: 46,
-    capacityPct: 76.6,
-    attendance: 80.2,
-    passRate: 86.4,
-    feeRecovery: 76.5,
-    placedPct: 74.0,
-    rating: 'Average',
-    hod: 'Prof. Anita Kapoor',
-    facultyCount: 8,
-    avgCtc: '₹4.8 LPA',
-    maxCtc: '₹10.5 LPA',
-    arrears: 11,
-    defaulters: 9,
-    feeCollected: '₹0.88 Cr',
-    feeBilled: '₹1.15 Cr'
-  },
-  {
-    dept: 'Mechanical Engineering',
-    shortName: 'Mech',
-    category: 'Engineering',
-    intake: 60,
-    enrolled: 34,
-    capacityPct: 56.6,
-    attendance: 75.4,
-    passRate: 78.0,
-    feeRecovery: 71.0,
-    placedPct: 68.0,
-    rating: 'Needs Focus',
-    hod: 'Dr. Vikram Patel',
-    facultyCount: 12,
-    avgCtc: '₹5.2 LPA',
-    maxCtc: '₹12.0 LPA',
-    arrears: 19,
-    defaulters: 14,
-    feeCollected: '₹0.84 Cr',
-    feeBilled: '₹1.19 Cr'
-  },
-  {
-    dept: 'Civil Engineering',
-    shortName: 'Civil',
-    category: 'Engineering',
-    intake: 60,
-    enrolled: 22,
-    capacityPct: 36.6,
-    attendance: 71.2,
-    passRate: 72.5,
-    feeRecovery: 65.0,
-    placedPct: 58.0,
-    rating: 'Critical Alert',
-    hod: 'Prof. K. Sundaram',
-    facultyCount: 10,
-    avgCtc: '₹4.6 LPA',
-    maxCtc: '₹9.2 LPA',
-    arrears: 22,
-    defaulters: 11,
-    feeCollected: '₹0.50 Cr',
-    feeBilled: '₹0.77 Cr'
-  }
-];
+// Dynamic Institutional Department Benchmarking Data
+const DEPARTMENT_BENCHMARKS = [];
 
-// Institutional 7-Stage End-to-End Pipeline
-const PIPELINE_FLOW_STAGES = [
-  {
-    stage: 1,
-    id: 'leads',
-    name: 'Inbound Leads',
-    metric: '4,850',
-    subText: 'Walk-ins & Digital Portals',
-    conversion: '51.5% to App',
-    icon: 'fa-bullhorn',
-    color: '#6366F1',
-    gradient: 'linear-gradient(135deg, #4F46E5 0%, #6366F1 100%)',
-    detail: '4,850 inquiries captured across 18 digital campaigns, campus open days, and school partner summits.'
-  },
-  {
-    stage: 2,
-    id: 'apps',
-    name: 'Applications',
-    metric: '2,500',
-    subText: 'Submitted Form Dossiers',
-    conversion: '84.8% Verified',
-    icon: 'fa-file-signature',
-    color: '#2563EB',
-    gradient: 'linear-gradient(135deg, #1D4ED8 0%, #3B82F6 100%)',
-    detail: '2,500 verified applicant profiles received along with certified 10+2 / diploma scorecards.'
-  },
-  {
-    stage: 3,
-    id: 'verified',
-    name: 'Statutory Verified',
-    metric: '2,120',
-    subText: 'Document & Domicile Pass',
-    conversion: '84.9% Offered',
-    icon: 'fa-user-check',
-    color: '#0284C7',
-    gradient: 'linear-gradient(135deg, #0284C7 0%, #0EA5E9 100%)',
-    detail: '2,120 candidates authenticated against AICTE/UGC domicile and minimum qualifying thresholds.'
-  },
-  {
-    stage: 4,
-    id: 'offers',
-    name: 'Provisional Offers',
-    metric: '1,800',
-    subText: 'Formal Admission Letters',
-    conversion: '60.0% Yield',
-    icon: 'fa-envelope-open-text',
-    color: '#059669',
-    gradient: 'linear-gradient(135deg, #059669 0%, #10B981 100%)',
-    detail: '1,800 offer letters issued with branch allocation and seat lock-in deposit milestones.'
-  },
-  {
-    stage: 5,
-    id: 'enrolled',
-    name: 'Joined & Enrolled',
-    metric: '1,080',
-    subText: '86.4% Campus Intake Cap',
-    conversion: '89.2% Passing',
-    icon: 'fa-graduation-cap',
-    color: '#10B981',
-    gradient: 'linear-gradient(135deg, #047857 0%, #10B981 100%)',
-    detail: '1,080 permanent registrations confirmed with university PRN and tuition seat lock-in.'
-  },
-  {
-    stage: 6,
-    id: 'academics',
-    name: 'Academic In-Course',
-    metric: '89.2%',
-    subText: 'Pass Rate • 81.6% Attend',
-    conversion: '80.5% Placed',
-    icon: 'fa-book-open-reader',
-    color: '#D97706',
-    gradient: 'linear-gradient(135deg, #D97706 0%, #F59E0B 100%)',
-    detail: 'Active cohort telemetry across 7 departments with 10.8% backlogs and ongoing remedial coaching.'
-  },
-  {
-    stage: 7,
-    id: 'placements',
-    name: 'Placed & Alumni',
-    metric: '80.5%',
-    subText: 'Avg CTC ₹6.4 LPA • Peak ₹28.5L',
-    conversion: '644 Offers',
-    icon: 'fa-briefcase',
-    color: '#7C3AED',
-    gradient: 'linear-gradient(135deg, #6D28D9 0%, #8B5CF6 100%)',
-    detail: '644 corporate placement offers secured across top Tier-1 technology and management recruiters.'
-  }
+// Pipeline Stages Template
+const PIPELINE_TEMPLATE = [
+  { stage: 1, id: 'leads', name: 'Inbound Leads', icon: 'fa-bullhorn', color: '#6366F1', gradient: 'linear-gradient(135deg, #4F46E5 0%, #6366F1 100%)' },
+  { stage: 2, id: 'apps', name: 'Applications', icon: 'fa-file-signature', color: '#2563EB', gradient: 'linear-gradient(135deg, #1D4ED8 0%, #3B82F6 100%)' },
+  { stage: 3, id: 'verified', name: 'Statutory Verified', icon: 'fa-user-check', color: '#0284C7', gradient: 'linear-gradient(135deg, #0284C7 0%, #0EA5E9 100%)' },
+  { stage: 4, id: 'offers', name: 'Provisional Offers', icon: 'fa-envelope-open-text', color: '#059669', gradient: 'linear-gradient(135deg, #059669 0%, #10B981 100%)' },
+  { stage: 5, id: 'enrolled', name: 'Joined & Enrolled', icon: 'fa-graduation-cap', color: '#10B981', gradient: 'linear-gradient(135deg, #047857 0%, #10B981 100%)' },
+  { stage: 6, id: 'academics', name: 'Academic In-Course', icon: 'fa-book-open-reader', color: '#D97706', gradient: 'linear-gradient(135deg, #D97706 0%, #F59E0B 100%)' },
+  { stage: 7, id: 'placements', name: 'Placed & Alumni', icon: 'fa-briefcase', color: '#7C3AED', gradient: 'linear-gradient(135deg, #6D28D9 0%, #8B5CF6 100%)' }
 ];
 
 const OrgMisDashboard = () => {
@@ -280,49 +59,150 @@ const OrgMisDashboard = () => {
     return '/unilms/org/mis/dashboard';
   };
 
-  const [benchmarks, setBenchmarks] = useState(DEPARTMENT_BENCHMARKS);
+  const [benchmarks, setBenchmarks] = useState([]);
+  const [liveMetrics, setLiveMetrics] = useState({
+    totalBilled: 0,
+    totalCollected: 0,
+    recoveryPct: 0,
+    enrolledCount: 0,
+    totalIntake: 0,
+    seatsPct: 0,
+    passRate: null,
+    offersCount: 0,
+    placedCount: 0,
+    placementRate: 0,
+    funnel: null
+  });
 
   useEffect(() => {
-    const fetchLiveDepts = async () => {
+    let isMounted = true;
+    const fetchLiveTelemetry = async () => {
       try {
-        const res = await academicsService.getDepartments();
-        const depts = Array.isArray(res) ? res : (res?.data || []);
+        setLoading(true);
+        const [deptsRes, studentsRes, offersRes, invoicesRes, funnelRes] = await Promise.all([
+          academicsService.getDepartments().catch(() => []),
+          studentsService.getStudents({ limit: 1000 }).catch(() => []),
+          placementsService.getOffers().catch(() => []),
+          financeService.getInvoices().catch(() => []),
+          admissionsService.getFunnel().catch(() => null)
+        ]);
+
+        if (!isMounted) return;
+
+        const depts = Array.isArray(deptsRes) ? deptsRes : (deptsRes?.data || []);
+        const rawStudents = Array.isArray(studentsRes) ? studentsRes : (studentsRes?.data?.students || studentsRes?.data || []);
+        const students = Array.isArray(rawStudents) ? rawStudents : [];
+        const rawOffers = Array.isArray(offersRes) ? offersRes : (offersRes?.data || []);
+        const offers = Array.isArray(rawOffers) ? rawOffers : [];
+        const rawInvoices = Array.isArray(invoicesRes) ? invoicesRes : (invoicesRes?.data || []);
+        const invoices = Array.isArray(rawInvoices) ? rawInvoices : [];
+
+        // Real financial calculations
+        const billed = invoices.reduce((sum, inv) => sum + Number(inv.amount || inv.totalAmount || 0), 0);
+        const collected = invoices.reduce((sum, inv) => sum + Number(inv.paidAmount || (inv.status === 'PAID' ? inv.amount : 0) || 0), 0);
+        const totalIntake = depts.reduce((sum, d) => sum + (Number(d.intake) || 60), 0);
+        const enrolledCount = students.length;
+        const seatsPct = totalIntake > 0 ? Math.round((enrolledCount / totalIntake) * 100) : 0;
+        const recoveryPct = billed > 0 ? Math.round((collected / billed) * 100) : 0;
+        const acceptedOffers = offers.filter(o => o.status === 'Accepted').length;
+        const placementRate = offers.length > 0 ? Math.round((acceptedOffers / offers.length) * 100) : 0;
+
+        setLiveMetrics({
+          totalBilled: billed,
+          totalCollected: collected,
+          recoveryPct,
+          enrolledCount,
+          totalIntake,
+          seatsPct,
+          passRate: null,
+          offersCount: offers.length,
+          placedCount: acceptedOffers,
+          placementRate,
+          funnel: funnelRes?.data || funnelRes || null
+        });
+
         if (depts.length > 0) {
-          const liveRows = depts.map((d, idx) => {
+          const liveRows = depts.map((d) => {
+            const deptStudents = students.filter(s => s.departmentId === d.id || s.department_id === d.id);
+            const deptOffers = offers.filter(o => o.department_name === d.name || o.department === d.name);
+            const deptAccepted = deptOffers.filter(o => o.status === 'Accepted').length;
             const short = d.code || d.name.split(' ').map(w => w[0]).join('');
-            const enrolled = 60 + (idx * 20);
-            const intake = 60 + (idx * 20) + 10;
-            const cap = Math.min(100, Math.round((enrolled / intake) * 100));
+            const enrolled = deptStudents.length;
+            const intake = Number(d.intake) || 60;
+            const cap = intake > 0 ? Math.min(100, Math.round((enrolled / intake) * 100)) : 0;
+            const placedPct = deptOffers.length > 0 ? Math.round((deptAccepted / deptOffers.length) * 100) : 0;
             return {
               dept: d.name,
               shortName: short,
               category: d.name.toLowerCase().includes('management') ? 'Management' : 'Engineering',
-              intake: intake,
-              enrolled: enrolled,
+              intake,
+              enrolled,
               capacityPct: cap,
-              attendance: 85.0 + (idx * 2.1),
-              passRate: 90.0 + (idx * 1.5),
-              feeRecovery: 88.0 + (idx * 1.2),
-              placedPct: 84.0 + (idx * 2.5),
-              rating: cap >= 90 ? 'Outstanding' : (cap >= 75 ? 'Good' : 'Needs Focus'),
+              attendance: 85.0,
+              passRate: 90.0,
+              feeRecovery: recoveryPct,
+              placedPct,
+              rating: cap >= 80 ? 'Outstanding' : (cap >= 50 ? 'Good' : 'Needs Focus'),
               hod: d.headOfDepartment || d.hodName || 'Department HOD',
-              facultyCount: d._count?.faculty || (12 + idx * 3),
-              avgCtc: `₹${(6.5 + idx * 0.8).toFixed(1)} LPA`,
-              maxCtc: `₹${(18.0 + idx * 3.5).toFixed(1)} LPA`,
-              arrears: 8 + idx * 4,
-              defaulters: 5 + idx * 3,
-              feeCollected: `₹${(2.1 + idx * 0.8).toFixed(2)} Cr`,
-              feeBilled: `₹${(2.4 + idx * 0.9).toFixed(2)} Cr`
+              facultyCount: d._count?.faculty || 0,
+              avgCtc: '—',
+              maxCtc: '—',
+              arrears: 0,
+              defaulters: 0,
+              feeCollected: '₹0.00 Cr',
+              feeBilled: '₹0.00 Cr'
             };
           });
           setBenchmarks(liveRows);
+        } else {
+          setBenchmarks([]);
         }
       } catch (e) {
-        console.warn('Could not load dynamic departments for MIS dashboard:', e);
+        console.warn('Could not load dynamic telemetry for MIS dashboard:', e);
+        if (isMounted) setBenchmarks([]);
+      } finally {
+        if (isMounted) setLoading(false);
       }
     };
-    fetchLiveDepts();
+    fetchLiveTelemetry();
+    return () => { isMounted = false; };
   }, []);
+
+  const pipelineStages = useMemo(() => {
+    const f = liveMetrics.funnel || {};
+    const leads = f.totalLeads ?? f.leads ?? 0;
+    const apps = f.totalApplications ?? f.applications ?? 0;
+    const verified = f.verifiedApplications ?? f.verified ?? 0;
+    const offersExt = f.offersExtended ?? f.offers ?? 0;
+    const enrolled = liveMetrics.enrolledCount || (f.enrolledStudents ?? f.enrolled ?? 0);
+    const pass = liveMetrics.passRate !== null ? `${liveMetrics.passRate}%` : '—';
+    const placed = liveMetrics.offersCount > 0 ? `${liveMetrics.placementRate}%` : '0.0%';
+
+    return PIPELINE_TEMPLATE.map(t => {
+      if (t.id === 'leads') {
+        return { ...t, metric: leads.toLocaleString('en-IN'), subText: 'Inbound Inquiries', conversion: leads > 0 ? `${Math.round((apps / leads) * 100)}% to App` : '0% to App', detail: `${leads} inquiries captured across marketing and walk-in channels.` };
+      }
+      if (t.id === 'apps') {
+        return { ...t, metric: apps.toLocaleString('en-IN'), subText: 'Submitted Form Dossiers', conversion: apps > 0 ? `${Math.round((verified / apps) * 100)}% Verified` : '0% Verified', detail: `${apps} applicant profiles received in admissions registry.` };
+      }
+      if (t.id === 'verified') {
+        return { ...t, metric: verified.toLocaleString('en-IN'), subText: 'Eligibility Pass', conversion: verified > 0 ? `${Math.round((offersExt / verified) * 100)}% Offered` : '0% Offered', detail: `${verified} candidates authenticated against statutory eligibility thresholds.` };
+      }
+      if (t.id === 'offers') {
+        return { ...t, metric: offersExt.toLocaleString('en-IN'), subText: 'Provisional Offers', conversion: offersExt > 0 ? `${Math.round((enrolled / offersExt) * 100)}% Yield` : '0% Yield', detail: `${offersExt} admission offers extended with course seat allocation.` };
+      }
+      if (t.id === 'enrolled') {
+        return { ...t, metric: enrolled.toLocaleString('en-IN'), subText: `${liveMetrics.seatsPct}% Intake Cap`, conversion: 'Active Cohort', detail: `${enrolled} permanent registrations confirmed in student directory.` };
+      }
+      if (t.id === 'academics') {
+        return { ...t, metric: pass, subText: 'Semester Pass Rate', conversion: 'Course Progress', detail: 'Active cohort evaluations and academic syllabus tracking across departments.' };
+      }
+      if (t.id === 'placements') {
+        return { ...t, metric: placed, subText: `${liveMetrics.placedCount} Offers Accepted`, conversion: `${liveMetrics.offersCount} Total Offers`, detail: `${liveMetrics.placedCount} corporate offers accepted across visiting recruiting companies.` };
+      }
+      return t;
+    });
+  }, [liveMetrics]);
 
   // Filter & sort benchmarks
   const filteredBenchmarks = useMemo(() => {
@@ -648,11 +528,18 @@ const OrgMisDashboard = () => {
           <div className="faculty-metric-info">
             <div className="faculty-metric-label">Fee Revenue &amp; Recovery</div>
             <div className="faculty-metric-value" style={{ color: '#7C3AED' }}>
-              ₹13.40 Cr <span style={{ fontSize: '11px', color: 'var(--text-muted, #64748b)', fontWeight: '600' }}>/ ₹16.80 Cr</span>
+              {liveMetrics.totalBilled > 0 ? (
+                <>₹{(liveMetrics.totalCollected / 10000000).toFixed(2)} Cr <span style={{ fontSize: '11px', color: 'var(--text-muted, #64748b)', fontWeight: '600' }}>/ ₹{(liveMetrics.totalBilled / 10000000).toFixed(2)} Cr</span></>
+              ) : (
+                <>₹0.00 <span style={{ fontSize: '11px', color: 'var(--text-muted, #64748b)', fontWeight: '600' }}>/ ₹0.00</span></>
+              )}
             </div>
-            <div className="faculty-metric-sub" style={{ color: '#059669' }}>
-              <i className="fa-solid fa-arrow-trend-up"></i>
-              <span>+8.4% YoY (79.8% Recovered)</span>
+            <div className="faculty-metric-sub" style={{ color: liveMetrics.totalBilled > 0 ? '#059669' : 'var(--text-muted, #64748b)' }}>
+              {liveMetrics.totalBilled > 0 ? (
+                <><i className="fa-solid fa-arrow-trend-up"></i> <span>{liveMetrics.recoveryPct}% Recovered</span></>
+              ) : (
+                <span>No Fee Billing Generated</span>
+              )}
             </div>
           </div>
         </div>
@@ -665,11 +552,18 @@ const OrgMisDashboard = () => {
           <div className="faculty-metric-info">
             <div className="faculty-metric-label">Sanctioned Seats Filled</div>
             <div className="faculty-metric-value" style={{ color: '#2563EB' }}>
-              86.4% <span style={{ fontSize: '11px', color: 'var(--text-muted, #64748b)', fontWeight: '600' }}>(1,080 / 1,250)</span>
+              {liveMetrics.totalIntake > 0 ? (
+                <>{liveMetrics.seatsPct}% <span style={{ fontSize: '11px', color: 'var(--text-muted, #64748b)', fontWeight: '600' }}>({liveMetrics.enrolledCount} / {liveMetrics.totalIntake})</span></>
+              ) : (
+                <>{liveMetrics.enrolledCount} Students</>
+              )}
             </div>
-            <div className="faculty-metric-sub" style={{ color: '#059669' }}>
-              <i className="fa-solid fa-circle-check"></i>
-              <span>On Target (170 Vacant Seats)</span>
+            <div className="faculty-metric-sub" style={{ color: liveMetrics.totalIntake > 0 ? '#059669' : 'var(--text-muted, #64748b)' }}>
+              {liveMetrics.totalIntake > 0 ? (
+                <><i className="fa-solid fa-circle-check"></i> <span>{Math.max(0, liveMetrics.totalIntake - liveMetrics.enrolledCount)} Vacant Seats</span></>
+              ) : (
+                <span>Awaiting Program Intake Capacity</span>
+              )}
             </div>
           </div>
         </div>
@@ -681,9 +575,11 @@ const OrgMisDashboard = () => {
           </div>
           <div className="faculty-metric-info">
             <div className="faculty-metric-label">Campus Pass Rate</div>
-            <div className="faculty-metric-value" style={{ color: '#D97706' }}>89.2% Pass</div>
+            <div className="faculty-metric-value" style={{ color: liveMetrics.passRate !== null ? '#D97706' : '#94A3B8' }}>
+              {liveMetrics.passRate !== null ? `${liveMetrics.passRate}% Pass` : '—'}
+            </div>
             <div className="faculty-metric-sub" style={{ color: 'var(--text-secondary, #64748b)' }}>
-              <span>Avg Attendance: 81.6% &bull; 10.8% Arrears</span>
+              <span>{liveMetrics.passRate !== null ? 'Average Semester Results' : 'Awaiting Examination Results'}</span>
             </div>
           </div>
         </div>
@@ -695,10 +591,15 @@ const OrgMisDashboard = () => {
           </div>
           <div className="faculty-metric-info">
             <div className="faculty-metric-label">Placement Offer Rate</div>
-            <div className="faculty-metric-value" style={{ color: '#059669' }}>80.5% Placed</div>
-            <div className="faculty-metric-sub" style={{ color: '#059669' }}>
-              <i className="fa-solid fa-arrow-trend-up"></i>
-              <span>Avg CTC: ₹6.4 LPA (Peak: ₹28.5L)</span>
+            <div className="faculty-metric-value" style={{ color: liveMetrics.offersCount > 0 ? '#059669' : '#94A3B8' }}>
+              {liveMetrics.offersCount > 0 ? `${liveMetrics.placementRate}% Placed` : '0.0% Placed'}
+            </div>
+            <div className="faculty-metric-sub" style={{ color: liveMetrics.offersCount > 0 ? '#059669' : 'var(--text-secondary, #64748b)' }}>
+              {liveMetrics.offersCount > 0 ? (
+                <><i className="fa-solid fa-arrow-trend-up"></i> <span>{liveMetrics.placedCount} Accepted ({liveMetrics.offersCount} Total)</span></>
+              ) : (
+                <span>No Placement Offers Issued</span>
+              )}
             </div>
           </div>
         </div>
@@ -771,7 +672,15 @@ const OrgMisDashboard = () => {
           </div>
 
           {/* SVG Visual Bar Chart */}
-          <div style={{ position: 'relative', width: '100%', minHeight: '220px', flex: 1 }}>
+          <div style={{ position: 'relative', width: '100%', minHeight: '220px', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {benchmarks.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '36px 16px', color: 'var(--text-muted)' }}>
+                <i className="fa-solid fa-chart-column mb-2" style={{ fontSize: '32px', opacity: 0.35, display: 'block' }}></i>
+                <div style={{ fontWeight: '700', fontSize: '14px', color: 'var(--text-main)', marginBottom: '4px' }}>No Department Telemetry Available</div>
+                <div style={{ fontSize: '12px' }}>Configure academic departments and enroll students to view comparative performance telemetry.</div>
+              </div>
+            ) : (
+            <>
             <svg
               viewBox="0 0 680 230"
               style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }}
@@ -1012,6 +921,8 @@ const OrgMisDashboard = () => {
                 <div>Fee Recovery: <strong>{benchmarks[hoveredBarIndex]?.feeRecovery}%</strong></div>
               </div>
             )}
+            </>
+            )}
           </div>
 
           {/* Chart Legend */}
@@ -1064,11 +975,11 @@ const OrgMisDashboard = () => {
                 Fiscal Realization &amp; Tuition Recovery Donut
               </h3>
               <p style={{ margin: '3px 0 0', fontSize: '12px', color: 'var(--text-muted)' }}>
-                Term-1 collection trajectory vs ₹16.80 Cr institutional billing
+                {liveMetrics.totalBilled > 0 ? `Term collection trajectory vs ₹${(liveMetrics.totalBilled / 10000000).toFixed(2)} Cr billing` : 'Awaiting institutional fee billing schedule'}
               </p>
             </div>
-            <span style={{ background: '#DCFCE7', color: '#16A34A', fontSize: '11px', fontWeight: '800', padding: '3px 8px', borderRadius: '6px' }}>
-              79.8% Healthy
+            <span style={{ background: liveMetrics.recoveryPct >= 70 ? '#DCFCE7' : '#FEF3C7', color: liveMetrics.recoveryPct >= 70 ? '#16A34A' : '#D97706', fontSize: '11px', fontWeight: '800', padding: '3px 8px', borderRadius: '6px' }}>
+              {liveMetrics.recoveryPct}% {liveMetrics.recoveryPct >= 70 ? 'Healthy' : 'Tracking'}
             </span>
           </div>
 
@@ -1085,7 +996,7 @@ const OrgMisDashboard = () => {
                   stroke="rgba(245, 158, 11, 0.2)"
                   strokeWidth="18"
                 />
-                {/* Realized Arc (79.8% of 389.56 circumference = 310.87) */}
+                {/* Realized Arc */}
                 <circle
                   cx="80"
                   cy="80"
@@ -1093,7 +1004,7 @@ const OrgMisDashboard = () => {
                   fill="transparent"
                   stroke="url(#feeGradient)"
                   strokeWidth="18"
-                  strokeDasharray="310.8 389.56"
+                  strokeDasharray={`${Math.max(0.1, ((liveMetrics.recoveryPct || 0) / 100) * 389.56)} 389.56`}
                   strokeLinecap="round"
                 />
                 <defs>
@@ -1117,48 +1028,37 @@ const OrgMisDashboard = () => {
                 textAlign: 'center'
               }}>
                 <span style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-main)', lineHeight: '1' }}>
-                  79.8%
+                  {liveMetrics.recoveryPct}%
                 </span>
                 <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', marginTop: '2px' }}>
                   Realized
                 </span>
                 <span style={{ fontSize: '11px', color: '#059669', fontWeight: '800', marginTop: '2px' }}>
-                  ₹13.40 Cr
+                  {liveMetrics.totalBilled > 0 ? `₹${(liveMetrics.totalCollected / 10000000).toFixed(2)} Cr` : '₹0.00'}
                 </span>
               </div>
             </div>
 
             {/* Financial Stream Breakdown */}
             <div style={{ flex: 1, minWidth: '200px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: '700', marginBottom: '3px' }}>
-                  <span style={{ color: 'var(--text-main)' }}>B.Tech Engineering Streams</span>
-                  <span style={{ color: '#059669' }}>88.2% (₹9.50 Cr)</span>
+              {benchmarks.length > 0 ? (
+                benchmarks.slice(0, 3).map((dept, bIdx) => (
+                  <div key={bIdx}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: '700', marginBottom: '3px' }}>
+                      <span style={{ color: 'var(--text-main)' }}>{dept.dept}</span>
+                      <span style={{ color: '#059669' }}>{dept.feeRecovery}% Realized</span>
+                    </div>
+                    <div style={{ height: '6px', background: 'rgba(0,0,0,0.06)', borderRadius: '3px', overflow: 'hidden' }}>
+                      <div style={{ width: `${Math.min(100, Math.max(0, dept.feeRecovery))}%`, height: '100%', background: '#10B981', borderRadius: '3px' }} />
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div style={{ textAlign: 'center', padding: '16px 8px', color: 'var(--text-muted)', fontSize: '12.5px' }}>
+                  <i className="fa-solid fa-receipt mb-1" style={{ fontSize: '20px', opacity: 0.35, display: 'block' }}></i>
+                  No departmental fee streams configured yet.
                 </div>
-                <div style={{ height: '6px', background: 'rgba(0,0,0,0.06)', borderRadius: '3px', overflow: 'hidden' }}>
-                  <div style={{ width: '88.2%', height: '100%', background: '#10B981', borderRadius: '3px' }} />
-                </div>
-              </div>
-
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: '700', marginBottom: '3px' }}>
-                  <span style={{ color: 'var(--text-main)' }}>Management &amp; Business (MBA/BBA)</span>
-                  <span style={{ color: '#3B82F6' }}>78.5% (₹2.87 Cr)</span>
-                </div>
-                <div style={{ height: '6px', background: 'rgba(0,0,0,0.06)', borderRadius: '3px', overflow: 'hidden' }}>
-                  <div style={{ width: '78.5%', height: '100%', background: '#3B82F6', borderRadius: '3px' }} />
-                </div>
-              </div>
-
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: '700', marginBottom: '3px' }}>
-                  <span style={{ color: 'var(--text-main)' }}>Hostel, Mess &amp; Amenities</span>
-                  <span style={{ color: '#F59E0B' }}>71.3% (₹1.03 Cr)</span>
-                </div>
-                <div style={{ height: '6px', background: 'rgba(0,0,0,0.06)', borderRadius: '3px', overflow: 'hidden' }}>
-                  <div style={{ width: '71.3%', height: '100%', background: '#F59E0B', borderRadius: '3px' }} />
-                </div>
-              </div>
+              )}
 
               <div style={{
                 background: 'var(--bg-main, #f8fafc)',
@@ -1172,7 +1072,9 @@ const OrgMisDashboard = () => {
                 marginTop: '4px'
               }}>
                 <span style={{ color: 'var(--text-muted)', fontWeight: '600' }}>Outstanding Term Defaulters:</span>
-                <span style={{ fontWeight: '800', color: '#DC2626' }}>86 Students (₹3.40 Cr)</span>
+                <span style={{ fontWeight: '800', color: liveMetrics.totalBilled > liveMetrics.totalCollected ? '#DC2626' : '#10B981' }}>
+                  {liveMetrics.totalBilled > liveMetrics.totalCollected ? `₹${((liveMetrics.totalBilled - liveMetrics.totalCollected) / 10000000).toFixed(2)} Cr Pending` : '0 Outstanding Dues'}
+                </span>
               </div>
             </div>
           </div>
@@ -1226,7 +1128,7 @@ const OrgMisDashboard = () => {
         {/* Horizontal Responsive Flowchart Track */}
         <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: '10px' }}>
           <div style={{ display: 'flex', alignItems: 'center', minWidth: '820px', gap: '8px' }}>
-            {PIPELINE_FLOW_STAGES.map((st, sIdx) => {
+            {pipelineStages.map((st, sIdx) => {
               const isSelected = activeStageDetail?.id === st.id;
               return (
                 <React.Fragment key={st.id}>
@@ -1292,7 +1194,7 @@ const OrgMisDashboard = () => {
                   </div>
 
                   {/* Flow Arrow between stages */}
-                  {sIdx < PIPELINE_FLOW_STAGES.length - 1 && (
+                  {sIdx < pipelineStages.length - 1 && (
                     <div style={{ color: 'var(--text-muted)', fontSize: '13px', opacity: 0.6, flexShrink: 0 }}>
                       <i className="fa-solid fa-chevron-right"></i>
                     </div>

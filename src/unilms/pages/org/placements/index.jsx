@@ -49,6 +49,36 @@ const OrgPlacementsIndex = () => {
     ? (offers.reduce((sum, o) => sum + Number(o.ctc || 0), 0) / offers.length).toFixed(0) 
     : 0;
 
+  // Highest stipend from live internships
+  const highestStipendInternship = useMemo(() => {
+    if (!internships || internships.length === 0) return null;
+    return internships.reduce((max, cur) => {
+      const curStipend = Number(cur.stipend || cur.monthly_stipend || 0);
+      const maxStipend = Number(max?.stipend || max?.monthly_stipend || 0);
+      return curStipend > maxStipend ? cur : max;
+    }, internships[0]);
+  }, [internships]);
+
+  const highestStipendVal = highestStipendInternship ? Number(highestStipendInternship.stipend || highestStipendInternship.monthly_stipend || 0) : 0;
+
+  // Department Placement Breakdown from live offers
+  const departmentPlacementStats = useMemo(() => {
+    if (!offers || offers.length === 0) return [];
+    const deptsMap = {};
+    offers.forEach(o => {
+      const dName = o.department_name || o.department || o.program_name || 'General';
+      if (!deptsMap[dName]) {
+        deptsMap[dName] = { name: dName, total: 0, accepted: 0 };
+      }
+      deptsMap[dName].total += 1;
+      if (o.status === 'Accepted') deptsMap[dName].accepted += 1;
+    });
+    return Object.values(deptsMap).map(d => ({
+      ...d,
+      pct: d.total > 0 ? ((d.accepted / d.total) * 100).toFixed(1) : '0.0'
+    }));
+  }, [offers]);
+
   // Filter recent offers
   const filteredOffers = useMemo(() => {
     return offers.filter(o => {
@@ -311,45 +341,26 @@ const OrgPlacementsIndex = () => {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontWeight: '600', marginBottom: '4px' }}>
-                <span>Computer Science & Engineering</span>
-                <span style={{ color: '#10B981' }}>94.2% (112 Placed)</span>
+            {departmentPlacementStats.length > 0 ? (
+              departmentPlacementStats.map((dept, idx) => (
+                <div key={idx}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontWeight: '600', marginBottom: '4px' }}>
+                    <span>{dept.name}</span>
+                    <span style={{ color: Number(dept.pct) >= 80 ? '#10B981' : Number(dept.pct) >= 50 ? '#3B82F6' : '#F59E0B' }}>
+                      {dept.pct}% ({dept.accepted} Placed)
+                    </span>
+                  </div>
+                  <div style={{ height: '8px', background: '#F1F5F9', borderRadius: '4px', overflow: 'hidden' }}>
+                    <div style={{ width: `${Math.min(100, Math.max(0, Number(dept.pct)))}%`, height: '100%', background: 'linear-gradient(90deg, #4F46E5, #10B981)', borderRadius: '4px' }}></div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div style={{ textAlign: 'center', padding: '24px 12px', color: 'var(--text-muted, #64748B)', fontSize: '13px' }}>
+                <i className="fa-solid fa-chart-column mb-2" style={{ fontSize: '24px', opacity: 0.35, display: 'block' }}></i>
+                No department placement records available yet.
               </div>
-              <div style={{ height: '8px', background: '#F1F5F9', borderRadius: '4px', overflow: 'hidden' }}>
-                <div style={{ width: '94.2%', height: '100%', background: 'linear-gradient(90deg, #4F46E5, #06B6D4)', borderRadius: '4px' }}></div>
-              </div>
-            </div>
-
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontWeight: '600', marginBottom: '4px' }}>
-                <span>Information Technology</span>
-                <span style={{ color: '#10B981' }}>91.5% (68 Placed)</span>
-              </div>
-              <div style={{ height: '8px', background: '#F1F5F9', borderRadius: '4px', overflow: 'hidden' }}>
-                <div style={{ width: '91.5%', height: '100%', background: 'linear-gradient(90deg, #4F46E5, #10B981)', borderRadius: '4px' }}></div>
-              </div>
-            </div>
-
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontWeight: '600', marginBottom: '4px' }}>
-                <span>Electronics & Communication</span>
-                <span style={{ color: '#3B82F6' }}>84.0% (52 Placed)</span>
-              </div>
-              <div style={{ height: '8px', background: '#F1F5F9', borderRadius: '4px', overflow: 'hidden' }}>
-                <div style={{ width: '84.0%', height: '100%', background: 'linear-gradient(90deg, #3B82F6, #6366F1)', borderRadius: '4px' }}></div>
-              </div>
-            </div>
-
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontWeight: '600', marginBottom: '4px' }}>
-                <span>Mechanical Engineering</span>
-                <span style={{ color: '#F59E0B' }}>76.8% (42 Placed)</span>
-              </div>
-              <div style={{ height: '8px', background: '#F1F5F9', borderRadius: '4px', overflow: 'hidden' }}>
-                <div style={{ width: '76.8%', height: '100%', background: 'linear-gradient(90deg, #F59E0B, #EAB308)', borderRadius: '4px' }}></div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -372,8 +383,12 @@ const OrgPlacementsIndex = () => {
             </div>
             <div style={{ background: '#F8FAFC', padding: '12px', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
               <div style={{ fontSize: '12px', color: '#64748B', fontWeight: '600' }}>Highest Stipend</div>
-              <div style={{ fontSize: '20px', fontWeight: '800', color: '#0F172A' }}>₹80,000 / mo</div>
-              <div style={{ fontSize: '11px', color: '#6366F1', marginTop: '2px' }}>Amazon SDE Internship</div>
+              <div style={{ fontSize: '20px', fontWeight: '800', color: '#0F172A' }}>
+                {highestStipendVal > 0 ? `₹${highestStipendVal.toLocaleString('en-IN')} / mo` : '₹0 / mo'}
+              </div>
+              <div style={{ fontSize: '11px', color: highestStipendVal > 0 ? '#6366F1' : 'var(--text-muted, #64748B)', marginTop: '2px' }}>
+                {highestStipendInternship?.company_name ? `${highestStipendInternship.company_name} ${highestStipendInternship.role ? `• ${highestStipendInternship.role}` : ''}` : 'No active postings'}
+              </div>
             </div>
           </div>
 
