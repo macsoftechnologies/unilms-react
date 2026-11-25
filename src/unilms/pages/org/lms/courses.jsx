@@ -1,53 +1,9 @@
 import { Link } from 'react-router-dom';
 import React, { useState, useMemo, useEffect } from 'react';
 import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../../components';
+import apiClient from '../../../services/api';
 
-const initialCourses = [
-  {
-    id: 1,
-    title: 'Data Structures & Algorithms in Java',
-    code: 'CS-201',
-    department: 'Computer Science',
-    instructor: 'Prof. Ananya Iyer',
-    enrolled_students: 124,
-    modules_count: 8,
-    status: 'Published',
-    credits: 4
-  },
-  {
-    id: 2,
-    title: 'Machine Learning & Deep Neural Networks',
-    code: 'CS-401',
-    department: 'Computer Science',
-    instructor: 'Dr. Priya Desai',
-    enrolled_students: 98,
-    modules_count: 12,
-    status: 'Published',
-    credits: 4
-  },
-  {
-    id: 3,
-    title: 'Digital Signal Processing & Microcontrollers',
-    code: 'EC-302',
-    department: 'Electronics & Communication',
-    instructor: 'Dr. R. K. Saxena',
-    enrolled_students: 86,
-    modules_count: 6,
-    status: 'Published',
-    credits: 3
-  },
-  {
-    id: 4,
-    title: 'Finite Element Analysis & CAD Modeling',
-    code: 'ME-305',
-    department: 'Mechanical Engineering',
-    instructor: 'Prof. Amitava Ghosh',
-    enrolled_students: 65,
-    modules_count: 7,
-    status: 'Draft',
-    credits: 3
-  }
-];
+const initialCourses = [];
 
 const OrgLmsCourses = () => {
   const [courses, setCourses] = useState(initialCourses);
@@ -58,15 +14,25 @@ const OrgLmsCourses = () => {
   const [formData, setFormData] = useState({
     title: '',
     code: '',
-    department: 'Computer Science',
-    instructor: 'Prof. Ananya Iyer',
+    department: 'General',
+    instructor: '',
     credits: 4
   });
 
   useEffect(() => {
+    let isMounted = true;
     setLoading(true);
-    const timer = setTimeout(() => setLoading(false), 350);
-    return () => clearTimeout(timer);
+    apiClient.get('/tenants/settings/org_lms_courses')
+      .then(res => {
+        if (isMounted && res?.data?.value && Array.isArray(res.data.value)) {
+          setCourses(res.data.value);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+    return () => { isMounted = false; };
   }, [searchQuery, deptFilter]);
 
   const filteredCourses = useMemo(() => {
@@ -102,7 +68,9 @@ const OrgLmsCourses = () => {
       status: 'Published',
       credits: Number(formData.credits)
     };
-    setCourses([newCourse, ...courses]);
+    const updated = [newCourse, ...courses];
+    setCourses(updated);
+    apiClient.post('/tenants/settings/org_lms_courses', { value: updated }).catch(() => {});
     setIsModalOpen(false);
     setFormData({
       title: '',

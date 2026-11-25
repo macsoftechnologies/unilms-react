@@ -1071,9 +1071,9 @@ const OrgFacultyDashboard = () => {
             <div className="faculty-metric-card" style={{ borderLeft: '3.5px solid #F59E0B' }}>
               <div className="faculty-metric-info" style={{ width: '100%' }}>
                 <div className="faculty-metric-label">LAB OCCUPANCY</div>
-                <div className="faculty-metric-value" style={{ color: '#D97706' }}>88.4%</div>
+                <div className="faculty-metric-value" style={{ color: '#D97706' }}>—</div>
                 <div className="faculty-metric-sub" style={{ color: 'var(--text-muted, #64748b)' }}>
-                  <span>AI, Cloud &amp; Networks Labs</span>
+                  <span>Practical / Lab Batches</span>
                 </div>
               </div>
             </div>

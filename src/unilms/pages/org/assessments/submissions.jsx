@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../../components';
+import apiClient from '../../../services/api';
 
-const defaultSubmissions = [
-  { id: 1, first_name: 'Aditya', last_name: 'Verma', roll_number: '23CSE001', email: 'aditya.v@univ.edu', submitted_at: '2026-03-24 10:30 AM', is_late: false, status: 'graded', auto_score: 45, final_marks: 48 },
-  { id: 2, first_name: 'Priya', last_name: 'Sharma', roll_number: '23CSE002', email: 'priya.s@univ.edu', submitted_at: '2026-03-24 11:15 AM', is_late: false, status: 'graded', auto_score: 43, final_marks: 45 },
-  { id: 3, first_name: 'Rahul', last_name: 'Deshmukh', roll_number: '23CSE003', email: 'rahul.d@univ.edu', submitted_at: '2026-03-25 04:20 PM', is_late: true, status: 'pending', auto_score: 38, final_marks: null },
-  { id: 4, first_name: 'Sneha', last_name: 'Patel', roll_number: '23IT001', email: 'sneha.p@univ.edu', submitted_at: '2026-03-23 09:40 PM', is_late: false, status: 'graded', auto_score: 41, final_marks: 43 },
-  { id: 5, first_name: 'Rohan', last_name: 'Joshi', roll_number: '23ECE001', email: 'rohan.j@univ.edu', submitted_at: '2026-03-25 06:15 PM', is_late: true, status: 'pending', auto_score: 35, final_marks: null },
-  { id: 6, first_name: 'Kavita', last_name: 'Rao', roll_number: '23ME001', email: 'kavita.r@univ.edu', submitted_at: '2026-03-24 02:40 PM', is_late: false, status: 'graded', auto_score: 46, final_marks: 47 }
-];
+const defaultSubmissions = [];
 
 const OrgAssessmentsSubmissions = () => {
   const navigate = useNavigate();
@@ -20,10 +14,21 @@ const OrgAssessmentsSubmissions = () => {
   const [awardMarks, setAwardMarks] = useState('');
 
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
+    let isMounted = true;
     setLoading(true);
-    const timer = setTimeout(() => setLoading(false), 350);
-    return () => clearTimeout(timer);
+    apiClient.get('/tenants/settings/org_assessment_submissions')
+      .then(res => {
+        if (isMounted && res?.data?.value && Array.isArray(res.data.value)) {
+          setSubmissions(res.data.value);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+    return () => { isMounted = false; };
   }, [searchQuery, statusFilter]);
 
   const filtered = submissions.filter(s => {

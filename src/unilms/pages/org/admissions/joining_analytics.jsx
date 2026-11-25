@@ -48,16 +48,16 @@ const OrgAdmissionsJoiningAnalytics = () => {
 
       // Pending students: applications where offer sent or accepted but not enrolled
       const pending = (Array.isArray(apps) ? apps : [])
-        .filter(a => a.status !== 'Enrolled' && a.status !== 'Rejected')
+        .filter(a => a.status === 'Offer Sent' || a.status === 'Accepted' || (a.status !== 'Enrolled' && a.status !== 'Rejected' && a.offerDate))
         .map(a => ({
           id: a.applicationNumber || a.adm_number || 'APP-2026',
-          name: a.fullName || a.full_name,
+          name: a.fullName || a.full_name || 'Candidate',
           program: a.programName || a.program?.name || 'Degree Program',
-          offerDate: a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-GB') : '—',
-          phone: a.phone,
-          source: 'Website Organic',
-          depositDue: '₹35,000',
-          daysPending: 10,
+          offerDate: a.offerDate ? new Date(a.offerDate).toLocaleDateString('en-GB') : (a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-GB') : '—'),
+          phone: a.phone || '—',
+          source: a.source || 'Direct Portal',
+          depositDue: a.tuition_fee ? `₹${Number(a.tuition_fee).toLocaleString('en-IN')}` : '₹35,000',
+          daysPending: a.createdAt ? Math.max(1, Math.floor((Date.now() - new Date(a.createdAt).getTime()) / (1000 * 60 * 60 * 24))) : 0,
           risk: 'Moderate'
         }));
       setPendingStudents(pending);
@@ -65,10 +65,18 @@ const OrgAdmissionsJoiningAnalytics = () => {
       // Channel conversion data
       const leadCount = Array.isArray(leads) ? leads.length : 0;
       const appCount = Array.isArray(apps) ? apps.length : 0;
-      setChannelsData([
-        { id: 1, name: 'Campus Walk-ins & Direct Desk', leads: Math.round(leadCount * 0.4), apps: Math.round(appCount * 0.4), offers: Math.round(appCount * 0.3), joined: Math.round(appCount * 0.25), yield: 85.0, cpa: '₹1,200', rating: 'Top Converter', color: '#10B981' },
-        { id: 2, name: 'Institutional Portal & Website', leads: Math.round(leadCount * 0.6), apps: Math.round(appCount * 0.6), offers: Math.round(appCount * 0.5), joined: Math.round(appCount * 0.4), yield: 70.0, cpa: '₹850', rating: 'Volume Driver', color: '#6366F1' }
-      ]);
+      if (leadCount > 0 || appCount > 0) {
+        const directDeskLeads = Math.round(leadCount * 0.4);
+        const webLeads = leadCount - directDeskLeads;
+        const directApps = Math.round(appCount * 0.4);
+        const webApps = appCount - directApps;
+        setChannelsData([
+          { id: 1, name: 'Campus Walk-ins & Direct Desk', leads: directDeskLeads, apps: directApps, offers: Math.round(directApps * 0.7), joined: Math.round(directApps * 0.5), yield: directApps > 0 ? parseFloat(((Math.round(directApps * 0.5) / directApps) * 100).toFixed(1)) : 0, cpa: 'Direct', rating: 'Direct Desk', color: '#10B981' },
+          { id: 2, name: 'Institutional Portal & Website', leads: webLeads, apps: webApps, offers: Math.round(webApps * 0.7), joined: Math.round(webApps * 0.5), yield: webApps > 0 ? parseFloat(((Math.round(webApps * 0.5) / webApps) * 100).toFixed(1)) : 0, cpa: 'Organic', rating: 'Portal Direct', color: '#6366F1' }
+        ]);
+      } else {
+        setChannelsData([]);
+      }
     } catch (e) {
       console.warn('Failed to load funnel analytics:', e);
     } finally {
@@ -98,9 +106,12 @@ const OrgAdmissionsJoiningAnalytics = () => {
     totalItems: totalPending
   } = useTablePagination(pendingStudents, 10);
 
-  const totalSanctionedIntake = programCapacities.reduce((acc, c) => acc + c.intake, 0) || 60;
-  const totalJoined = funnelStages[6]?.count || 0;
-  const totalOffers = funnelStages[3]?.count || 0;
+  const totalSanctionedIntake = programCapacities.reduce((acc, c) => acc + (Number(c.intake) || 0), 0);
+  const totalLeads = funnelStages[0]?.count || channelsData.reduce((acc, c) => acc + c.leads, 0) || 0;
+  const totalApps = funnelStages[1]?.count || channelsData.reduce((acc, c) => acc + c.apps, 0) || 0;
+  const totalOffers = funnelStages[3]?.count || channelsData.reduce((acc, c) => acc + c.offers, 0) || 0;
+  const totalDeposits = funnelStages[5]?.count || 0;
+  const totalJoined = funnelStages[6]?.count || programCapacities.reduce((acc, c) => acc + (Number(c.joined) || 0), 0) || 0;
   const yieldRate = totalOffers > 0 ? ((totalJoined / totalOffers) * 100).toFixed(1) : '0.0';
   const capacityFilledPct = totalSanctionedIntake > 0 ? ((totalJoined / totalSanctionedIntake) * 100).toFixed(1) : '0.0';
 
@@ -214,71 +225,7 @@ const OrgAdmissionsJoiningAnalytics = () => {
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* 1. AI NARRATIVE EXECUTIVE BRIEFING CARD                                  */}
-      {/* ========================================================================= */}
-      {/* <div style={{
-        background: 'linear-gradient(135deg, rgba(2, 132, 199, 0.08) 0%, rgba(99, 102, 241, 0.04) 100%)',
-        border: '1px solid rgba(2, 132, 199, 0.28)',
-        borderRadius: '16px',
-        padding: '22px 24px',
-        marginBottom: '24px',
-        boxShadow: '0 4px 18px rgba(2, 132, 199, 0.08)'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginBottom: '12px' }}>
-          <span style={{
-            background: 'linear-gradient(135deg, #0284C7 0%, #0EA5E9 100%)',
-            color: '#ffffff',
-            padding: '4px 12px',
-            borderRadius: '20px',
-            fontSize: '11px',
-            fontWeight: '800',
-            textTransform: 'uppercase',
-            letterSpacing: '0.6px',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px'
-          }}>
-            <i className="fa-solid fa-wand-magic-sparkles"></i> AI Funnel Intelligence
-          </span>
-          <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600' }}>
-            Yield Rate: <strong>{yieldRate}%</strong> • Total Seats Filled: <strong>{capacityFilledPct}%</strong>
-          </span>
-        </div>
 
-        <h3 style={{ fontSize: '16.5px', fontWeight: '800', color: 'var(--text-main)', marginBottom: '10px', lineHeight: '1.4' }}>
-          Admissions Intake {session} Narrative: Stellar Tech Yield; 510 Candidates Dropped at Stage 5 Fee Deposit
-        </h3>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px', marginTop: '14px' }}>
-          <div style={{ background: 'var(--bg-card, #ffffff)', padding: '14px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
-            <div style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: '#059669', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <i className="fa-solid fa-circle-check"></i> High Yield Discipline
-            </div>
-            <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-main)', lineHeight: '1.5' }}>
-              <strong>B.Tech CSE & Data Science</strong> reached <strong>100% capacity</strong> with 0 vacant seats. Campus Walk-ins recorded the highest yield at <strong>85.2%</strong>.
-            </p>
-          </div>
-
-          <div style={{ background: 'var(--bg-card, #ffffff)', padding: '14px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
-            <div style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: '#D97706', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <i className="fa-solid fa-triangle-exclamation"></i> Critical Friction Point
-            </div>
-            <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-main)', lineHeight: '1.5' }}>
-              Largest drop-off occurs at <strong>Stage 5 (Fee Deposit)</strong> where <strong>510 candidates (28.3%)</strong> received offers but hesitated to pay initial token confirmation.
-            </p>
-          </div>
-
-          <div style={{ background: 'var(--bg-card, #ffffff)', padding: '14px 16px', borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}>
-            <div style={{ fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', color: '#7C3AED', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <i className="fa-solid fa-bullseye"></i> Board Recommendation
-            </div>
-            <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-main)', lineHeight: '1.5' }}>
-              Trigger automated SMS/WhatsApp alerts and deploy a <strong>10% Dean Scholarship incentive</strong> for 58 unconfirmed offers in Mechanical and Civil to close remaining intake.
-            </p>
-          </div>
-        </div>
-      </div> */}
 
       {/* ========================================================================= */}
       {/* 2. TOP METRIC SCORECARD CARDS                                            */}
@@ -291,10 +238,10 @@ const OrgAdmissionsJoiningAnalytics = () => {
           </div>
           <div className="faculty-metric-info">
             <div className="faculty-metric-label">Total Inbound Leads</div>
-            <div className="faculty-metric-value" style={{ color: '#7C3AED' }}>4,850 Leads</div>
-            <div className="faculty-metric-sub" style={{ color: '#059669' }}>
+            <div className="faculty-metric-value" style={{ color: '#7C3AED' }}>{totalLeads.toLocaleString()} Leads</div>
+            <div className="faculty-metric-sub" style={{ color: totalLeads > 0 ? '#059669' : 'var(--text-muted)' }}>
               <i className="fa-solid fa-arrow-trend-up"></i>
-              <span>+12.4% vs AY 25-26</span>
+              <span>{totalLeads > 0 ? 'Active Inbound Inquiries' : 'No Inbound Leads'}</span>
             </div>
           </div>
         </div>
@@ -306,9 +253,9 @@ const OrgAdmissionsJoiningAnalytics = () => {
           </div>
           <div className="faculty-metric-info">
             <div className="faculty-metric-label">Applications Submitted</div>
-            <div className="faculty-metric-value" style={{ color: '#2563EB' }}>2,500 Forms</div>
+            <div className="faculty-metric-value" style={{ color: '#2563EB' }}>{totalApps.toLocaleString()} Forms</div>
             <div className="faculty-metric-sub" style={{ color: 'var(--text-secondary, #64748b)' }}>
-              <span>Lead-to-App: 51.5%</span>
+              <span>Lead-to-App: {totalLeads > 0 ? ((totalApps / totalLeads) * 100).toFixed(1) + '%' : '0.0%'}</span>
             </div>
           </div>
         </div>
@@ -320,9 +267,9 @@ const OrgAdmissionsJoiningAnalytics = () => {
           </div>
           <div className="faculty-metric-info">
             <div className="faculty-metric-label">Offers Extended</div>
-            <div className="faculty-metric-value" style={{ color: '#D97706' }}>1,800 Offers</div>
+            <div className="faculty-metric-value" style={{ color: '#D97706' }}>{totalOffers.toLocaleString()} Offers</div>
             <div className="faculty-metric-sub" style={{ color: 'var(--text-secondary, #64748b)' }}>
-              <span>App-to-Offer: 72.0%</span>
+              <span>App-to-Offer: {totalApps > 0 ? ((totalOffers / totalApps) * 100).toFixed(1) + '%' : '0.0%'}</span>
             </div>
           </div>
         </div>
@@ -334,10 +281,10 @@ const OrgAdmissionsJoiningAnalytics = () => {
           </div>
           <div className="faculty-metric-info">
             <div className="faculty-metric-label">Joined &amp; Enrolled</div>
-            <div className="faculty-metric-value" style={{ color: '#059669' }}>1,080 Students</div>
+            <div className="faculty-metric-value" style={{ color: '#059669' }}>{totalJoined.toLocaleString()} Students</div>
             <div className="faculty-metric-sub" style={{ color: '#059669' }}>
               <i className="fa-solid fa-circle-check"></i>
-              <span>Yield: 60.0% ({capacityFilledPct}% Cap)</span>
+              <span>Yield: {yieldRate}% ({capacityFilledPct}% Cap)</span>
             </div>
           </div>
         </div>
@@ -348,7 +295,7 @@ const OrgAdmissionsJoiningAnalytics = () => {
           { id: 'funnel', label: '7-Stage Conversion Funnel', icon: 'fa-solid fa-filter' },
           { id: 'channels', label: 'Lead Sources & Marketing ROI', icon: 'fa-solid fa-bullhorn' },
           { id: 'programs', label: 'Branch Quota Utilization', icon: 'fa-solid fa-chart-column' },
-          { id: 'followup', label: 'Unconfirmed Offer Recovery Desk', icon: 'fa-solid fa-user-clock', badge: '58 Pending' }
+          { id: 'followup', label: 'Unconfirmed Offer Recovery Desk', icon: 'fa-solid fa-user-clock', badge: pendingStudents.length > 0 ? `${pendingStudents.length} Pending` : undefined }
         ].map((tab) => (
           <button
             key={tab.id}
@@ -457,7 +404,9 @@ const OrgAdmissionsJoiningAnalytics = () => {
                     <div style={{ fontWeight: '800', fontSize: '13px', color: 'var(--text-main)' }}>Lead ➔ Application Conversion</div>
                     <small style={{ color: 'var(--text-muted)' }}>Initial applicant interest capture</small>
                   </div>
-                  <div style={{ fontWeight: '800', fontSize: '16px', color: '#4F46E5' }}>51.5%</div>
+                  <div style={{ fontWeight: '800', fontSize: '16px', color: '#4F46E5' }}>
+                    {totalLeads > 0 ? ((totalApps / totalLeads) * 100).toFixed(1) + '%' : '0.0%'}
+                  </div>
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 14px', background: 'var(--bg-main)', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
@@ -465,7 +414,9 @@ const OrgAdmissionsJoiningAnalytics = () => {
                     <div style={{ fontWeight: '800', fontSize: '13px', color: 'var(--text-main)' }}>Application ➔ Offer Selection</div>
                     <small style={{ color: 'var(--text-muted)' }}>Document eligibility clearance</small>
                   </div>
-                  <div style={{ fontWeight: '800', fontSize: '16px', color: '#0284C7' }}>72.0%</div>
+                  <div style={{ fontWeight: '800', fontSize: '16px', color: '#0284C7' }}>
+                    {totalApps > 0 ? ((totalOffers / totalApps) * 100).toFixed(1) + '%' : '0.0%'}
+                  </div>
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 14px', background: 'var(--bg-main)', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
@@ -473,7 +424,9 @@ const OrgAdmissionsJoiningAnalytics = () => {
                     <div style={{ fontWeight: '800', fontSize: '13px', color: 'var(--text-main)' }}>Offer ➔ Deposit Realization</div>
                     <small style={{ color: '#DC2626', fontWeight: '600' }}>Critical drop-off zone</small>
                   </div>
-                  <div style={{ fontWeight: '800', fontSize: '16px', color: '#D97706' }}>71.7%</div>
+                  <div style={{ fontWeight: '800', fontSize: '16px', color: '#D97706' }}>
+                    {totalOffers > 0 ? ((totalDeposits / totalOffers) * 100).toFixed(1) + '%' : '0.0%'}
+                  </div>
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 14px', background: 'var(--bg-main)', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
@@ -481,7 +434,9 @@ const OrgAdmissionsJoiningAnalytics = () => {
                     <div style={{ fontWeight: '800', fontSize: '13px', color: 'var(--text-main)' }}>Deposit ➔ Day-1 Physical Joining</div>
                     <small style={{ color: 'var(--text-muted)' }}>Zero melt on confirmed deposits</small>
                   </div>
-                  <div style={{ fontWeight: '800', fontSize: '16px', color: '#059669' }}>83.7%</div>
+                  <div style={{ fontWeight: '800', fontSize: '16px', color: '#059669' }}>
+                    {totalDeposits > 0 ? ((totalJoined / totalDeposits) * 100).toFixed(1) + '%' : totalOffers > 0 ? yieldRate + '%' : '0.0%'}
+                  </div>
                 </div>
               </div>
             </div>
@@ -492,11 +447,14 @@ const OrgAdmissionsJoiningAnalytics = () => {
                 Net Institutional Yield Index
               </div>
               <div style={{ fontSize: '32px', fontWeight: '800', color: '#ffffff', margin: '4px 0' }}>
-                60.0%
+                {yieldRate}%
               </div>
               <p style={{ margin: 0, fontSize: '12.5px', color: '#C7D2FE', lineHeight: '1.6' }}>
-                Out of 1,800 offers extended, 1,080 students completed registration & joined physical classes.
-                The remaining 720 offers represent ₹2.5 Cr in uncaptured tuition fee opportunity.
+                {totalOffers > 0 ? (
+                  `Out of ${totalOffers.toLocaleString()} offers extended, ${totalJoined.toLocaleString()} students completed registration & joined physical classes.`
+                ) : (
+                  `Awaiting admission offer generation and candidate registrations for cycle ${session}.`
+                )}
               </p>
               <button
                 type="button"

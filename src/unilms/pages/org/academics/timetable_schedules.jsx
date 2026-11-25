@@ -1,44 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../../components';
+import apiClient from '../../../services/api';
 
-const initialSchedules = [
-  {
-    id: 1,
-    cohort_name: 'B.Tech CSE (Batch 2023 - 2027)',
-    semester_name: 'Semester 6',
-    template_name: 'Standard B.Tech Engineering Timetable',
-    status: 'Published'
-  },
-  {
-    id: 2,
-    cohort_name: 'B.Tech AIML (Batch 2024 - 2028)',
-    semester_name: 'Semester 4',
-    template_name: 'Standard B.Tech Engineering Timetable',
-    status: 'Published'
-  },
-  {
-    id: 3,
-    cohort_name: 'B.Tech ECE (Batch 2023 - 2027)',
-    semester_name: 'Semester 6',
-    template_name: 'Standard B.Tech Engineering Timetable',
-    status: 'Draft'
-  },
-  {
-    id: 4,
-    cohort_name: 'MBA Executive (Batch 2025 - 2027)',
-    semester_name: 'Semester 2',
-    template_name: 'Executive Trimester Matrix',
-    status: 'Published'
-  },
-  {
-    id: 5,
-    cohort_name: 'B.Tech Mechanical (Batch 2023 - 2027)',
-    semester_name: 'Semester 6',
-    template_name: 'Standard Engineering Matrix',
-    status: 'Draft'
-  }
-];
+const initialSchedules = [];
 
 const OrgAcademicsTimetableSchedules = () => {
   const [schedules, setSchedules] = useState(initialSchedules);
@@ -50,9 +15,19 @@ const OrgAcademicsTimetableSchedules = () => {
   const [toastMsg, setToastMsg] = useState(null);
 
   useEffect(() => {
+    let isMounted = true;
     setLoading(true);
-    const timer = setTimeout(() => setLoading(false), 300);
-    return () => clearTimeout(timer);
+    apiClient.get('/tenants/settings/org_timetable_schedules')
+      .then(res => {
+        if (isMounted && res?.data?.value && Array.isArray(res.data.value)) {
+          setSchedules(res.data.value);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+    return () => { isMounted = false; };
   }, []);
 
   const showToast = (msg) => {
@@ -69,20 +44,24 @@ const OrgAcademicsTimetableSchedules = () => {
       template_name: selectedTemplate,
       status: 'Draft'
     };
-    setSchedules([newSchedule, ...schedules]);
+    const updated = [newSchedule, ...schedules];
+    setSchedules(updated);
+    apiClient.post('/tenants/settings/org_timetable_schedules', { value: updated }).catch(() => {});
     setIsModalOpen(false);
     showToast(`Schedule created for ${selectedCohort}!`);
   };
 
   const handleTogglePublish = (id) => {
-    setSchedules(schedules.map(s => {
+    const updated = schedules.map(s => {
       if (s.id === id) {
         const nextStatus = s.status === 'Published' ? 'Draft' : 'Published';
         showToast(`Schedule is now ${nextStatus}.`);
         return { ...s, status: nextStatus };
       }
       return s;
-    }));
+    });
+    setSchedules(updated);
+    apiClient.post('/tenants/settings/org_timetable_schedules', { value: updated }).catch(() => {});
   };
 
   const {

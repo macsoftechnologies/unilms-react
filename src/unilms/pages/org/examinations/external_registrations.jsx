@@ -1,33 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../../components';
+import studentsService from '../../../services/students.service';
+import apiClient from '../../../services/api';
 
-const initialRegistrations = [
-  { id: 1, first_name: 'Aditya', last_name: 'Verma', roll_number: '23CSE001', exam_name: 'Affiliated State Tech University (ASTU) Finals', registration_no: 'REG-2026-ASTU-0982', registration_date: '2026-03-12', fee_paid: true },
-  { id: 2, first_name: 'Priya', last_name: 'Sharma', roll_number: '23CSE002', exam_name: 'Affiliated State Tech University (ASTU) Finals', registration_no: 'REG-2026-ASTU-0983', registration_date: '2026-03-12', fee_paid: true },
-  { id: 3, first_name: 'Rahul', last_name: 'Deshmukh', roll_number: '23CSE003', exam_name: 'National Technical Board Arrear Clearance', registration_no: 'NTB-SUPP-4412', registration_date: '2026-03-15', fee_paid: false },
-  { id: 4, first_name: 'Sneha', last_name: 'Patel', roll_number: '23IT001', exam_name: 'Affiliated State Tech University (ASTU) Finals', registration_no: 'REG-2026-ASTU-1104', registration_date: '2026-03-14', fee_paid: true },
-  { id: 5, first_name: 'Rohan', last_name: 'Joshi', roll_number: '23ECE001', exam_name: 'Autonomous Board Lateral Entry Clearance', registration_no: 'LAT-2026-0045', registration_date: '2026-03-18', fee_paid: false },
-  { id: 6, first_name: 'Kavita', last_name: 'Rao', roll_number: '23ME001', exam_name: 'Affiliated State Tech University (ASTU) Finals', registration_no: 'REG-2026-ASTU-1289', registration_date: '2026-03-16', fee_paid: true }
-];
-
-const studentOptions = [
-  { id: 1, name: 'Aditya Verma', roll: '23CSE001' },
-  { id: 2, name: 'Priya Sharma', roll: '23CSE002' },
-  { id: 3, name: 'Rahul Deshmukh', roll: '23CSE003' },
-  { id: 4, name: 'Sneha Patel', roll: '23IT001' },
-  { id: 5, name: 'Rohan Joshi', roll: '23ECE001' },
-  { id: 6, name: 'Kavita Rao', roll: '23ME001' }
-];
+const initialRegistrations = [];
 
 const OrgExaminationsExternalRegistrations = () => {
   const [registrations, setRegistrations] = useState(initialRegistrations);
+  const [students, setStudents] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [feeFilter, setFeeFilter] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
-    student_id: '1',
+    student_id: '',
     exam_name: '',
     registration_no: '',
     registration_date: new Date().toISOString().split('T')[0],
@@ -35,11 +22,31 @@ const OrgExaminationsExternalRegistrations = () => {
   });
 
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
+    let isMounted = true;
     setLoading(true);
-    const timer = setTimeout(() => setLoading(false), 350);
-    return () => clearTimeout(timer);
-  }, [searchQuery, feeFilter]);
+    Promise.allSettled([
+      apiClient.get('/tenants/settings/org_external_registrations'),
+      studentsService.getStudents()
+    ]).then(([regRes, stuRes]) => {
+      if (!isMounted) return;
+      if (regRes.status === 'fulfilled' && regRes.value?.data?.value && Array.isArray(regRes.value.data.value)) {
+        setRegistrations(regRes.value.data.value);
+      }
+      if (stuRes.status === 'fulfilled') {
+        const sList = Array.isArray(stuRes.value) ? stuRes.value : (stuRes.value?.data || []);
+        setStudents(sList.map(s => ({
+          id: s.id,
+          name: `${s.firstName || s.first_name || ''} ${s.lastName || s.last_name || ''}`.trim() || 'Student',
+          roll: s.rollNumber || s.roll_number || 'N/A'
+        })));
+      }
+    }).finally(() => {
+      if (isMounted) setLoading(false);
+    });
+    return () => { isMounted = false; };
+  }, []);
 
   const filtered = registrations.filter(r => {
     const fullName = `${r.first_name} ${r.last_name}`.toLowerCase();
@@ -67,8 +74,8 @@ const OrgExaminationsExternalRegistrations = () => {
 
   const handleSave = (e) => {
     e.preventDefault();
-    const st = studentOptions.find(s => String(s.id) === String(formData.student_id)) || studentOptions[0];
-    const [firstName, ...rest] = st.name.split(' ');
+    const st = students.find(s => String(s.id) === String(formData.student_id)) || (students[0] || { name: 'Student', roll: 'N/A' });
+    const [firstName, ...rest] = (st.name || 'Student').split(' ');
     const lastName = rest.join(' ');
 
     const newReg = {
@@ -82,10 +89,12 @@ const OrgExaminationsExternalRegistrations = () => {
       fee_paid: formData.fee_paid
     };
 
-    setRegistrations([newReg, ...registrations]);
+    const updated = [newReg, ...registrations];
+    setRegistrations(updated);
+    apiClient.post('/tenants/settings/org_external_registrations', { value: updated }).catch(() => {});
     setIsModalOpen(false);
     setFormData({
-      student_id: '1',
+      student_id: students[0]?.id || '',
       exam_name: '',
       registration_no: '',
       registration_date: new Date().toISOString().split('T')[0],
@@ -94,12 +103,16 @@ const OrgExaminationsExternalRegistrations = () => {
   };
 
   const toggleFee = (id) => {
-    setRegistrations(registrations.map(r => r.id === id ? { ...r, fee_paid: !r.fee_paid } : r));
+    const updated = registrations.map(r => r.id === id ? { ...r, fee_paid: !r.fee_paid } : r);
+    setRegistrations(updated);
+    apiClient.post('/tenants/settings/org_external_registrations', { value: updated }).catch(() => {});
   };
 
   const handleDelete = (id) => {
     if (window.confirm('Remove this external registration record?')) {
-      setRegistrations(registrations.filter(r => r.id !== id));
+      const updated = registrations.filter(r => r.id !== id);
+      setRegistrations(updated);
+      apiClient.post('/tenants/settings/org_external_registrations', { value: updated }).catch(() => {});
     }
   };
 
@@ -301,7 +314,7 @@ const OrgExaminationsExternalRegistrations = () => {
                     style={{ width: '100%', height: '38px', borderRadius: '8px', border: '1px solid var(--border-color)', padding: '0 12px' }}
                     required
                   >
-                    {studentOptions.map(s => (
+                    {students.map(s => (
                       <option key={s.id} value={s.id}>{s.name} ({s.roll})</option>
                     ))}
                   </select>

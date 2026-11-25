@@ -16,11 +16,11 @@ const FINANCE_REPORTS_DATA = [];
 const ACADEMIC_REPORTS_DATA = [];
 
 const NAAC_METRICS_DATA = [
-  { criterion: 'Criterion 1: Curricular Aspects', metricCode: '1.1.2 & 1.2.1', description: 'Percentage of syllabus revised & CBCS implementation', value: '100% CBCS / NEP-2020 Compliant', status: 'Compliant' },
-  { criterion: 'Criterion 2: Teaching-Learning', metricCode: '2.1.1 & 2.2.2', description: 'Enrolment percentage & Student-Full time Teacher ratio', value: '1 : 14.2 (Intake 86.4%)', status: 'Compliant' },
-  { criterion: 'Criterion 2: Evaluation Process', metricCode: '2.6.2 & 2.6.3', description: 'Attainment of Program Outcomes & Pass percentage', value: 'Pass Rate: 89.2% | PO Attain: 79.2%', status: 'Compliant' },
-  { criterion: 'Criterion 3: Research & Extension', metricCode: '3.1.1 & 3.3.2', description: 'Grants received & Scopus/WoS journal publications', value: '38 Papers Indexed (Current Year)', status: 'On Track' },
-  { criterion: 'Criterion 5: Student Support', metricCode: '5.1.1 & 5.2.1', description: 'Scholarship beneficiaries & Campus Placement %', value: '28.4% Beneficiaries | 80.5% Placed', status: 'Compliant' },
+  { criterion: 'Criterion 1: Curricular Aspects', metricCode: '1.1.2 & 1.2.1', description: 'Percentage of syllabus revised & CBCS implementation', value: 'CBCS / NEP-2020 Framework Active', status: 'Compliant' },
+  { criterion: 'Criterion 2: Teaching-Learning', metricCode: '2.1.1 & 2.2.2', description: 'Enrolment percentage & Student-Full time Teacher ratio', value: 'Faculty-Student Ratio Tracked via ERP', status: 'Compliant' },
+  { criterion: 'Criterion 2: Evaluation Process', metricCode: '2.6.2 & 2.6.3', description: 'Attainment of Program Outcomes & Pass percentage', value: 'OBE CO-PO Attainment Framework Active', status: 'Compliant' },
+  { criterion: 'Criterion 3: Research & Extension', metricCode: '3.1.1 & 3.3.2', description: 'Grants received & Scopus/WoS journal publications', value: 'Research & Faculty Grants Module Active', status: 'On Track' },
+  { criterion: 'Criterion 5: Student Support', metricCode: '5.1.1 & 5.2.1', description: 'Scholarship beneficiaries & Campus Placement %', value: 'Placements & Scholarship Gatekeeper Active', status: 'Compliant' },
   { criterion: 'Criterion 6: Governance & Leadership', metricCode: '6.2.2 & 6.3.2', description: 'Implementation of e-governance ERP across operations', value: '100% ERP Digitized via UniLMS', status: 'Compliant' }
 ];
 

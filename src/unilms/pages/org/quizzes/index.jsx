@@ -4,72 +4,7 @@ import { TableSkeletonLoader, TablePagination, useTablePagination, useConfirmDia
 import academicsService from '../../../services/academics.service';
 import apiClient from '../../../services/api';
 
-const initialQuizzesFallback = [
-  {
-    id: 'quiz-001',
-    title: 'Cloud Architecture & DevOps Microservices Quiz I',
-    subject_code: 'CS401',
-    subject_name: 'Cloud Architecture & DevOps',
-    department_id: 'dept-cse',
-    department_name: 'Computer Science & Engineering',
-    program_id: 'prog-btech-cse',
-    program_name: 'B.Tech CSE',
-    cohort_id: 'cohort-2026',
-    cohort_name: 'Batch 2026 - 2030 (B.Tech CSE)',
-    faculty_name: 'Prof. Ananya Iyer',
-    duration: 30,
-    total_questions: 15,
-    status: 'Published'
-  },
-  {
-    id: 'quiz-002',
-    title: 'Data Structures & Trees Rapid MCQ Test',
-    subject_code: 'CS201',
-    subject_name: 'Data Structures & Algorithms',
-    department_id: 'dept-cse',
-    department_name: 'Computer Science & Engineering',
-    program_id: 'prog-btech-cse',
-    program_name: 'B.Tech CSE',
-    cohort_id: 'cohort-2026',
-    cohort_name: 'Batch 2026 - 2030 (B.Tech CSE)',
-    faculty_name: 'Dr. Suresh Verma',
-    duration: 45,
-    total_questions: 20,
-    status: 'Published'
-  },
-  {
-    id: 'quiz-003',
-    title: 'Relational Schema & SQL Constraints Challenge',
-    subject_code: 'CS403',
-    subject_name: 'Database Management Systems',
-    department_id: 'dept-cse',
-    department_name: 'Computer Science & Engineering',
-    program_id: 'prog-btech-cse',
-    program_name: 'B.Tech CSE',
-    cohort_id: 'cohort-2026',
-    cohort_name: 'Batch 2026 - 2030 (B.Tech CSE)',
-    faculty_name: 'Dr. Suresh Verma',
-    duration: 25,
-    total_questions: 10,
-    status: 'Draft'
-  },
-  {
-    id: 'quiz-004',
-    title: 'Operating Systems Virtual Memory & Scheduling Challenge',
-    subject_code: 'CS101',
-    subject_name: 'Operating Systems',
-    department_id: 'dept-cse',
-    department_name: 'Computer Science & Engineering',
-    program_id: 'prog-btech-cse',
-    program_name: 'B.Tech CSE',
-    cohort_id: 'cohort-2026',
-    cohort_name: 'Batch 2026 - 2030 (B.Tech CSE)',
-    faculty_name: 'Prof. Meenakshi Sundaram',
-    duration: 40,
-    total_questions: 20,
-    status: 'Published'
-  }
-];
+const initialQuizzesFallback = [];
 
 const OrgQuizzesIndex = () => {
   // Enterprise Confirmation Dialog Hook

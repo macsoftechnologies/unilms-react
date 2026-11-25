@@ -1,53 +1,64 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../../components';
+import academicsService from '../../../services/academics.service';
+import staffService from '../../../services/staff.service';
+import apiClient from '../../../services/api';
 
-const initialPapers = [
-  { id: 1, exam_name: 'End Semester Theory Finals 2026', subject_name: 'CS401 Cloud Architecture & DevOps', faculty_name: 'Dr. Rajesh Iyer', paper_type: 'Set A & B (Confidential)', deadline: '2026-04-10', status: 'Approved' },
-  { id: 2, exam_name: 'End Semester Theory Finals 2026', subject_name: 'CS201 Data Structures & Algorithms', faculty_name: 'Prof. Vikram Seth', paper_type: 'Set A (External Review)', deadline: '2026-04-15', status: 'Submitted' },
-  { id: 3, exam_name: 'Midterm Assessment Cycle II', subject_name: 'IT201 Database Management Systems', faculty_name: 'Dr. Meera Nambiar', paper_type: 'Internal Question Bank', deadline: '2026-04-18', status: 'Approved' },
-  { id: 4, exam_name: 'Supplementary Examinations', subject_name: 'MA101 Engineering Mathematics I', faculty_name: 'Prof. Suresh Kumar', paper_type: 'Remedial Single Set', deadline: '2026-04-20', status: 'Pending' },
-  { id: 5, exam_name: 'End Semester Theory Finals 2026', subject_name: 'EC101 Basic Electrical & Electronics', faculty_name: 'Dr. Kavita Reddy', paper_type: 'Set A & B (Bilingual)', deadline: '2026-04-22', status: 'Pending' }
-];
-
-const facultyOptions = [
-  'Dr. Rajesh Iyer',
-  'Prof. Vikram Seth',
-  'Dr. Meera Nambiar',
-  'Prof. Suresh Kumar',
-  'Dr. Kavita Reddy',
-  'Dr. Ananya Iyer'
-];
-
-const subjectOptions = [
-  'CS401 Cloud Architecture & DevOps',
-  'CS201 Data Structures & Algorithms',
-  'IT201 Database Management Systems',
-  'MA101 Engineering Mathematics I',
-  'EC101 Basic Electrical & Electronics'
-];
+const initialPapers = [];
 
 const OrgExaminationsSetPapers = () => {
   const [papers, setPapers] = useState(initialPapers);
+  const [facultyOptions, setFacultyOptions] = useState([]);
+  const [subjectOptions, setSubjectOptions] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
-    exam_name: 'End Semester Theory Finals 2026',
-    subject_name: subjectOptions[0],
-    faculty_name: facultyOptions[0],
+    exam_name: 'End Semester Theory Finals',
+    subject_name: '',
+    faculty_name: '',
     paper_type: 'Set A & B (Confidential)',
     deadline: new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0],
     status: 'Pending'
   });
 
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
+    let isMounted = true;
     setLoading(true);
-    const timer = setTimeout(() => setLoading(false), 350);
-    return () => clearTimeout(timer);
-  }, [searchQuery, statusFilter]);
+    Promise.allSettled([
+      apiClient.get('/tenants/settings/org_examination_papers'),
+      academicsService.getSubjects(),
+      staffService.getStaff()
+    ]).then(([papRes, subRes, stfRes]) => {
+      if (!isMounted) return;
+      if (papRes.status === 'fulfilled' && papRes.value?.data?.value && Array.isArray(papRes.value.data.value)) {
+        setPapers(papRes.value.data.value);
+      }
+      if (subRes.status === 'fulfilled') {
+        const sList = Array.isArray(subRes.value) ? subRes.value : (subRes.value?.data || []);
+        const names = sList.map(s => `${s.code ? `${s.code} ` : ''}${s.name || s.title || ''}`.trim()).filter(Boolean);
+        setSubjectOptions(names);
+        if (names.length > 0) {
+          setFormData(prev => ({ ...prev, subject_name: prev.subject_name || names[0] }));
+        }
+      }
+      if (stfRes.status === 'fulfilled') {
+        const fList = Array.isArray(stfRes.value) ? stfRes.value : (stfRes.value?.data || []);
+        const names = fList.map(f => `${f.firstName || f.first_name || ''} ${f.lastName || f.last_name || ''}`.trim() || f.name).filter(Boolean);
+        setFacultyOptions(names);
+        if (names.length > 0) {
+          setFormData(prev => ({ ...prev, faculty_name: prev.faculty_name || names[0] }));
+        }
+      }
+    }).finally(() => {
+      if (isMounted) setLoading(false);
+    });
+    return () => { isMounted = false; };
+  }, []);
 
   const filtered = papers.filter(p => {
     const q = searchQuery.toLowerCase();
@@ -83,23 +94,29 @@ const OrgExaminationsSetPapers = () => {
       deadline: formData.deadline,
       status: formData.status
     };
-    setPapers([newPaper, ...papers]);
+    const updated = [newPaper, ...papers];
+    setPapers(updated);
+    apiClient.post('/tenants/settings/org_examination_papers', { value: updated }).catch(() => {});
     setIsModalOpen(false);
   };
 
   const toggleStatus = (id) => {
-    setPapers(papers.map(p => {
+    const updated = papers.map(p => {
       if (p.id === id) {
         const next = p.status === 'Pending' ? 'Submitted' : p.status === 'Submitted' ? 'Approved' : 'Pending';
         return { ...p, status: next };
       }
       return p;
-    }));
+    });
+    setPapers(updated);
+    apiClient.post('/tenants/settings/org_examination_papers', { value: updated }).catch(() => {});
   };
 
   const handleDelete = (id) => {
     if (window.confirm('Delete this paper setting assignment?')) {
-      setPapers(papers.filter(p => p.id !== id));
+      const updated = papers.filter(p => p.id !== id);
+      setPapers(updated);
+      apiClient.post('/tenants/settings/org_examination_papers', { value: updated }).catch(() => {});
     }
   };
 

@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../../components';
+import apiClient from '../../../services/api';
 
-const defaultSubmissions = [
-  { id: 1, roll_number: '23CSE001', student_name: 'Aditya Verma', status: 'Graded', submitted_at: '2026-03-24 10:30 AM', file_name: 'Aditya_Assignment_Final.pdf', marks_obtained: 48, feedback: 'Excellent analysis of microservice orchestrations.' },
-  { id: 2, roll_number: '23CSE002', student_name: 'Priya Sharma', status: 'Graded', submitted_at: '2026-03-24 11:15 AM', file_name: 'Priya_CloudArch_Report.docx', marks_obtained: 45, feedback: 'Well structured and diagrams are clear.' },
-  { id: 3, roll_number: '23CSE003', student_name: 'Rahul Deshmukh', status: 'Submitted', submitted_at: '2026-03-25 04:20 PM', file_name: 'Rahul_DevOps_Lab.pdf', marks_obtained: null, feedback: '' },
-  { id: 4, roll_number: '23IT001', student_name: 'Sneha Patel', status: 'Graded', submitted_at: '2026-03-23 09:40 PM', file_name: 'Sneha_Project_Documentation.pdf', marks_obtained: 42, feedback: 'Good effort, improve container security chapter.' },
-  { id: 5, roll_number: '23ECE001', student_name: 'Rohan Joshi', status: 'Not Submitted', submitted_at: null, file_name: null, marks_obtained: null, feedback: '' },
-  { id: 6, roll_number: '23ME001', student_name: 'Kavita Rao', status: 'Submitted', submitted_at: '2026-03-25 08:10 PM', file_name: 'Kavita_Assignment_Submission.pdf', marks_obtained: null, feedback: '' }
-];
+const defaultSubmissions = [];
 
 const OrgAssignmentsSubmissions = () => {
   const navigate = useNavigate();
@@ -21,10 +15,21 @@ const OrgAssignmentsSubmissions = () => {
   const [gradeFeedback, setGradeFeedback] = useState('');
 
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
+    let isMounted = true;
     setLoading(true);
-    const timer = setTimeout(() => setLoading(false), 350);
-    return () => clearTimeout(timer);
+    apiClient.get('/tenants/settings/org_assignment_submissions')
+      .then(res => {
+        if (isMounted && res?.data?.value && Array.isArray(res.data.value)) {
+          setSubmissions(res.data.value);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+    return () => { isMounted = false; };
   }, [searchQuery, statusFilter]);
 
   const filtered = submissions.filter(s => {
