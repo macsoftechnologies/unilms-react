@@ -97,7 +97,7 @@ const OrgAdmissionsDashboard = () => {
               Admissions Overview &amp; Candidate CRM
             </h2>
             <p style={{ margin: '2px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '11px' }}>
-              Real-time enrollment cycle monitoring, prospect tracking &amp; admission funnel metrics &bull; Academic Year 2026&ndash;2027
+              Real-time enrollment cycle monitoring, prospect tracking &amp; admission funnel metrics
             </p>
           </div>
         </div>

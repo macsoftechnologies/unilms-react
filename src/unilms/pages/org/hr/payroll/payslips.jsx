@@ -128,7 +128,7 @@ const OrgHrPayrollPayslips = () => {
                 Monthly Payroll &amp; Payslips
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Review salary generation, bank disbursements &amp; generate official employee monthly payslips &bull; AY 2026&ndash;2027
+                Review salary generation, bank disbursements &amp; generate official employee monthly payslips
               </p>
             </div>
           </div>

@@ -201,7 +201,7 @@ const OrgHrPayrollIndex = () => {
               Payroll Management &amp; Disbursement
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Overview of monthly salary operations, net payouts &amp; tax compliance &bull; AY 2026&ndash;2027
+              Overview of monthly salary operations, net payouts &amp; tax compliance
             </p>
           </div>
         </div>

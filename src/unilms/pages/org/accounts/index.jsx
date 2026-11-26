@@ -112,7 +112,7 @@ const OrgAccountsIndex = () => {
               )}
             </div>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Financial balances, bank ledgers &amp; cashbook transactions &bull; Academic Year 2026&ndash;2027
+              Financial balances, bank ledgers &amp; cashbook transactions
               {lastSyncTime && (
                 <span style={{ marginLeft: '10px', fontSize: '11.5px', color: '#94a3b8' }}>
                   &bull; Last synced: {lastSyncTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}

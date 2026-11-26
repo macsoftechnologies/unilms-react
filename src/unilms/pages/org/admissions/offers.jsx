@@ -217,7 +217,7 @@ const OrgAdmissionsOffers = () => {
                 Manage Admission Offers &amp; Letters
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Generate provisional admission offers, track due dates &amp; monitor acceptance &bull; AY 2026&ndash;2027
+                Generate provisional admission offers, track due dates &amp; monitor acceptance
               </p>
             </div>
           </div>

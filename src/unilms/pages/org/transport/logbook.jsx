@@ -230,7 +230,7 @@ const OrgTransportLogbook = () => {
               Transport Fuel &amp; Trip Logbook
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Log fuel expenses, mileage, odometer tracking &amp; servicing &bull; AY 2026&ndash;2027
+              Log fuel expenses, mileage, odometer tracking &amp; servicing
             </p>
           </div>
         </div>

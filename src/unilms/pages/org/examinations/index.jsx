@@ -128,7 +128,7 @@ const OrgExaminationsIndex = () => {
         title: '',
         type: 'REGULAR',
         term: 'Semester 1',
-        academicYear: '2026-2027',
+        academicYear: getCurrentAcademicYear(),
         startDate: '2026-12-01',
         endDate: '2026-12-20',
         description: ''
@@ -148,7 +148,7 @@ const OrgExaminationsIndex = () => {
       title: exam.title || exam.name || '',
       type: (exam.type || 'REGULAR').toUpperCase(),
       term: exam.term || 'Semester 1',
-      academicYear: exam.academicYear || '2026-2027',
+      academicYear: exam.academicYear || getCurrentAcademicYear(),
       startDate: exam.startDate ? exam.startDate.substring(0, 10) : '2026-12-01',
       endDate: exam.endDate ? exam.endDate.substring(0, 10) : '2026-12-20',
       description: exam.description || ''
@@ -161,7 +161,7 @@ const OrgExaminationsIndex = () => {
       title: '',
       type: 'REGULAR',
       term: 'Semester 1',
-      academicYear: '2026-2027',
+      academicYear: getCurrentAcademicYear(),
       startDate: '2026-12-01',
       endDate: '2026-12-20',
       description: ''
@@ -262,7 +262,7 @@ const OrgExaminationsIndex = () => {
               Exam Setup &amp; Governance
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Define institutional exam cycles, eligibility regulations, and active evaluation sessions &bull; AY 2026&ndash;2027
+              Define institutional exam cycles, eligibility regulations, and active evaluation sessions
             </p>
           </div>
         </div>
@@ -566,7 +566,7 @@ const OrgExaminationsIndex = () => {
                           </td>
                           <td style={{ padding: '12px 14px', fontSize: '12px', color: '#334155' }}>
                             <div>{e.term || 'All Sems'}</div>
-                            <div style={{ fontSize: '11px', color: '#64748B' }}>{e.academicYear || '2026-2027'}</div>
+                            <div style={{ fontSize: '11px', color: '#64748B' }}>{e.academicYear || getCurrentAcademicYear()}</div>
                           </td>
                           <td style={{ padding: '12px 14px', fontSize: '12px', color: '#64748B' }}>
                             {e.startDate ? new Date(e.startDate).toLocaleDateString() : 'TBD'}

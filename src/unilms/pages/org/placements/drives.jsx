@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { TableSkeletonLoader, TablePagination, useTablePagination, useConfirmDialog } from '../../../components';
 import { getStoredDrives, saveStoredDrives, getStoredCompanies } from './placementsData';
 import placementsService from '../../../services/placements.service';
+import { getCurrentAcademicYear } from '../../../utils/date';
 
 const OrgPlacementsDrives = () => {
   const { confirm, ConfirmDialog } = useConfirmDialog();
@@ -381,7 +382,7 @@ const OrgPlacementsDrives = () => {
           <div>
             <div style={{ fontSize: '12px', color: '#64748B', fontWeight: '600', textTransform: 'uppercase' }}>Total Drives</div>
             <div style={{ fontSize: '24px', fontWeight: '800', color: '#1E293B' }}>{totalDrives} Scheduled</div>
-            <div style={{ fontSize: '11px', color: '#10B981', fontWeight: '600' }}>Academic Season 2026-27</div>
+            <div style={{ fontSize: '11px', color: '#10B981', fontWeight: '600' }}>Academic Season {getCurrentAcademicYear()}</div>
           </div>
         </div>
 

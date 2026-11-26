@@ -111,7 +111,7 @@ const OrgAcademicsDashboard = () => {
                 Academics Command Center
               </h2>
               <p style={{ margin: '1px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '11.5px' }}>
-                Multi-Disciplinary Governance (Pharmacy, Degree, PG, Engineering) &bull; Academic Year 2026&ndash;2027
+                Multi-Disciplinary Governance (Pharmacy, Degree, PG, Engineering)
               </p>
             </div>
           </div>

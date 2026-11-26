@@ -125,7 +125,7 @@ const OrgInternshipsTpoAudit = () => {
               TPO Final Audit &amp; Certification Gatekeeper
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Audit completed candidate records according to the 4 Enterprise Verification Rules &bull; AY 2026&ndash;2027
+              Audit completed candidate records according to the 4 Enterprise Verification Rules
             </p>
           </div>
         </div>

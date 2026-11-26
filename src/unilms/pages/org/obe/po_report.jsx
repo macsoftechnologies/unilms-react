@@ -100,7 +100,7 @@ const OrgObePoReport = () => {
               Program Outcome (PO) Attainment Ledger
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              NAAC / NBA Criteria 2.6.2 compliant aggregate PO calculation report &bull; AY 2026&ndash;2027
+              NAAC / NBA Criteria 2.6.2 compliant aggregate PO calculation report
             </p>
           </div>
         </div>

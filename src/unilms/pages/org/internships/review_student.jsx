@@ -90,7 +90,7 @@ const OrgInternshipsReviewStudent = () => {
               Student Internship Evaluation &amp; Review
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Grade milestone deliverables, technical viva &amp; company supervisor feedback &bull; AY 2026&ndash;2027
+              Grade milestone deliverables, technical viva &amp; company supervisor feedback
             </p>
           </div>
         </div>

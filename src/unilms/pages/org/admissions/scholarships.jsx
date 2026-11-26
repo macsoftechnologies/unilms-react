@@ -244,7 +244,7 @@ const OrgAdmissionsScholarships = () => {
                 Scholarships &amp; Financial Aid Tracking
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Manage institutional grants, government merit disbursements &amp; financial welfare programs &bull; AY 2026&ndash;2027
+                Manage institutional grants, government merit disbursements &amp; financial welfare programs
               </p>
             </div>
           </div>

@@ -94,7 +94,7 @@ const OrgAdministrationIndex = () => {
               Administration &amp; Campus Setup
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Manage organization-level settings, campus infrastructure, academic calendar, and governance &bull; AY 2026&ndash;2027
+              Manage organization-level settings, campus infrastructure, academic calendar, and governance
             </p>
           </div>
         </div>

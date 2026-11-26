@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import transportService from '../../../services/transport.service';
 import { studentsService } from '../../../services/students.service';
 import { TableSkeletonLoader, TablePagination, useTablePagination, useConfirmDialog } from '../../../components';
+import { getCurrentAcademicYear } from '../../../utils/date';
 
 const OrgTransportSubscriptions = () => {
   const [subscriptions, setSubscriptions] = useState([]);
@@ -242,7 +243,7 @@ const OrgTransportSubscriptions = () => {
         studentId: formData.student_id,
         routeId: formData.route_id,
         stopId: formData.halt_id,
-        academicYear: '2026-2027',
+        academicYear: getCurrentAcademicYear(),
         rfidCardNo: formData.rfid_card_no,
         feeStatus: formData.fee_status,
         annualFee: Number(formData.annual_fee),
@@ -320,7 +321,7 @@ const OrgTransportSubscriptions = () => {
               Transport Subscriptions &amp; Passes
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Manage student and staff bus passes, halt fees &amp; renewals &bull; AY 2026&ndash;2027
+              Manage student and staff bus passes, halt fees &amp; renewals
             </p>
           </div>
         </div>

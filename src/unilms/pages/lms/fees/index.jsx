@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../../components';
 import lmsStudentService from '../../../services/lmsStudent.service';
+import { getCurrentAcademicYear } from '../../../utils/date';
 
 const LmsFeesIndex = () => {
   const [loading, setLoading] = useState(true);
@@ -35,7 +36,7 @@ const LmsFeesIndex = () => {
                 id: inv.id,
                 invoiceNumber: inv.invoiceNumber || 'INV-DUE',
                 name: inv.title || 'Term Academic Tuition & Package',
-                academicYear: inv.academicYear || '2026-2027',
+                academicYear: inv.academicYear || getCurrentAcademicYear(),
                 semester: inv.semester || 'Semester 1',
                 dueDate: inv.dueDate ? new Date(inv.dueDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—',
                 due: billed.toLocaleString('en-IN', { minimumFractionDigits: 2 }),

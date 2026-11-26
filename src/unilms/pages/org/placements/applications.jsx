@@ -281,7 +281,7 @@ const OrgPlacementsApplications = () => {
               {drive ? drive.title : 'Candidate Shortlisting &amp; Screening Queue'}
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              {drive ? `${drive.company_name} | Role: ${drive.job_role} | Package: ${drive.ctc_details} | Date: ${drive.drive_date}` : 'Review candidate profiles, test scores &amp; interview statuses &bull; AY 2026&ndash;2027'}
+              {drive ? `${drive.company_name} | Role: ${drive.job_role} | Package: ${drive.ctc_details} | Date: ${drive.drive_date}` : 'Review candidate profiles, test scores &amp; interview statuses'}
             </p>
           </div>
         </div>

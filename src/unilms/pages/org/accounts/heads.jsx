@@ -214,7 +214,7 @@ const OrgAccountsHeads = () => {
               )}
             </div>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              PostgreSQL Chart of Accounts &bull; Income, Expense, Asset, and Liability ledger codes &bull; Academic Year 2026&ndash;2027
+              PostgreSQL Chart of Accounts &bull; Income, Expense, Asset, and Liability ledger codes
               {lastSyncTime && (
                 <span style={{ marginLeft: '10px', fontSize: '11.5px', color: '#94a3b8' }}>
                   &bull; Last synced: {lastSyncTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}

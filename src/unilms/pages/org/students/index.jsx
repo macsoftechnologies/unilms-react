@@ -465,7 +465,7 @@ const OrgStudentsIndex = () => {
                 Student Directory &amp; Central Academic Registry
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Master roster of active students, academic standing &amp; 360° performance &bull; AY 2026&ndash;2027
+                Master roster of active students, academic standing &amp; 360° performance
               </p>
             </div>
           </div>

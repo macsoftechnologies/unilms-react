@@ -231,7 +231,7 @@ const OrgSystemsUsers = () => {
                 </h2>
               </div>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Manage institutional staff, faculty, student, and parent user credentials &bull; AY 2026&ndash;2027 &bull; Last Synced: {lastSyncTime}
+                Manage institutional staff, faculty, student, and parent user credentials &bull; Last Synced: {lastSyncTime}
               </p>
             </div>
           </div>

@@ -96,7 +96,7 @@ const OrgAdmissionsCollegeStrength = () => {
                 College Strength &amp; Enrollment Analytics
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Comprehensive seat sanctioning, program-wise occupancy &amp; student demographics &bull; AY 2026&ndash;2027
+                Comprehensive seat sanctioning, program-wise occupancy &amp; student demographics
               </p>
             </div>
           </div>

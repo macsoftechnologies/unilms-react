@@ -168,7 +168,7 @@ const OrgAdministrationBankDetails = () => {
               Institutional Bank Accounts
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Configure organization bank details for fee collection, student refunds &amp; payroll processing &bull; AY 2026&ndash;2027
+              Configure organization bank details for fee collection, student refunds &amp; payroll processing
             </p>
           </div>
         </div>

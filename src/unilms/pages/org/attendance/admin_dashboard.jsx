@@ -177,7 +177,7 @@ const OrgAttendanceAdminDashboard = () => {
                 </h2>
               </div>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Track attendance shortages, condonation eligibility &amp; student alerts &bull; AY 2026&ndash;2027
+                Track attendance shortages, condonation eligibility &amp; student alerts
               </p>
             </div>
           </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import admissionsService from '../../../services/admissions.service';
+import { getCurrentAcademicYear } from '../../../utils/date';
 
 const OrgAdmissionsOfferLetterPdf = () => {
   const navigate = useNavigate();
@@ -133,7 +134,7 @@ const OrgAdmissionsOfferLetterPdf = () => {
         </div>
 
         <div style={{ fontSize: '15px', fontWeight: '700', color: '#1E1B4B', margin: '20px 0 14px 0', borderLeft: '4px solid #7C3AED', paddingLeft: '12px' }}>
-          Sub: Offer of Provisional Admission for Academic Session 2026-2027
+          Sub: Offer of Provisional Admission for Academic Session {candidate?.academicYear || getCurrentAcademicYear()}
         </div>
 
         <p style={{ fontSize: '14px', lineHeight: '1.6', color: '#334155' }}>

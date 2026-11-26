@@ -269,7 +269,7 @@ const OrgTimetableBuilder = () => {
                 </h2>
               </div>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Assign period schedules to cohort batches &amp; sections &bull; AY 2026&ndash;2027
+                Assign period schedules to cohort batches &amp; sections
               </p>
             </div>
           </div>

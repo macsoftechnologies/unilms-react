@@ -239,7 +239,7 @@ const OrgHrSettingsIndex = () => {
               HR &amp; Department Settings
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Configure organizational departments, employee designations &amp; staff leave policies &bull; AY 2026&ndash;2027
+              Configure organizational departments, employee designations &amp; staff leave policies
             </p>
           </div>
         </div>

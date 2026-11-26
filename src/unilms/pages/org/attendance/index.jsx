@@ -164,7 +164,7 @@ const OrgAttendanceIndex = () => {
                 </h2>
               </div>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Real-time roll call registers, attendance compliance rates &amp; classroom logs &bull; AY 2026&ndash;2027
+                Real-time roll call registers, attendance compliance rates &amp; classroom logs
               </p>
             </div>
           </div>

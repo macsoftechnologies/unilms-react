@@ -128,7 +128,7 @@ const FacultyPoSetup = () => {
                 Program Outcomes (PO) &amp; PSOs
               </h2>
               <div style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>
-                Configure Graduate Attributes, NBA Criteria 1 &bull; AY 2026&ndash;2027
+                Configure Graduate Attributes, NBA Criteria 1
               </div>
             </div>
           </div>

@@ -170,7 +170,7 @@ const OrgAttendanceReport = () => {
               </h2>
             </div>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              View aggregated attendance metrics across academic cohorts &amp; export ledgers &bull; AY 2026&ndash;2027
+              View aggregated attendance metrics across academic cohorts &amp; export ledgers
             </p>
           </div>
         </div>

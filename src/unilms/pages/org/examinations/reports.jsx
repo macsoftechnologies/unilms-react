@@ -163,7 +163,7 @@ const OrgExaminationsReports = () => {
                 Examination Reports &amp; Result Tabulation
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Generate D-Form fee defaulters, pass percentage analytics &amp; student grade transcripts &bull; AY 2026&ndash;2027
+                Generate D-Form fee defaulters, pass percentage analytics &amp; student grade transcripts
               </p>
             </div>
           </div>

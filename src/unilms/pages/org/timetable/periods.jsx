@@ -257,7 +257,7 @@ const OrgTimetablePeriods = () => {
               </h2>
             </div>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Define daily lecture time slots, morning intervals, and recess breaks for templates &bull; AY 2026&ndash;2027
+              Define daily lecture time slots, morning intervals, and recess breaks for templates
             </p>
           </div>
         </div>

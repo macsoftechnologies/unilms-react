@@ -122,7 +122,7 @@ const OrgLmsCourses = () => {
               LMS Digital Courses &amp; Curriculum Studio
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Manage digital courses, curriculum modules, video lessons, and online learning materials &bull; AY 2026&ndash;2027
+              Manage digital courses, curriculum modules, video lessons, and online learning materials
             </p>
           </div>
         </div>

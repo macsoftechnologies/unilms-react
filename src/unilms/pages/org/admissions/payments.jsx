@@ -211,7 +211,7 @@ const OrgAdmissionsPayments = () => {
                 Candidate Fee Collection &amp; Payments Ledger
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Track application fees, seat confirmation deposits &amp; manual transaction receipts &bull; AY 2026&ndash;2027
+                Track application fees, seat confirmation deposits &amp; manual transaction receipts
               </p>
             </div>
           </div>

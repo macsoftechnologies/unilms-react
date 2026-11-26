@@ -155,7 +155,7 @@ const OrgAdministrationDiary = () => {
                 Institutional Diary &amp; Public Notice Board
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Campus announcements, administrative circulars, official circulars &amp; student notifications &bull; AY 2026&ndash;2027
+                Campus announcements, administrative circulars, official circulars &amp; student notifications
               </p>
             </div>
           </div>

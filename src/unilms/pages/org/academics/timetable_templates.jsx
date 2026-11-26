@@ -193,7 +193,7 @@ const OrgAcademicsTimetableTemplates = () => {
               Timetable Templates &amp; Period Matrices
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Master scheduling templates, slot definitions &amp; department lecture matrices &bull; AY 2026&ndash;2027
+              Master scheduling templates, slot definitions &amp; department lecture matrices
             </p>
           </div>
         </div>

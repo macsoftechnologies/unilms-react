@@ -20,7 +20,7 @@ const OrgFeesMatrix = () => {
   // Cascading Selection Filters
   const [selectedDeptId, setSelectedDeptId] = useState('');
   const [selectedProgramId, setSelectedProgramId] = useState('');
-  const [selectedBatchYear, setSelectedBatchYear] = useState('2026');
+  const [selectedBatchYear, setSelectedBatchYear] = useState(String(new Date().getFullYear()));
 
   // One-time Joining Fees configuration (Semester 1 Only)
   const [joiningFees, setJoiningFees] = useState({
@@ -515,9 +515,15 @@ const OrgFeesMatrix = () => {
               className="form-control"
               style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', fontWeight: '600', fontSize: '13.5px' }}
             >
-              <option value="2026">Class of 2026–{2026 + durationYears} (Current Admitted Batch 2026)</option>
-              <option value="2025">Class of 2025–{2025 + durationYears} (Batch 2025 - Year 2 / Locked Fee)</option>
-              <option value="2024">Class of 2024–{2024 + durationYears} (Batch 2024 - Senior / Locked Fee)</option>
+              {[0, -1, -2].map(offset => {
+                const year = new Date().getFullYear() + offset;
+                const label = offset === 0
+                  ? `Class of ${year}–${year + durationYears} (Current Admitted Batch ${year})`
+                  : offset === -1
+                    ? `Class of ${year}–${year + durationYears} (Batch ${year} - Year 2 / Locked Fee)`
+                    : `Class of ${year}–${year + durationYears} (Batch ${year} - Senior / Locked Fee)`;
+                return <option key={year} value={String(year)}>{label}</option>;
+              })}
             </select>
           </div>
         </div>

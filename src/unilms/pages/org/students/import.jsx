@@ -188,7 +188,7 @@ const OrgStudentsImport = () => {
               Bulk Student Import (CSV / Excel)
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Upload a CSV file or load standard cohort batches to create multiple student master records &bull; AY 2026&ndash;2027
+              Upload a CSV file or load standard cohort batches to create multiple student master records
             </p>
           </div>
         </div>

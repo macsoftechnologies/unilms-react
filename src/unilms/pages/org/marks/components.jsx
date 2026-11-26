@@ -226,7 +226,7 @@ const OrgMarksComponents = () => {
               Mark Components &amp; Assessment Criteria
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Define internal exams, continuous evaluations, quizzes, and map them to Course Outcomes (COs) &bull; AY 2026&ndash;2027
+              Define internal exams, continuous evaluations, quizzes, and map them to Course Outcomes (COs)
             </p>
           </div>
         </div>

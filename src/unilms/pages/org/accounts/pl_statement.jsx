@@ -93,7 +93,7 @@ const OrgAccountsPlStatement = () => {
               )}
             </div>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Financial performance, operational revenues, and institutional expenditures &bull; Academic Year 2026&ndash;2027
+              Financial performance, operational revenues, and institutional expenditures
               {lastSyncTime && (
                 <span style={{ marginLeft: '10px', fontSize: '11.5px', color: '#94a3b8' }}>
                   &bull; Last synced: {lastSyncTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}

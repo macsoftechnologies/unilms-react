@@ -165,7 +165,7 @@ const OrgExaminationsFinance = () => {
               Examination Finance &amp; Budget Ledger
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Special grants, university allocation, invigilator honorarium &amp; logistics expenditure &bull; AY 2026&ndash;2027
+              Special grants, university allocation, invigilator honorarium &amp; logistics expenditure
             </p>
           </div>
         </div>

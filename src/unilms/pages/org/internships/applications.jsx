@@ -111,7 +111,7 @@ const OrgInternshipsApplications = () => {
                 Internship Applications &amp; Offers Queue
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748B)', fontSize: '13px' }}>
-                Review student resumes, extend time-limited offers, assign academic mentors &bull; AY 2026&ndash;2027
+                Review student resumes, extend time-limited offers, assign academic mentors
               </p>
             </div>
           </div>

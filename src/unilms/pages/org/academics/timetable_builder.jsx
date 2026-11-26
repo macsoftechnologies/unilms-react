@@ -122,7 +122,7 @@ const OrgAcademicsTimetableBuilder = () => {
               Timetable Builder: Class Scheduling
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Construct weekly timetable slots, room allocations &amp; faculty assignments &bull; AY 2026&ndash;2027
+              Construct weekly timetable slots, room allocations &amp; faculty assignments
             </p>
           </div>
         </div>

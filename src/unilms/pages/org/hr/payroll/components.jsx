@@ -216,7 +216,7 @@ const OrgHrPayrollComponents = () => {
                 Salary Components &amp; Earnings / Deductions
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Configure basic pay, HRA, DA, EPF, professional tax, medical allowances &amp; formula rules &bull; AY 2026&ndash;2027
+                Configure basic pay, HRA, DA, EPF, professional tax, medical allowances &amp; formula rules
               </p>
             </div>
           </div>

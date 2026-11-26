@@ -138,7 +138,7 @@ const OrgAdministrationComplaints = () => {
                 Complaints &amp; Grievances Redressal Desk
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Monitor incoming complaints, status tracking, resolution reports &amp; student escalations &bull; AY 2026&ndash;2027
+                Monitor incoming complaints, status tracking, resolution reports &amp; student escalations
               </p>
             </div>
           </div>

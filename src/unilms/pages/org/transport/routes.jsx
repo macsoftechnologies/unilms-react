@@ -232,7 +232,7 @@ const OrgTransportRoutes = () => {
               Transport Routes &amp; Networks
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Define transit paths, vehicle allocations &amp; passenger capacities &bull; AY 2026&ndash;2027
+              Define transit paths, vehicle allocations &amp; passenger capacities
             </p>
           </div>
         </div>

@@ -236,7 +236,7 @@ const OrgHrPayrollStructures = () => {
                 Salary Structures &amp; Pay Bands
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Manage salary packages, pay grades mapped to designations &amp; allowance formulas &bull; AY 2026&ndash;2027
+                Manage salary packages, pay grades mapped to designations &amp; allowance formulas
               </p>
             </div>
           </div>

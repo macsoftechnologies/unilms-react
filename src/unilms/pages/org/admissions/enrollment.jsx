@@ -216,7 +216,7 @@ const OrgAdmissionsEnrollment = () => {
                 Final Student Enrollment &amp; Matriculation
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Applications with accepted offers &amp; cleared dues ready for section assignment &amp; roll numbers &bull; AY 2026&ndash;2027
+                Applications with accepted offers &amp; cleared dues ready for section assignment &amp; roll numbers
               </p>
             </div>
           </div>

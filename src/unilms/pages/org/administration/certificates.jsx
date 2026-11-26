@@ -139,7 +139,7 @@ const OrgAdministrationCertificates = () => {
                 Certificate Masters &amp; Templates
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Bonafide, study, transfer, character &amp; course completion certificate issuance templates &bull; AY 2026&ndash;2027
+                Bonafide, study, transfer, character &amp; course completion certificate issuance templates
               </p>
             </div>
           </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import academicsService from '../../../services/academics.service';
 import apiClient from '../../../services/api';
+import { getCurrentAcademicYear, getAcademicYearOptions } from '../../../utils/date';
 
 const OrgAdministrationSettings = () => {
   const [academicYears, setAcademicYears] = useState([]);
@@ -10,7 +11,7 @@ const OrgAdministrationSettings = () => {
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   const [formData, setFormData] = useState({
-    default_academic_year: '2026-2027',
+    default_academic_year: getCurrentAcademicYear(),
     timezone: 'Asia/Kolkata',
     sms_api_key: '',
     pg_api_key: '',
@@ -34,7 +35,7 @@ const OrgAdministrationSettings = () => {
           setFormData((prev) => ({ ...prev, ...settingsRes.data.value }));
         } else if (years.length > 0) {
           const activeYear = years.find((y) => y.status === 'Active' || y.isCurrent) || years[0];
-          setFormData((prev) => ({ ...prev, default_academic_year: activeYear.name || activeYear.year || '2026-2027' }));
+          setFormData((prev) => ({ ...prev, default_academic_year: activeYear.name || activeYear.year || getCurrentAcademicYear() }));
         }
       } catch (err) {
         console.error('Failed to load administration settings', err);
@@ -101,7 +102,7 @@ const OrgAdministrationSettings = () => {
               Campus Administration &amp; General Settings
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Institution configuration, timezone, default academic year &amp; system parameters &bull; AY 2026&ndash;2027
+              Institution configuration, timezone, default academic year &amp; system parameters
             </p>
           </div>
         </div>
@@ -195,10 +196,9 @@ const OrgAdministrationSettings = () => {
                       </option>
                     ))}
                     {academicYears.length === 0 && (
-                      <>
-                        <option value="2026-2027">AY 2026-2027 (Active)</option>
-                        <option value="2025-2026">AY 2025-2026</option>
-                      </>
+                      getAcademicYearOptions().map(opt => (
+                        <option key={opt} value={opt}>AY {opt}</option>
+                      ))
                     )}
                   </select>
                 </div>

@@ -171,7 +171,7 @@ const OrgAttendanceTake = () => {
               Live Classroom Attendance Register
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Date: <strong>{sessionDate}</strong> &bull; Record instant period attendance &bull; AY 2026&ndash;2027
+              Date: <strong>{sessionDate}</strong> &bull; Record instant period attendance
             </p>
           </div>
         </div>

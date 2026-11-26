@@ -267,7 +267,7 @@ const OrgStaffChecklists = () => {
               Staff Checklists &amp; Standard Operating Procedures
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Employee onboarding, routine compliance tasks &amp; departmental handover checklists &bull; AY 2026&ndash;2027
+              Employee onboarding, routine compliance tasks &amp; departmental handover checklists
             </p>
           </div>
         </div>

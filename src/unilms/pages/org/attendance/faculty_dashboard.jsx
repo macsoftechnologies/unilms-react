@@ -129,7 +129,7 @@ const OrgAttendanceFacultyDashboard = () => {
                 </h2>
               </div>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Teaching sessions, pending marks &amp; live student presentee rates &bull; AY 2026&ndash;2027
+                Teaching sessions, pending marks &amp; live student presentee rates
               </p>
             </div>
           </div>

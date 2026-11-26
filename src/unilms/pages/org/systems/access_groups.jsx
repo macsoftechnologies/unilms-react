@@ -77,7 +77,7 @@ const OrgSystemsAccessGroups = () => {
                 Security Roles &amp; Access Groups
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Define modular permission roles and granular access rights for faculty, accountants, wardens, and administrative staff &bull; AY 2026&ndash;2027
+                Define modular permission roles and granular access rights for faculty, accountants, wardens, and administrative staff
               </p>
             </div>
           </div>

@@ -149,7 +149,7 @@ const OrgAdmissionsDocuments = () => {
                 Admission Document Scrutiny &amp; Verification
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Scrutinize uploaded certificates, identity proofs &amp; eligibility documents &bull; AY 2026&ndash;2027
+                Scrutinize uploaded certificates, identity proofs &amp; eligibility documents
               </p>
             </div>
           </div>

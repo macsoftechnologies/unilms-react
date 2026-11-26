@@ -151,7 +151,7 @@ const OrgTimetableIndex = () => {
                 </h2>
               </div>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Weekly lecture periods, practical laboratory slots, and master schedule configurations &bull; AY 2026&ndash;2027
+                Weekly lecture periods, practical laboratory slots, and master schedule configurations
               </p>
             </div>
           </div>

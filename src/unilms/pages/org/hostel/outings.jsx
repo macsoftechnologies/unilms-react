@@ -242,7 +242,7 @@ const OrgHostelOutings = () => {
                 Hostel Outings &amp; Digital Gatepasses
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Warden approvals, biometric exit/entry verification, and parent consent telemetry &bull; AY 2026&ndash;2027
+                Warden approvals, biometric exit/entry verification, and parent consent telemetry
               </p>
             </div>
           </div>

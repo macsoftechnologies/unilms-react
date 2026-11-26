@@ -231,7 +231,7 @@ const OrgAdmissionsApplications = () => {
                 Manage Applications &amp; Candidate Screening
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Review, verify &amp; process prospective candidate admission applications &bull; AY 2026&ndash;2027
+                Review, verify &amp; process prospective candidate admission applications
               </p>
             </div>
           </div>

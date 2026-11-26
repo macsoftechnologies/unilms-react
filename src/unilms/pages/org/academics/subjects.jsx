@@ -681,7 +681,7 @@ const OrgAcademicsSubjects = () => {
                         Curriculum Subjects &amp; Syllabus Repository
                       </h2>
                       <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                        Configure branch courses, elective options, semester schemes &amp; lecture credits &bull; AY 2026&ndash;2027
+                        Configure branch courses, elective options, semester schemes &amp; lecture credits
                       </p>
                     </div>
                   </div>

@@ -122,7 +122,7 @@ const OrgAcademicsTimetableSchedules = () => {
                 Cohort Schedules &amp; Batches
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Manage term timetable assignments for student cohorts and class sections &bull; AY 2026&ndash;2027
+                Manage term timetable assignments for student cohorts and class sections
               </p>
             </div>
           </div>

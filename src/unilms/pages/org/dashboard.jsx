@@ -13,7 +13,7 @@ const OrgDashboard = () => {
     enrolledCount: 0,
     planTier: 'Enterprise Pro',
     planStatus: 'Active',
-    planExpiry: 'Valid Through AY 2026-27'
+    planExpiry: 'Enterprise License Active'
   });
   const [loading, setLoading] = useState(true);
 
@@ -46,7 +46,7 @@ const OrgDashboard = () => {
             enrolledCount: admData?.enrolledCount || 0,
             planTier: tenant?.plan || 'Enterprise Pro',
             planStatus: 'Active',
-            planExpiry: 'Valid Through AY 2026-27'
+            planExpiry: tenant?.subscriptionEndDate ? `Valid Through ${new Date(tenant.subscriptionEndDate).toLocaleDateString()}` : 'Enterprise License Active'
           }));
         }
       } catch (err) {
@@ -101,7 +101,7 @@ const OrgDashboard = () => {
               {tenant?.name || 'Institutional Campus'} Cockpit &amp; Operations Overview
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Live institutional metrics, active enrollments, revenue collection &amp; system health &bull; AY 2026&ndash;2027
+              Live institutional metrics, active enrollments, revenue collection &amp; system health
             </p>
           </div>
         </div>

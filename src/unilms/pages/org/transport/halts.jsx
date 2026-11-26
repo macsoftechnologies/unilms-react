@@ -225,7 +225,7 @@ const OrgTransportHalts = () => {
               Transport Halts &amp; Fare Stages
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Manage bus stops, pickup timings &amp; fee stages along routes &bull; AY 2026&ndash;2027
+              Manage bus stops, pickup timings &amp; fee stages along routes
             </p>
           </div>
         </div>

@@ -458,7 +458,7 @@ const OrgExaminationsHallTickets = () => {
             <div style={{ background: '#fff', borderRadius: '16px', maxWidth: '640px', width: '100%', padding: '30px', boxShadow: '0 25px 50px rgba(0,0,0,0.25)', maxHeight: '92vh', overflowY: 'auto' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '2px solid #E2E8F0', paddingBottom: '16px', marginBottom: '18px' }}>
                 <div>
-                  <span style={{ fontSize: '11px', fontWeight: '800', color: '#2563EB', letterSpacing: '1px', textTransform: 'uppercase' }}>OFFICIAL ADMIT CARD &bull; AY 2026–2027</span>
+                  <span style={{ fontSize: '11px', fontWeight: '800', color: '#2563EB', letterSpacing: '1px', textTransform: 'uppercase' }}>OFFICIAL ADMIT CARD</span>
                   <h3 style={{ margin: '4px 0 0', fontSize: '18px', fontWeight: '900', color: '#111827' }}>
                     {activeHallTicket.exam?.title || activeHallTicket.exam?.name || 'End Semester Examination'}
                   </h3>

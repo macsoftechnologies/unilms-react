@@ -177,7 +177,7 @@ const OrgAdmissionsCategories = () => {
                 Categories &amp; Reservation Quotas
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Configure social reservation brackets, statutory percentage allocations &amp; certificate requirements &bull; AY 2026&ndash;2027
+                Configure social reservation brackets, statutory percentage allocations &amp; certificate requirements
               </p>
             </div>
           </div>

@@ -186,7 +186,7 @@ const OrgStudentsCreateEdit = () => {
               {editId ? 'Edit Student Record' : 'Register New Student (Full Form)'}
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Enter comprehensive student master academic credentials, portal login, and biographical profile &bull; AY 2026&ndash;2027
+              Enter comprehensive student master academic credentials, portal login, and biographical profile
             </p>
           </div>
         </div>

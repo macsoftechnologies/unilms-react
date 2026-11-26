@@ -158,7 +158,7 @@ const OrgExaminationsExternalRegistrations = () => {
                 External Exam Registrations (University / Board)
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Supplementary enrollments, external board exams, hall ticket dispatch &amp; fee statuses &bull; AY 2026&ndash;2027
+                Supplementary enrollments, external board exams, hall ticket dispatch &amp; fee statuses
               </p>
             </div>
           </div>

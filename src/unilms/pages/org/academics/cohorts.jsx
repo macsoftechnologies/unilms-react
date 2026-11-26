@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TableSkeletonLoader, TablePagination, useTablePagination, useConfirmDialog } from '../../../components';
 import academicsService from '../../../services/academics.service';
+import { getCurrentAcademicYear } from '../../../utils/date';
 
 const OrgAcademicsCohorts = () => {
   // Enterprise Confirmation Dialog Hook
@@ -107,7 +108,7 @@ const OrgAcademicsCohorts = () => {
       details: [
         `Batch Name: ${cohortName.trim()}`,
         `Degree Program: ${prog?.name || 'Selected Program'} (${prog?.code || ''})`,
-        `Academic Year: ${academicYears.find(y => y.id === academicYearId)?.name || 'AY 2026-2027'}`,
+        `Academic Year: ${academicYears.find(y => y.id === academicYearId)?.name || getCurrentAcademicYear()}`,
         `Current Term: ${semesterName || 'Semester 1'}`
       ],
       confirmText: isEdit ? 'Yes, Update Batch' : 'Yes, Create Batch',

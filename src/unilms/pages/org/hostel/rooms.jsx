@@ -181,7 +181,7 @@ const OrgHostelRooms = () => {
                 Hostel Rooms &amp; Floor Inventory
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Room numbers, sharing tier specifications, bed occupancy, and availability &bull; AY 2026&ndash;2027
+                Room numbers, sharing tier specifications, bed occupancy, and availability
               </p>
             </div>
           </div>

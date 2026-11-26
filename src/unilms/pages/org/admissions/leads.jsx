@@ -293,7 +293,7 @@ const OrgAdmissionsLeads = () => {
                 Manage Leads CRM &amp; Inquiries
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Capture inquiries, track lead stages &amp; nurture candidate conversions &bull; AY 2026&ndash;2027
+                Capture inquiries, track lead stages &amp; nurture candidate conversions
               </p>
             </div>
           </div>

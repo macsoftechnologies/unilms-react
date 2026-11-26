@@ -184,7 +184,7 @@ const OrgHostelIndex = () => {
                 Hostel &amp; Residential Life Dashboard
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Campus student residential housing, block configurations, warden assignments, and bed telemetry &bull; AY 2026&ndash;2027
+                Campus student residential housing, block configurations, warden assignments, and bed telemetry
               </p>
             </div>
           </div>

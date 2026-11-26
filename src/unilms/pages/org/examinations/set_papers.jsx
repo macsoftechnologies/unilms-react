@@ -162,7 +162,7 @@ const OrgExaminationsSetPapers = () => {
                 Exam Papers Setup &amp; Confidential Moderation
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Assign faculty to set question papers, monitor deadlines, keys &amp; security approvals &bull; AY 2026&ndash;2027
+                Assign faculty to set question papers, monitor deadlines, keys &amp; security approvals
               </p>
             </div>
           </div>

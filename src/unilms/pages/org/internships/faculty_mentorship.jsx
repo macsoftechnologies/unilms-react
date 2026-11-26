@@ -92,7 +92,7 @@ const OrgInternshipsFacultyMentorship = () => {
               Faculty Internship Mentorship Workspace
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Review deliverables, evaluate weekly progress reports &amp; submit final rubric &bull; AY 2026&ndash;2027
+              Review deliverables, evaluate weekly progress reports &amp; submit final rubric
             </p>
           </div>
         </div>

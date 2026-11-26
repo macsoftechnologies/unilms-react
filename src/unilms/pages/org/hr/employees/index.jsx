@@ -221,7 +221,7 @@ const OrgHrEmployeesIndex = () => {
                 HR Employee Roster &amp; Profiles
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Manage teaching faculty, technical officers and administrative payroll contracts &bull; AY 2026&ndash;2027
+                Manage teaching faculty, technical officers and administrative payroll contracts
               </p>
             </div>
           </div>

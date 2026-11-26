@@ -273,7 +273,7 @@ const OrgInternshipsCreatePosting = () => {
               {isEditing ? 'Edit Internship &amp; Roadmap' : 'Post Internship &amp; Roadmap Builder'}
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Build sequential learning milestones and deliverable tasks for student execution &bull; AY 2026&ndash;2027
+              Build sequential learning milestones and deliverable tasks for student execution
             </p>
           </div>
         </div>

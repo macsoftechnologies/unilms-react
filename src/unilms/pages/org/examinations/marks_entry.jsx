@@ -528,7 +528,7 @@ const OrgExaminationsMarksEntry = () => {
               Marks Entry &amp; Grade Ledger Desk
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Record evaluated marks with customizable department grading scales &amp; UGC standards &bull; AY 2026&ndash;2027
+              Record evaluated marks with customizable department grading scales &amp; UGC standards
             </p>
           </div>
         </div>

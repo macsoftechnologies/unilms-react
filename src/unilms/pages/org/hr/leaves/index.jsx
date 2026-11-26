@@ -214,7 +214,7 @@ const OrgHrLeavesIndex = () => {
                 Staff Leave Management &amp; Approvals
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Track employee leave quotas, apply for leave requests, and manage approvals across departments &bull; AY 2026&ndash;2027
+                Track employee leave quotas, apply for leave requests, and manage approvals across departments
               </p>
             </div>
           </div>

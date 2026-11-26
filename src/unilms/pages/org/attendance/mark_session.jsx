@@ -198,7 +198,7 @@ const OrgAttendanceMarkSession = () => {
                 Mark Period Attendance Session
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Record classroom attendance, toggle present/absent &amp; sync with university records &bull; AY 2026&ndash;2027
+                Record classroom attendance, toggle present/absent &amp; sync with university records
               </p>
             </div>
           </div>

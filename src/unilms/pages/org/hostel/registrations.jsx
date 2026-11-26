@@ -253,7 +253,7 @@ const OrgHostelRegistrations = () => {
                 Student Hostel Bed Allotments
               </h2>
               <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-                Active residential bed registry, room assignments, joining dates, and vacate processing &bull; AY 2026&ndash;2027
+                Active residential bed registry, room assignments, joining dates, and vacate processing
               </p>
             </div>
           </div>

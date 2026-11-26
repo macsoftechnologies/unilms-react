@@ -203,7 +203,7 @@ const OrgFeesInvoicing = () => {
         dueDate: dueDate,
         title: finalTitle,
         semester: struct ? `Semester ${struct.semester || 1}` : 'Semester 1',
-        academicYear: struct?.academicYear || '2026-2027',
+        academicYear: struct?.academicYear || getCurrentAcademicYear(),
       });
 
       const studentName = st ? `${st.firstName} ${st.lastName || ''}`.trim() : 'Student';

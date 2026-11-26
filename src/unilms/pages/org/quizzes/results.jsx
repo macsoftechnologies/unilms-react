@@ -107,7 +107,7 @@ const OrgQuizzesResults = () => {
               Quiz Results &amp; Student Attempts
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              CBT Assessment Attempts &bull; Online MCQ Evaluation Ledger &bull; AY 2026&ndash;2027
+              CBT Assessment Attempts &bull; Online MCQ Evaluation Ledger
             </p>
           </div>
         </div>

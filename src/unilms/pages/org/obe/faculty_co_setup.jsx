@@ -120,7 +120,7 @@ const OrgObeFacultyCoSetup = () => {
               Course Outcomes (CO) Setup
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Define measurable Bloom's Taxonomy learning outcomes for NBA/NAAC accreditation &bull; AY 2026&ndash;2027
+              Define measurable Bloom's Taxonomy learning outcomes for NBA/NAAC accreditation
             </p>
           </div>
         </div>

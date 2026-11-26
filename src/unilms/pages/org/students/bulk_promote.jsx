@@ -153,7 +153,7 @@ const OrgStudentsBulkPromote = () => {
               Bulk Term Promotion Wizard
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Progress an entire cohort batch to the next academic semester based on attendance and backlog criteria &bull; AY 2026&ndash;2027
+              Progress an entire cohort batch to the next academic semester based on attendance and backlog criteria
             </p>
           </div>
         </div>

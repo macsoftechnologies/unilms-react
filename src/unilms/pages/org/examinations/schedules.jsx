@@ -303,7 +303,7 @@ const OrgExaminationsSchedules = () => {
               Exam Schedules &amp; Master Timetable
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Schedule course examinations across dates, timing slots &amp; examination halls &bull; AY 2026&ndash;2027
+              Schedule course examinations across dates, timing slots &amp; examination halls
             </p>
           </div>
         </div>

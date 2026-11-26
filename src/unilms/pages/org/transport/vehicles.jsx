@@ -232,7 +232,7 @@ const OrgTransportVehicles = () => {
               Transport Fleet Directory
             </h2>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Manage college fleet vehicles, capacity, drivers &amp; live GPS telemetry &bull; AY 2026&ndash;2027
+              Manage college fleet vehicles, capacity, drivers &amp; live GPS telemetry
             </p>
           </div>
         </div>
