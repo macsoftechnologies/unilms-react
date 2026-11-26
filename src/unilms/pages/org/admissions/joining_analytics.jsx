@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../../components';
 import admissionsService from '../../../services/admissions.service';
+import academicsService from '../../../services/academics.service';
+import { getCurrentAcademicYear, getAcademicYearOptions } from '../../../utils/date';
 
 const OrgAdmissionsJoiningAnalytics = () => {
   const location = useLocation();
   const isAnalyticsPortal = location.pathname.includes('/analytics');
 
-  const [session, setSession] = useState('2026-2027');
+  const [session, setSession] = useState(getCurrentAcademicYear());
+  const [academicYears, setAcademicYears] = useState([]);
   const [activeTab, setActiveTab] = useState('funnel');
   const [showFollowupModal, setShowFollowupModal] = useState(false);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
@@ -22,12 +25,22 @@ const OrgAdmissionsJoiningAnalytics = () => {
   const loadData = async () => {
     try {
       setTabLoading(true);
-      const [funnel, strength, apps, leads] = await Promise.all([
+      const [funnel, strength, apps, leads, years] = await Promise.all([
         admissionsService.getFunnel(),
         admissionsService.getCollegeStrength(),
         admissionsService.getApplications(),
-        admissionsService.getLeads()
+        admissionsService.getLeads(),
+        academicsService.getAcademicYears().catch(() => [])
       ]);
+
+      const validYears = Array.isArray(years) ? years : (years?.data || []);
+      setAcademicYears(validYears);
+      if (validYears.length > 0) {
+        const activeYear = validYears.find(y => y.status === 'active' || y.isCurrent) || validYears[0];
+        if (activeYear && !session) {
+          setSession(activeYear.name || activeYear.year);
+        }
+      }
 
       setFunnelStages(Array.isArray(funnel) ? funnel : []);
 
@@ -180,10 +193,19 @@ const OrgAdmissionsJoiningAnalytics = () => {
             value={session}
             onChange={(e) => setSession(e.target.value)}
             className="form-control"
-            style={{ width: 'auto', minWidth: '160px', fontWeight: '700', fontSize: '13px', borderRadius: '10px' }}
+            style={{ width: 'auto', minWidth: '180px', fontWeight: '700', fontSize: '13px', borderRadius: '10px' }}
           >
-            <option value="2026-2027">Academic Cycle 2026 - 2027</option>
-            <option value="2025-2026">Academic Cycle 2025 - 2026</option>
+            {academicYears.length > 0 ? (
+              academicYears.map(ay => (
+                <option key={ay.id} value={ay.name || ay.year}>
+                  Academic Cycle {ay.name || ay.year} {ay.status === 'active' ? '(Current)' : ''}
+                </option>
+              ))
+            ) : (
+              getAcademicYearOptions().map(opt => (
+                <option key={opt} value={opt}>Academic Cycle {opt}</option>
+              ))
+            )}
           </select>
 
           <Link

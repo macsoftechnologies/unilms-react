@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TableSkeletonLoader, TablePagination, useTablePagination, useConfirmDialog } from '../../../components';
 import { transportService } from '../../../services/transport.service';
+import { getCurrentAcademicYear } from '../../../utils/date';
 
 const LmsPortalTransport = () => {
   const user = (() => { try { return JSON.parse(localStorage.getItem('unilms_user') || '{}'); } catch { return {}; } })();
@@ -82,7 +83,7 @@ const LmsPortalTransport = () => {
       details: [
         `Transport Route: ${routeName}`,
         `Designated Boarding Halt: ${boardingHalt}`,
-        'Pass Validity: Academic Year 2026–2027',
+        `Pass Validity: Academic Year ${getCurrentAcademicYear()}`,
         'Verification: Digital Boarding Pass will be generated in database'
       ],
       confirmText: 'Yes, Confirm Pass',
@@ -99,7 +100,7 @@ const LmsPortalTransport = () => {
       await transportService.createSubscription({
         routeId,
         stopId,
-        academicYear: '2026-2027',
+        academicYear: getCurrentAcademicYear(),
       });
 
       showToast(`Bus Pass subscription registered for ${routeName}!`);
@@ -342,7 +343,7 @@ const LmsPortalTransport = () => {
                 <i className="fa-solid fa-bus" style={{ fontSize: '20px' }}></i>
                 <div>
                   <div style={{ fontSize: '14px', fontWeight: '800' }}>CAMPUS TRANSIT PASS</div>
-                  <div style={{ fontSize: '11px', opacity: 0.9 }}>AY 2026–2027 &bull; Student Pass</div>
+                  <div style={{ fontSize: '11px', opacity: 0.9 }}>AY {activePass?.academicYear || getCurrentAcademicYear()} &bull; Student Pass</div>
                 </div>
               </div>
               <button

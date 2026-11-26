@@ -4,6 +4,7 @@ import { TableSkeletonLoader, TablePagination, useTablePagination, useConfirmDia
 import financeService from '../../../services/finance.service';
 import studentsService from '../../../services/students.service';
 import academicsService from '../../../services/academics.service';
+import { getCurrentAcademicYear } from '../../../utils/date';
 
 const OrgFeesInvoicing = () => {
   // Enterprise Confirmation Dialog Hook
@@ -63,7 +64,7 @@ const OrgFeesInvoicing = () => {
     d.setDate(d.getDate() + 150);
     return d.toISOString().split('T')[0];
   });
-  const [bulkTitle, setBulkTitle] = useState('Academic Year 2026-2027 Term 1 Fee Package');
+  const [bulkTitle, setBulkTitle] = useState(() => `Academic Year ${getCurrentAcademicYear()} Term 1 Fee Package`);
 
   const [toastMsg, setToastMsg] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -252,7 +253,7 @@ const OrgFeesInvoicing = () => {
       const res = await financeService.createBulkInvoices({
         programId: bulkProgramId,
         semester: `Semester ${bulkSemester}`,
-        academicYear: '2026-2027',
+        academicYear: struct?.academicYear || getCurrentAcademicYear(),
         totalAmount: Number(bulkAmount),
         dueDate: bulkDueDate,
         title: finalTitle,

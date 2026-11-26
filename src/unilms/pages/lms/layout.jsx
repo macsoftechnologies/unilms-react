@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useTenant } from '../../context/TenantContext';
+import { getCurrentAcademicYear } from '../../utils/date';
 import './lms.css';
 
 const LmsLayout = () => {
@@ -326,7 +327,7 @@ const LmsLayout = () => {
 
                 <div className="term-badge-header">
                   <i className="fa-solid fa-graduation-cap"></i>
-                  <span className="term-text-full">Semester 4 (2026-2027)</span>
+                  <span className="term-text-full">Semester 4 ({getCurrentAcademicYear()})</span>
                   <span className="term-text-short">Sem 4</span>
                 </div>
 

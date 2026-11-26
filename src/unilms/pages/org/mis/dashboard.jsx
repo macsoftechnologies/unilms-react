@@ -6,6 +6,7 @@ import studentsService from '../../../services/students.service';
 import placementsService from '../../../services/placements.service';
 import financeService from '../../../services/finance.service';
 import admissionsService from '../../../services/admissions.service';
+import { getCurrentAcademicYear, getAcademicYearOptions } from '../../../utils/date';
 
 // Dynamic Institutional Department Benchmarking Data
 const DEPARTMENT_BENCHMARKS = [];
@@ -25,7 +26,8 @@ const OrgMisDashboard = () => {
   const location = useLocation();
   const isAnalyticsPortal = location.pathname.includes('/analytics');
 
-  const [session, setSession] = useState('2026-2027');
+  const [session, setSession] = useState(getCurrentAcademicYear());
+  const [academicYears, setAcademicYears] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortBy, setSortBy] = useState('capacityPct');
@@ -79,15 +81,25 @@ const OrgMisDashboard = () => {
     const fetchLiveTelemetry = async () => {
       try {
         setLoading(true);
-        const [deptsRes, studentsRes, offersRes, invoicesRes, funnelRes] = await Promise.all([
+        const [deptsRes, studentsRes, offersRes, invoicesRes, funnelRes, yearsRes] = await Promise.all([
           academicsService.getDepartments().catch(() => []),
           studentsService.getStudents({ limit: 1000 }).catch(() => []),
           placementsService.getOffers().catch(() => []),
           financeService.getInvoices().catch(() => []),
-          admissionsService.getFunnel().catch(() => null)
+          admissionsService.getFunnel().catch(() => null),
+          academicsService.getAcademicYears().catch(() => [])
         ]);
 
         if (!isMounted) return;
+
+        const validYears = Array.isArray(yearsRes) ? yearsRes : (yearsRes?.data || []);
+        setAcademicYears(validYears);
+        if (validYears.length > 0) {
+          const activeYear = validYears.find(y => y.status === 'active' || y.isCurrent) || validYears[0];
+          if (activeYear && !session) {
+            setSession(activeYear.name || activeYear.year);
+          }
+        }
 
         const depts = Array.isArray(deptsRes) ? deptsRes : (deptsRes?.data || []);
         const rawStudents = Array.isArray(studentsRes) ? studentsRes : (studentsRes?.data?.students || studentsRes?.data || []);
@@ -355,8 +367,17 @@ const OrgMisDashboard = () => {
                 border: '1px solid var(--border-color)'
               }}
             >
-              <option value="2026-2027">AY 2026-2027 (Current Active)</option>
-              <option value="2025-2026">AY 2025-2026 (Audited Prior)</option>
+              {academicYears.length > 0 ? (
+                academicYears.map(ay => (
+                  <option key={ay.id} value={ay.name || ay.year}>
+                    AY {ay.name || ay.year} {ay.status === 'active' ? '(Current Active)' : ''}
+                  </option>
+                ))
+              ) : (
+                getAcademicYearOptions().map(opt => (
+                  <option key={opt} value={opt}>AY {opt}</option>
+                ))
+              )}
             </select>
           </div>
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { TableSkeletonLoader } from '../../components';
 import { parentService } from '../../services/parent.service';
+import { getCurrentAcademicYear } from '../../utils/date';
 
 const ParentDashboard = () => {
   const [children, setChildren] = useState([]);
@@ -158,7 +159,7 @@ const ParentDashboard = () => {
         }}>
           <div>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255, 255, 255, 0.15)', padding: '4px 12px', borderRadius: '12px', fontSize: '11px', fontWeight: '700', letterSpacing: '0.8px', textTransform: 'uppercase', marginBottom: '8px' }}>
-              <i className="fa-solid fa-id-card"></i> WARD PROFILE &bull; AY 2026-2027
+              <i className="fa-solid fa-id-card"></i> WARD PROFILE &bull; AY {getCurrentAcademicYear()}
             </div>
             <h2 style={{ margin: '0 0 6px 0', fontSize: '24px', fontWeight: '800' }}>
               {student.name}

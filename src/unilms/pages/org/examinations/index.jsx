@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { TableSkeletonLoader, TablePagination, useTablePagination, useConfirmDialog } from '../../../components';
 import examinationsService from '../../../services/examinations.service';
+import academicsService from '../../../services/academics.service';
+import { getCurrentAcademicYear, getAcademicYearOptions } from '../../../utils/date';
 
 const OrgExaminationsIndex = () => {
   // Enterprise Confirmation Dialog Hook
   const { confirm, ConfirmDialog } = useConfirmDialog();
 
   const [exams, setExams] = useState([]);
+  const [academicYears, setAcademicYears] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState(null);
   const [toastMsg, setToastMsg] = useState(null);
@@ -19,7 +22,7 @@ const OrgExaminationsIndex = () => {
     title: '',
     type: 'REGULAR',
     term: 'Semester 1',
-    academicYear: '2026-2027',
+    academicYear: getCurrentAcademicYear(),
     startDate: '2026-12-01',
     endDate: '2026-12-20',
     description: ''
@@ -33,9 +36,20 @@ const OrgExaminationsIndex = () => {
   const loadExams = async () => {
     setLoading(true);
     try {
-      const data = await examinationsService.getExams();
+      const [data, years] = await Promise.all([
+        examinationsService.getExams(),
+        academicsService.getAcademicYears().catch(() => [])
+      ]);
       const list = Array.isArray(data) ? data : (data?.data || []);
       setExams(list);
+      const validYears = Array.isArray(years) ? years : (years?.data || []);
+      setAcademicYears(validYears);
+      if (validYears.length > 0 && !formData.academicYear) {
+        const active = validYears.find(y => y.status === 'active' || y.isCurrent) || validYears[0];
+        if (active) {
+          setFormData(prev => ({ ...prev, academicYear: active.name || active.year }));
+        }
+      }
     } catch (err) {
       console.error('Failed to load exams:', err);
       showToast('Could not load examination cycles from server.', 'danger');
@@ -362,14 +376,24 @@ const OrgExaminationsIndex = () => {
 
                 <div className="form-group">
                   <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', marginBottom: '6px', color: '#334155' }}>Academic Year</label>
-                  <input 
-                    type="text"
+                  <select 
                     className="form-control"
                     value={formData.academicYear}
                     onChange={(e) => setFormData({ ...formData, academicYear: e.target.value })}
-                    placeholder="2026-2027"
                     style={{ width: '100%', height: '38px', borderRadius: '8px', border: '1px solid var(--border-color)', padding: '0 10px', fontSize: '13px' }}
-                  />
+                  >
+                    {academicYears.length > 0 ? (
+                      academicYears.map(ay => (
+                        <option key={ay.id} value={ay.name || ay.year}>
+                          {ay.name || ay.year} {ay.status === 'active' ? '(Current)' : ''}
+                        </option>
+                      ))
+                    ) : (
+                      getAcademicYearOptions().map(opt => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))
+                    )}
+                  </select>
                 </div>
               </div>
 

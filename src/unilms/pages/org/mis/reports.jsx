@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../../components';
 import academicsService from '../../../services/academics.service';
+import { getCurrentAcademicYear, getAcademicYearOptions } from '../../../utils/date';
 
 const REPORT_CATEGORIES = [
   { id: 'admissions', label: 'Admissions & Enrollment Ledgers', icon: 'fa-solid fa-user-plus' },
@@ -29,7 +30,8 @@ const OrgMisReports = () => {
   const isAnalyticsPortal = location.pathname.includes('/analytics');
 
   const [activeCategory, setActiveCategory] = useState('admissions');
-  const [session, setSession] = useState('2026-2027');
+  const [session, setSession] = useState(getCurrentAcademicYear());
+  const [academicYears, setAcademicYears] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [exportNotice, setExportNotice] = useState('');
   const [loading, setLoading] = useState(false);
@@ -43,9 +45,20 @@ const OrgMisReports = () => {
   const [liveDepts, setLiveDepts] = useState([]);
 
   useEffect(() => {
-    academicsService.getDepartments().then(res => {
-      const depts = Array.isArray(res) ? res : (res?.data || []);
+    Promise.all([
+      academicsService.getDepartments().catch(() => []),
+      academicsService.getAcademicYears().catch(() => [])
+    ]).then(([deptRes, yearsRes]) => {
+      const depts = Array.isArray(deptRes) ? deptRes : (deptRes?.data || []);
       if (depts.length > 0) setLiveDepts(depts);
+      const validYears = Array.isArray(yearsRes) ? yearsRes : (yearsRes?.data || []);
+      setAcademicYears(validYears);
+      if (validYears.length > 0) {
+        const activeYear = validYears.find(y => y.status === 'active' || y.isCurrent) || validYears[0];
+        if (activeYear && !session) {
+          setSession(activeYear.name || activeYear.year);
+        }
+      }
     }).catch(() => {});
   }, []);
 
@@ -244,10 +257,19 @@ const OrgMisReports = () => {
             value={session} 
             onChange={(e) => setSession(e.target.value)} 
             className="form-control" 
-            style={{ width: 'auto', minWidth: '160px', fontWeight: '700', fontSize: '13px', borderRadius: '10px' }}
+            style={{ width: 'auto', minWidth: '180px', fontWeight: '700', fontSize: '13px', borderRadius: '10px' }}
           >
-            <option value="2026-2027">Academic Session 2026-2027</option>
-            <option value="2025-2026">Academic Session 2025-2026</option>
+            {academicYears.length > 0 ? (
+              academicYears.map(ay => (
+                <option key={ay.id} value={ay.name || ay.year}>
+                  Academic Session {ay.name || ay.year} {ay.status === 'active' ? '(Current)' : ''}
+                </option>
+              ))
+            ) : (
+              getAcademicYearOptions().map(opt => (
+                <option key={opt} value={opt}>Academic Session {opt}</option>
+              ))
+            )}
           </select>
 
           <Link 

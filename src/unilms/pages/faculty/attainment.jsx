@@ -3,31 +3,44 @@ import { Link } from 'react-router-dom';
 import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../components';
 import obeService from '../../services/obe.service';
 import academicsService from '../../services/academics.service';
+import { getCurrentAcademicYear, getAcademicYearOptions } from '../../utils/date';
 
 const FacultyAttainment = () => {
   const [subjects, setSubjects] = useState([]);
   const [selectedSubjectId, setSelectedSubjectId] = useState('');
-  const [academicYear, setAcademicYear] = useState('2026-2027');
+  const [academicYears, setAcademicYears] = useState([]);
+  const [academicYear, setAcademicYear] = useState(getCurrentAcademicYear());
   const [reportData, setReportData] = useState({ attainments: [], poAttainments: {} });
   const [loading, setLoading] = useState(true);
   const [toastMsg, setToastMsg] = useState(null);
 
   useEffect(() => {
-    const fetchSubjects = async () => {
+    const fetchMasterData = async () => {
       setLoading(true);
       try {
-        const subList = await academicsService.getSubjects();
+        const [subList, yearsList] = await Promise.all([
+          academicsService.getSubjects().catch(() => []),
+          academicsService.getAcademicYears().catch(() => [])
+        ]);
         setSubjects(subList || []);
         if (subList && subList.length > 0) {
           setSelectedSubjectId(subList[0].id);
         }
+        const validYears = Array.isArray(yearsList) ? yearsList : (yearsList?.data || []);
+        setAcademicYears(validYears);
+        if (validYears.length > 0) {
+          const activeYear = validYears.find(y => y.status === 'active' || y.isCurrent) || validYears[0];
+          if (activeYear) {
+            setAcademicYear(activeYear.name || activeYear.year);
+          }
+        }
       } catch (e) {
-        console.error('Failed to load subjects:', e);
+        console.error('Failed to load master data:', e);
       } finally {
         setLoading(false);
       }
     };
-    fetchSubjects();
+    fetchMasterData();
   }, []);
 
   const loadReport = async (subId, year) => {
@@ -172,15 +185,26 @@ const FacultyAttainment = () => {
             </select>
           </div>
 
-          <div style={{ width: '180px' }}>
+          <div style={{ width: '220px' }}>
             <label style={{ display: 'block', fontSize: '13px', fontWeight: '700', marginBottom: '6px' }}>Academic Year</label>
-            <input
-              type="text"
+            <select
               value={academicYear}
               onChange={(e) => setAcademicYear(e.target.value)}
               className="form-control"
-              style={{ height: '40px' }}
-            />
+              style={{ height: '40px', fontWeight: '600' }}
+            >
+              {academicYears.length > 0 ? (
+                academicYears.map(ay => (
+                  <option key={ay.id} value={ay.name || ay.year}>
+                    {ay.name || ay.year} {ay.status === 'active' ? '(Current)' : ''}
+                  </option>
+                ))
+              ) : (
+                getAcademicYearOptions().map(opt => (
+                  <option key={opt} value={opt}>Academic Year {opt}</option>
+                ))
+              )}
+            </select>
           </div>
         </div>
 

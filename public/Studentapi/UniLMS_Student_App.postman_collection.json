@@ -1,0 +1,1611 @@
+{
+  "info": {
+    "_postman_id": "unilms-student-app-api-v1",
+    "name": "UniLMS - Student App & Portal APIs (All-In-One Single File)",
+    "description": "### UniLMS Standalone All-In-One Student API Collection\n\n**Zero-Configuration Setup:** This collection is completely self-contained with built-in collection variables. You do NOT need any separate environment file!\n\n1. Import this single file into Postman.\n2. Open **01. Authentication & Session** -> Send **01. Student Multi-Tenant Login**.\n3. The access token and student ID are automatically saved directly into the collection.\n4. All 35+ APIs in all other folders work instantly!",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01. Authentication & Session",
+      "description": "Student identity authentication, credentials verification, and JWT session token refresh.",
+      "item": [
+        {
+          "name": "01. Student Multi-Tenant Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const data = pm.response.json();",
+                  "    if (data.accessToken) {",
+                  "        pm.collectionVariables.set('token', data.accessToken);",
+                  "        console.log(\"Token stored in collection variables!\");",
+                  "    }",
+                  "    if (data.refreshToken) {",
+                  "        pm.collectionVariables.set('refreshToken', data.refreshToken);",
+                  "    }",
+                  "    if (data.user) {",
+                  "        if (data.user.studentId) {",
+                  "            pm.collectionVariables.set('studentId', data.user.studentId);",
+                  "            console.log(\"Student ID stored:\", data.user.studentId);",
+                  "        }",
+                  "        if (data.user.tenant && data.user.tenant.code) {",
+                  "            pm.collectionVariables.set('tenantCode', data.user.tenant.code);",
+                  "        }",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orgCode\": \"{{tenantCode}}\",\n  \"identifier\": \"{{identifier}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Authenticates student using their institution's unique Campus Code (orgCode), Roll Number / Email (identifier), and Password.\\n\\n**Required before sending:**\\n- Enter your institution's Campus Code in {{tenantCode}}\\n- Enter your student Roll Number in {{identifier}}\\n- Enter your student Password in {{password}}\\n\\nOn 200 OK, the test script automatically captures and saves {{token}}, {{refreshToken}}, and {{studentId}} into the collection variables."
+          }
+        },
+        {
+          "name": "02. Refresh Session Access Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const data = pm.response.json();",
+                  "    if (data.accessToken) {",
+                  "        pm.collectionVariables.set('token', data.accessToken);",
+                  "        console.log(\"Refreshed token stored!\");",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "refresh"
+              ]
+            },
+            "description": "Refreshes expired short-lived JWT accessToken using long-lived refreshToken."
+          }
+        }
+      ]
+    },
+    {
+      "name": "02. Student Profile & Dashboard 360",
+      "description": "Student 360 overview, telemetry dashboard KPIs, verified digital ID card, and academic calendar.",
+      "item": [
+        {
+          "name": "01. Get Student 360 Dashboard Overview",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/parent/student/{{studentId}}/overview",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "parent",
+                "student",
+                "{{studentId}}",
+                "overview"
+              ]
+            },
+            "description": "Comprehensive 360 overview for student home screen: personal profile, current attendance %, outstanding fee balance, today's schedule, and faculty mentor."
+          }
+        },
+        {
+          "name": "02. Get Student Self-Service Summary KPIs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/students/portal/self-service-summary?studentId={{studentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "students",
+                "portal",
+                "self-service-summary"
+              ],
+              "query": [
+                {
+                  "key": "studentId",
+                  "value": "{{studentId}}"
+                }
+              ]
+            },
+            "description": "Real-time summary counts: active complaints, certificate requests, exam registrations, and diary notices."
+          }
+        },
+        {
+          "name": "03. Get Verified Student Digital ID Card Dossier",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/students/portal/digital-id?studentId={{studentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "students",
+                "portal",
+                "digital-id"
+              ],
+              "query": [
+                {
+                  "key": "studentId",
+                  "value": "{{studentId}}"
+                }
+              ]
+            },
+            "description": "Digital Student ID Card dossier with verified photo, barcode, validity year, program, emergency contact, and blood group."
+          }
+        },
+        {
+          "name": "04. Get Academic Calendar & Events",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/parent/student/{{studentId}}/calendar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "parent",
+                "student",
+                "{{studentId}}",
+                "calendar"
+              ]
+            },
+            "description": "Returns institutional academic calendar, semester timeline, examination weeks, and institutional holidays."
+          }
+        },
+        {
+          "name": "05. Get Full Student Profile Dossier",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/students/{{studentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "students",
+                "{{studentId}}"
+              ]
+            },
+            "description": "Returns detailed student profile including personal, parent, admission, and academic cohort data."
+          }
+        }
+      ]
+    },
+    {
+      "name": "03. Academic Timetable & Schedules",
+      "description": "Weekly class timetable, period timings, room allocations, and faculty assignments.",
+      "item": [
+        {
+          "name": "01. Get Weekly Class Timetable",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/parent/student/{{studentId}}/timetable",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "parent",
+                "student",
+                "{{studentId}}",
+                "timetable"
+              ]
+            },
+            "description": "Returns periods and scheduled slots across Monday-Saturday for the student's current cohort and section."
+          }
+        }
+      ]
+    },
+    {
+      "name": "04. Attendance Monitoring",
+      "description": "Period-wise attendance registers, monthly percentages, and deficit warnings.",
+      "item": [
+        {
+          "name": "01. Get Overall Attendance Summary & Register",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/parent/student/{{studentId}}/attendance",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "parent",
+                "student",
+                "{{studentId}}",
+                "attendance"
+              ]
+            },
+            "description": "Returns cumulative attendance %, total periods held, periods attended, and latest attendance log."
+          }
+        },
+        {
+          "name": "02. Get Monthly Attendance Register",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/parent/student/{{studentId}}/attendance?month=2026-11",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "parent",
+                "student",
+                "{{studentId}}",
+                "attendance"
+              ],
+              "query": [
+                {
+                  "key": "month",
+                  "value": "2026-11"
+                }
+              ]
+            },
+            "description": "Filters attendance history for a specific calendar month (YYYY-MM)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "05. Coursework & Study Materials",
+      "description": "Homework assignments, lecture notes, syllabus documents, and learning resources.",
+      "item": [
+        {
+          "name": "01. Get Homework Assignments & Submissions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/parent/student/{{studentId}}/homework",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "parent",
+                "student",
+                "{{studentId}}",
+                "homework"
+              ]
+            },
+            "description": "Returns list of course assignments, due dates, submission status, and teacher remarks."
+          }
+        },
+        {
+          "name": "02. Get Downloadable Study Materials",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/academics/study-materials",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "academics",
+                "study-materials"
+              ]
+            },
+            "description": "Lists uploaded study notes, PDFs, presentations, and reference links grouped by subject."
+          }
+        }
+      ]
+    },
+    {
+      "name": "06. Digital LMS Video Courses",
+      "description": "Online LMS learning courses, modules, video lessons, and completion tracking.",
+      "item": [
+        {
+          "name": "01. Browse Available Courses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/lms/courses?isPublished=true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "lms",
+                "courses"
+              ],
+              "query": [
+                {
+                  "key": "isPublished",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Lists all published online LMS video courses available for enrollment."
+          }
+        },
+        {
+          "name": "02. Get Enrolled Courses & Progress",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/lms/my-courses?studentId={{studentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "lms",
+                "my-courses"
+              ],
+              "query": [
+                {
+                  "key": "studentId",
+                  "value": "{{studentId}}"
+                }
+              ]
+            },
+            "description": "Returns the active student's enrolled courses with individual completion percentages."
+          }
+        },
+        {
+          "name": "03. Get Course Curriculum & Video Lessons",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/lms/courses/:courseId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "lms",
+                "courses",
+                ":courseId"
+              ],
+              "variable": [
+                {
+                  "key": "courseId",
+                  "value": "replace-with-course-id"
+                }
+              ]
+            },
+            "description": "Returns course syllabus, chapter modules, and playable video lessons."
+          }
+        },
+        {
+          "name": "04. Enroll into an LMS Course",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"{{studentId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/lms/courses/:courseId/enroll",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "lms",
+                "courses",
+                ":courseId",
+                "enroll"
+              ],
+              "variable": [
+                {
+                  "key": "courseId",
+                  "value": "replace-with-course-id"
+                }
+              ]
+            },
+            "description": "Enrolls the authenticated student into an LMS course."
+          }
+        }
+      ]
+    },
+    {
+      "name": "07. CBT Online Quizzes & Tests",
+      "description": "Computer-Based Testing (CBT), online quizzes, 30-second autosave heartbeat, and submission engine.",
+      "item": [
+        {
+          "name": "01. List Available Quizzes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cbt/quizzes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cbt",
+                "quizzes"
+              ]
+            },
+            "description": "Lists all scheduled and active CBT quizzes and mock assessments."
+          }
+        },
+        {
+          "name": "02. Get Quiz Details & Instructions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cbt/quizzes/:quizId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cbt",
+                "quizzes",
+                ":quizId"
+              ],
+              "variable": [
+                {
+                  "key": "quizId",
+                  "value": "replace-with-quiz-id"
+                }
+              ]
+            },
+            "description": "Fetches quiz duration, total questions, marking scheme, and proctoring guidelines."
+          }
+        },
+        {
+          "name": "03. Start or Resume CBT Test Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quizId\": \"replace-with-quiz-id\",\n  \"studentId\": \"{{studentId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cbt/start",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cbt",
+                "start"
+              ]
+            },
+            "description": "Initializes a CBT test attempt and creates or resumes a test session with exam player timer."
+          }
+        },
+        {
+          "name": "04. Get Live CBT Exam Player State",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cbt/session/:sessionId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cbt",
+                "session",
+                ":sessionId"
+              ],
+              "variable": [
+                {
+                  "key": "sessionId",
+                  "value": "replace-with-session-id"
+                }
+              ]
+            },
+            "description": "Returns the exam player questions, remaining seconds, and previously saved answers."
+          }
+        },
+        {
+          "name": "05. 30-Second Autosave Heartbeat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentQuestionIndex\": 1,\n  \"answers\": {\n    \"q1\": \"A\",\n    \"q2\": \"C\"\n  },\n  \"timeRemainingSeconds\": 1740\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cbt/session/:sessionId/heartbeat",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cbt",
+                "session",
+                ":sessionId",
+                "heartbeat"
+              ],
+              "variable": [
+                {
+                  "key": "sessionId",
+                  "value": "replace-with-session-id"
+                }
+              ]
+            },
+            "description": "Called periodically every 30 seconds by mobile/web player to persist answers and timer."
+          }
+        },
+        {
+          "name": "06. Finalize & Submit CBT Test",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"answers\": {\n    \"q1\": \"A\",\n    \"q2\": \"C\",\n    \"q3\": \"B\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/cbt/session/:sessionId/submit",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cbt",
+                "session",
+                ":sessionId",
+                "submit"
+              ],
+              "variable": [
+                {
+                  "key": "sessionId",
+                  "value": "replace-with-session-id"
+                }
+              ]
+            },
+            "description": "Concludes the CBT exam session, saves final answers, and returns test results."
+          }
+        }
+      ]
+    },
+    {
+      "name": "08. Examinations & Grade Cards",
+      "description": "Official exam schedules, semester marks, SGPA/CGPA grade card, and hall tickets.",
+      "item": [
+        {
+          "name": "01. Get Examination Schedules",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/examinations/schedules",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "examinations",
+                "schedules"
+              ]
+            },
+            "description": "Lists published date-sheets and upcoming mid-term/end-term exams."
+          }
+        },
+        {
+          "name": "02. Get Student Marks & Grade Card",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/parent/student/{{studentId}}/marks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "parent",
+                "student",
+                "{{studentId}}",
+                "marks"
+              ]
+            },
+            "description": "Returns subject-wise internal, external marks, credits, grade, and SGPA/CGPA."
+          }
+        },
+        {
+          "name": "03. Get Exam Registrations & Hall Tickets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/students/portal/exam-registrations?studentId={{studentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "students",
+                "portal",
+                "exam-registrations"
+              ],
+              "query": [
+                {
+                  "key": "studentId",
+                  "value": "{{studentId}}"
+                }
+              ]
+            },
+            "description": "Lists student registered examinations and digital hall tickets with barcode."
+          }
+        },
+        {
+          "name": "04. Register for Exam Cycle",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"{{studentId}}\",\n  \"examScheduleId\": \"replace-with-exam-schedule-id\",\n  \"semester\": \"Semester 1\",\n  \"academicYear\": \"2026-2027\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/students/portal/exam-registrations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "students",
+                "portal",
+                "exam-registrations"
+              ]
+            },
+            "description": "Submits registration application for upcoming semester examination cycle."
+          }
+        }
+      ]
+    },
+    {
+      "name": "09. Fee Obligations & Receipts (View Only)",
+      "description": "Student fee ledger, tuition dues, outstanding balances, and verified payment receipts (as viewed in the web portal).",
+      "item": [
+        {
+          "name": "01. Get Fee Invoices & Balance Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/parent/student/{{studentId}}/fees",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "parent",
+                "student",
+                "{{studentId}}",
+                "fees"
+              ]
+            },
+            "description": "Returns tuition and hostel invoice ledger, payments made, receipt numbers, and outstanding balance."
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. Campus Services (Hostel & Transport)",
+      "description": "Hostel room allocation, outing gate passes, transport bus routes, and digital bus passes.",
+      "item": [
+        {
+          "name": "01. Get My Hostel Bed Allocation",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/hostel/allocations?studentId={{studentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "hostel",
+                "allocations"
+              ],
+              "query": [
+                {
+                  "key": "studentId",
+                  "value": "{{studentId}}"
+                }
+              ]
+            },
+            "description": "Returns the student's assigned hostel block, room number, and bed identifier."
+          }
+        },
+        {
+          "name": "02. List Outing & Gate Pass Requests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/hostel/outings?studentId={{studentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "hostel",
+                "outings"
+              ],
+              "query": [
+                {
+                  "key": "studentId",
+                  "value": "{{studentId}}"
+                }
+              ]
+            },
+            "description": "Returns history and approval status of student hostel outing / gate pass requests."
+          }
+        },
+        {
+          "name": "03. Submit Hostel Outing Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"{{studentId}}\",\n  \"outingType\": \"DAY_OUTING\",\n  \"reason\": \"Medical consultation & library study\",\n  \"departureTime\": \"2026-11-26T10:00:00Z\",\n  \"expectedReturnTime\": \"2026-11-26T18:00:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/hostel/outings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "hostel",
+                "outings"
+              ]
+            },
+            "description": "Submits digital gate pass request for warden / admin authorization."
+          }
+        },
+        {
+          "name": "04. Get My Transport Subscriptions & Bus Pass",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/transport/subscriptions?studentId={{studentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "transport",
+                "subscriptions"
+              ],
+              "query": [
+                {
+                  "key": "studentId",
+                  "value": "{{studentId}}"
+                }
+              ]
+            },
+            "description": "Returns active student bus pass details, route, stop, and pass validity."
+          }
+        },
+        {
+          "name": "05. Subscribe to Transport Bus Route",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"{{studentId}}\",\n  \"routeId\": \"replace-with-route-id\",\n  \"stopId\": \"replace-with-stop-id\",\n  \"academicYear\": \"2026-2027\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/transport/subscriptions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "transport",
+                "subscriptions"
+              ]
+            },
+            "description": "Enrolls student into campus bus route and generates subscription entry."
+          }
+        }
+      ]
+    },
+    {
+      "name": "11. Placements & Career Services",
+      "description": "Campus placement drives, internship postings, job applications, and offer letters.",
+      "item": [
+        {
+          "name": "01. List Placement Recruitment Drives",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/placements/drives",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "placements",
+                "drives"
+              ]
+            },
+            "description": "Lists campus hiring drives, eligibility criteria, CTC packages, and deadlines."
+          }
+        },
+        {
+          "name": "02. List Internship Opportunities",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/placements/internships",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "placements",
+                "internships"
+              ]
+            },
+            "description": "Lists industry internship openings with stipend, duration, and job descriptions."
+          }
+        },
+        {
+          "name": "03. Get My Placement Applications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/placements/applications",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "placements",
+                "applications"
+              ]
+            },
+            "description": "Returns applicant status across technical rounds, interviews, and HR rounds."
+          }
+        },
+        {
+          "name": "04. Submit Job Application",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"driveId\": \"replace-with-drive-id\",\n  \"studentId\": \"{{studentId}}\",\n  \"resumeUrl\": \"https://campus.edu/resumes/my_resume.pdf\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/placements/applications",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "placements",
+                "applications"
+              ]
+            },
+            "description": "Applies for an active recruitment drive with candidate resume link."
+          }
+        },
+        {
+          "name": "05. Get Received Job Offers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/placements/offers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "placements",
+                "offers"
+              ]
+            },
+            "description": "Lists official offer letters, designations, and joining terms issued to the student."
+          }
+        }
+      ]
+    },
+    {
+      "name": "12. Student Self-Service & Grievances",
+      "description": "Official certificate requests, confidential grievances, course feedback, notices, and notifications.",
+      "item": [
+        {
+          "name": "01. List Certificate Requests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/students/portal/certificate-requests?studentId={{studentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "students",
+                "portal",
+                "certificate-requests"
+              ],
+              "query": [
+                {
+                  "key": "studentId",
+                  "value": "{{studentId}}"
+                }
+              ]
+            },
+            "description": "Lists student applications for Bonafide, Conduct, and Transfer certificates."
+          }
+        },
+        {
+          "name": "02. Submit Certificate Application",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"{{studentId}}\",\n  \"certificateType\": \"BONAFIDE\",\n  \"reason\": \"Passport renewal and scholarship verification\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/students/portal/certificate-requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "students",
+                "portal",
+                "certificate-requests"
+              ]
+            },
+            "description": "Applies for an institutional certificate."
+          }
+        },
+        {
+          "name": "03. List Grievances & Helpdesk Tickets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/students/portal/complaints?studentId={{studentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "students",
+                "portal",
+                "complaints"
+              ],
+              "query": [
+                {
+                  "key": "studentId",
+                  "value": "{{studentId}}"
+                }
+              ]
+            },
+            "description": "Lists student submitted support tickets and resolution remarks."
+          }
+        },
+        {
+          "name": "04. Submit Grievance / Complaint",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"{{studentId}}\",\n  \"category\": \"FACILITY\",\n  \"title\": \"Laboratory Equipment Issue\",\n  \"description\": \"Workstation 12 in the CAD lab requires keyboard replacement.\",\n  \"priority\": \"MEDIUM\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/students/portal/complaints",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "students",
+                "portal",
+                "complaints"
+              ]
+            },
+            "description": "Submits a grievance or campus service ticket to college administration."
+          }
+        },
+        {
+          "name": "05. List Course & Faculty Feedback Submissions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/students/portal/feedbacks?studentId={{studentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "students",
+                "portal",
+                "feedbacks"
+              ],
+              "query": [
+                {
+                  "key": "studentId",
+                  "value": "{{studentId}}"
+                }
+              ]
+            },
+            "description": "Lists completed feedback surveys submitted by the student."
+          }
+        },
+        {
+          "name": "06. Submit Course Evaluation Feedback",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentId\": \"{{studentId}}\",\n  \"facultyId\": \"replace-with-faculty-id\",\n  \"subjectId\": \"replace-with-subject-id\",\n  \"academicYear\": \"2026-2027\",\n  \"ratings\": {\n    \"clarity\": 5,\n    \"punctuality\": 5,\n    \"coverage\": 4,\n    \"interaction\": 5\n  },\n  \"comments\": \"Very thorough explanation of practical topics.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/students/portal/feedbacks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "students",
+                "portal",
+                "feedbacks"
+              ]
+            },
+            "description": "Submits faculty performance & course satisfaction rating."
+          }
+        },
+        {
+          "name": "07. Get Academic Notices & Circulars (Student Diary)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/students/portal/notices",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "students",
+                "portal",
+                "notices"
+              ]
+            },
+            "description": "Returns official campus notices, academic circulars, and diary updates."
+          }
+        },
+        {
+          "name": "08. Get Real-Time Notifications Feed",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "X-Tenant-Code",
+                "value": "{{tenantCode}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notifications",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notifications"
+              ]
+            },
+            "description": "Returns live notifications feed for fee reminders, attendance warnings, and events."
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.unilms.in/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "tenantCode",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "identifier",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "studentId",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

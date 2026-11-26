@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useTenant } from '../../context/TenantContext';
+import academicsService from '../../services/academics.service';
+import { getCurrentAcademicYear, getAcademicYearOptions } from '../../utils/date';
 
 const THEMES = [
   { id: 'purple', name: 'Royal Purple', color: '#7C3AED' },
@@ -77,7 +79,19 @@ const ExecutiveAnalyticsLayout = () => {
   const [activeTheme, setActiveTheme] = useState(() => {
     return localStorage.getItem('theme_accent') || localStorage.getItem('superadmin_theme') || 'purple';
   });
-  const [session, setSession] = useState('2026-2027');
+  const [session, setSession] = useState(getCurrentAcademicYear());
+  const [academicYears, setAcademicYears] = useState([]);
+
+  useEffect(() => {
+    academicsService.getAcademicYears().then(res => {
+      const list = Array.isArray(res) ? res : (res?.data || []);
+      setAcademicYears(list);
+      if (list.length > 0) {
+        const active = list.find(y => y.status === 'active' || y.isCurrent) || list[0];
+        if (active && !session) setSession(active.name || active.year);
+      }
+    }).catch(() => {});
+  }, []);
 
   // Dropdown & Mobile Menu States
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -394,8 +408,17 @@ const ExecutiveAnalyticsLayout = () => {
                 outline: 'none'
               }}
             >
-              <option value="2026-2027" style={{ background: '#0B1120', color: '#ffffff' }}>AY 2026-2027 (Active)</option>
-              <option value="2025-2026" style={{ background: '#0B1120', color: '#ffffff' }}>AY 2025-2026 (Audited)</option>
+              {academicYears.length > 0 ? (
+                academicYears.map(ay => (
+                  <option key={ay.id} value={ay.name || ay.year} style={{ background: '#0B1120', color: '#ffffff' }}>
+                    AY {ay.name || ay.year} {ay.status === 'active' ? '(Active)' : ''}
+                  </option>
+                ))
+              ) : (
+                getAcademicYearOptions().map(opt => (
+                  <option key={opt} value={opt} style={{ background: '#0B1120', color: '#ffffff' }}>AY {opt}</option>
+                ))
+              )}
             </select>
           </div>
 

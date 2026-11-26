@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { TableSkeletonLoader, TablePagination, useTablePagination, useConfirmDialog } from '../../components';
 import { parentService } from '../../services/parent.service';
+import { getCurrentAcademicYear } from '../../utils/date';
 
 const ParentFees = () => {
   const { confirm, ConfirmDialog } = useConfirmDialog();
@@ -232,7 +233,7 @@ const ParentFees = () => {
             ₹{(summary.totalBilled || 0).toLocaleString('en-IN')}
           </div>
           <div style={{ fontSize: '11px', fontWeight: '600', color: '#64748B', marginTop: '3px' }}>
-            Academic Year 2026-2027
+            Academic Year {getCurrentAcademicYear()}
           </div>
         </div>
 
