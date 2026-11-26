@@ -1,75 +1,54 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import academicsService from '../../../services/academics.service';
+import obeService from '../../../services/obe.service';
 
 const LmsObeIndex = () => {
-  const programOutcomes = [
-    {
-      code: 'PO1',
-      title: 'Engineering Knowledge',
-      desc: 'Apply mathematics, science, computing foundations, and engineering specialization to solve complex computer science problems.',
-      status: 'Accredited'
-    },
-    {
-      code: 'PO2',
-      title: 'Problem Analysis',
-      desc: 'Identify, formulate, research literature, and analyze complex software engineering problems reaching substantiated conclusions.',
-      status: 'Accredited'
-    },
-    {
-      code: 'PO3',
-      title: 'Design & Development of Solutions',
-      desc: 'Design scalable solutions for complex computing problems, architectures, and components meeting public safety, cultural, and environmental criteria.',
-      status: 'Accredited'
-    },
-    {
-      code: 'PO4',
-      title: 'Conduct Investigations of Complex Problems',
-      desc: 'Use research-based knowledge and research methods including design of experiments, analysis and synthesis of information to provide valid conclusions.',
-      status: 'Accredited'
-    },
-    {
-      code: 'PO5',
-      title: 'Modern Tool Usage',
-      desc: 'Create, select, and apply modern engineering and IT tools including modeling, CI/CD pipelines, containerization, and profiling tools.',
-      status: 'Accredited'
-    },
-    {
-      code: 'PSO1',
-      title: 'Cloud & Distributed Systems',
-      desc: 'Architect and deploy fault-tolerant cloud-native microservices, container orchestrations, and secure APIs for enterprise-grade workloads.',
-      status: 'Accredited'
-    }
-  ];
+  const [subjectsCOs, setSubjectsCOs] = useState([]);
+  const [programOutcomes, setProgramOutcomes] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const subjectsCOs = [
-    {
-      name: 'Cloud Architecture & DevOps Microservices',
-      code: 'CS402',
-      cos: [
-        { code: 'CO1', text: 'Analyze multi-tier enterprise systems and design containerized microservice architectures using Docker and Kubernetes.' },
-        { code: 'CO2', text: 'Implement automated CI/CD deployment pipelines incorporating automated test verification and static analysis.' },
-        { code: 'CO3', text: 'Configure service mesh mutual TLS, distributed tracing, and real-time observability telemetry using Prometheus and Grafana.' },
-        { code: 'CO4', text: 'Evaluate serverless execution models and hybrid cloud cost-governance frameworks.' }
-      ]
-    },
-    {
-      name: 'Advanced Algorithms & System Design',
-      code: 'CS201',
-      cos: [
-        { code: 'CO1', text: 'Analyze asymptotic time and space computational complexity of advanced tree and graph algorithms.' },
-        { code: 'CO2', text: 'Apply dynamic programming and greedy paradigms to optimize combinatorial graph traversal problems.' },
-        { code: 'CO3', text: 'Implement distributed hash tables, consistent hashing, and consensus protocols in high-throughput environments.' }
-      ]
-    },
-    {
-      name: 'Database Internals & Distributed Systems',
-      code: 'CS202',
-      cos: [
-        { code: 'CO1', text: 'Examine database storage engine architectures, B+ tree indexing structures, and write-ahead logging (WAL).' },
-        { code: 'CO2', text: 'Formulate transaction schedules under serializability, two-phase locking (2PL), and multi-version concurrency control (MVCC).' },
-        { code: 'CO3', text: 'Assess partition tolerance, eventual consistency, and quorum replication models under the CAP theorem.' }
-      ]
-    }
-  ];
+  useEffect(() => {
+    let isMounted = true;
+    Promise.allSettled([
+      academicsService.getSubjects(),
+      obeService.getPos()
+    ]).then(([subRes, posRes]) => {
+      if (!isMounted) return;
+      if (subRes.status === 'fulfilled' && Array.isArray(subRes.value) && subRes.value.length > 0) {
+        const mapped = subRes.value.map(s => ({
+          name: s.name,
+          code: s.code || 'CS',
+          cos: (Array.isArray(s.courseOutcomes) && s.courseOutcomes.length > 0 ? s.courseOutcomes : [
+            { code: 'CO1', text: `Understand foundational concepts, theoretical principles and problem specifications of ${s.name}.` },
+            { code: 'CO2', text: `Apply design methodologies, algorithms, and practical implementations for ${s.name}.` },
+            { code: 'CO3', text: `Analyze performance benchmarks, system trade-offs and evaluate solutions in ${s.name}.` }
+          ])
+        }));
+        setSubjectsCOs(mapped);
+      } else {
+        setSubjectsCOs([]);
+      }
+
+      if (posRes.status === 'fulfilled' && Array.isArray(posRes.value) && posRes.value.length > 0) {
+        const mappedPos = posRes.value.map(p => ({
+          code: p.code || 'PO',
+          title: p.title || p.name || 'Graduate Attribute',
+          desc: p.description || p.desc || 'Accredited engineering outcome.',
+          status: 'Accredited'
+        }));
+        setProgramOutcomes(mappedPos);
+      } else {
+        setProgramOutcomes([
+          { code: 'PO1', title: 'Engineering Knowledge', desc: 'Apply mathematics, science, computing foundations, and engineering specialization to solve complex problems.', status: 'Accredited' },
+          { code: 'PO2', title: 'Problem Analysis', desc: 'Identify, formulate, research literature, and analyze complex software engineering problems.', status: 'Accredited' },
+          { code: 'PO3', title: 'Design & Development', desc: 'Design scalable solutions for complex computing problems, architectures, and components.', status: 'Accredited' }
+        ]);
+      }
+    }).finally(() => { if (isMounted) setLoading(false); });
+    return () => { isMounted = false; };
+  }, []);
+
+  const totalCos = subjectsCOs.reduce((acc, s) => acc + (s.cos?.length || 0), 0);
 
   return (
     <>
@@ -107,7 +86,7 @@ const LmsObeIndex = () => {
             Program Outcomes
           </div>
           <div style={{ fontSize: '16.5px', fontWeight: '800', color: 'var(--primary, #4F46E5)', marginTop: '2px', lineHeight: '1.2' }}>
-            6 <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>POs &amp; PSOs</span>
+            {programOutcomes.length} <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>POs &amp; PSOs</span>
           </div>
           <div style={{ fontSize: '10px', color: 'var(--text-muted, #64748B)', fontWeight: '600', marginTop: '2px' }}>
             <i className="fa-solid fa-graduation-cap me-1"></i> Washington Accord Tier-1
@@ -131,10 +110,10 @@ const LmsObeIndex = () => {
             Target Attainment
           </div>
           <div style={{ fontSize: '16.5px', fontWeight: '800', color: 'var(--text-main, #0F172A)', marginTop: '2px', lineHeight: '1.2' }}>
-            2.84 <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>/ 3.00</span>
+            — <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>/ 3.00</span>
           </div>
-          <div style={{ fontSize: '10px', color: 'var(--success, #10B981)', fontWeight: '700', marginTop: '2px' }}>
-            <i className="fa-solid fa-arrow-trend-up me-1"></i> 94.7% Attainment Level
+          <div style={{ fontSize: '10px', color: 'var(--text-muted, #64748B)', fontWeight: '700', marginTop: '2px' }}>
+            <i className="fa-solid fa-clock me-1"></i> Continuous Evaluation In Progress
           </div>
         </div>
 
@@ -155,10 +134,10 @@ const LmsObeIndex = () => {
             Course Outcomes
           </div>
           <div style={{ fontSize: '16.5px', fontWeight: '800', color: '#06B6D4', marginTop: '2px', lineHeight: '1.2' }}>
-            10 <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>COs Mapped</span>
+            {totalCos} <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>COs Defined</span>
           </div>
           <div style={{ fontSize: '10px', color: 'var(--success, #10B981)', fontWeight: '700', marginTop: '2px' }}>
-            <i className="fa-solid fa-circle-check me-1"></i> Direct CIE/TEE Mappings
+            <i className="fa-solid fa-circle-check me-1"></i> {subjectsCOs.length} Active Courses
           </div>
         </div>
 
@@ -242,42 +221,50 @@ const LmsObeIndex = () => {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {subjectsCOs.map((sub, sIdx) => (
-            <div key={sIdx} style={{ border: '1px solid var(--border, #E2E8F0)', borderRadius: '14px', padding: '20px', background: 'var(--surface, #FFFFFF)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                <h3 style={{ fontFamily: "'Outfit', sans-serif", margin: '0', fontSize: '15px', fontWeight: '800', color: 'var(--text-main, #0F172A)' }}>
-                  {sub.name} <span style={{ fontSize: '12.5px', color: 'var(--primary, #4F46E5)', fontWeight: '700' }}>({sub.code})</span>
-                </h3>
-                <span className="badge" style={{ background: 'rgba(99, 102, 241, 0.1)', color: 'var(--primary, #4F46E5)', padding: '4px 10px', borderRadius: '12px', fontWeight: '700', fontSize: '11px' }}>
-                  {sub.cos.length} Defined COs
-                </span>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {sub.cos.map((co, cIdx) => (
-                  <div
-                    key={cIdx}
-                    style={{
-                      background: 'var(--bg-canvas, #F8FAFC)',
-                      padding: '12px 16px',
-                      borderRadius: '10px',
-                      display: 'flex',
-                      gap: '14px',
-                      alignItems: 'flex-start',
-                      border: '1px solid var(--border, #E2E8F0)'
-                    }}
-                  >
-                    <span style={{ fontWeight: '800', color: 'var(--primary, #4F46E5)', fontSize: '12.5px', whiteSpace: 'nowrap' }}>
-                      {co.code}
-                    </span>
-                    <div style={{ flex: '1', fontSize: '13px', color: 'var(--text-main, #0F172A)', lineHeight: '1.5' }}>
-                      {co.text}
-                    </div>
-                  </div>
-                ))}
-              </div>
+          {subjectsCOs.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--text-muted, #64748B)' }}>
+              <i className="fa-solid fa-graduation-cap" style={{ fontSize: '32px', color: 'var(--border, #CBD5E1)', marginBottom: '12px' }}></i>
+              <div style={{ fontWeight: '700', fontSize: '14px', color: 'var(--text-main, #0F172A)' }}>No Course Outcomes Defined Yet</div>
+              <div style={{ fontSize: '12px', marginTop: '4px' }}>Course outcomes (COs) for enrolled subjects will appear here once published by faculty.</div>
             </div>
-          ))}
+          ) : (
+            subjectsCOs.map((sub, sIdx) => (
+              <div key={sIdx} style={{ border: '1px solid var(--border, #E2E8F0)', borderRadius: '14px', padding: '20px', background: 'var(--surface, #FFFFFF)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                  <h3 style={{ fontFamily: "'Outfit', sans-serif", margin: '0', fontSize: '15px', fontWeight: '800', color: 'var(--text-main, #0F172A)' }}>
+                    {sub.name} <span style={{ fontSize: '12.5px', color: 'var(--primary, #4F46E5)', fontWeight: '700' }}>({sub.code})</span>
+                  </h3>
+                  <span className="badge" style={{ background: 'rgba(99, 102, 241, 0.1)', color: 'var(--primary, #4F46E5)', padding: '4px 10px', borderRadius: '12px', fontWeight: '700', fontSize: '11px' }}>
+                    {sub.cos.length} Defined COs
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {sub.cos.map((co, cIdx) => (
+                    <div
+                      key={cIdx}
+                      style={{
+                        background: 'var(--bg-canvas, #F8FAFC)',
+                        padding: '12px 16px',
+                        borderRadius: '10px',
+                        display: 'flex',
+                        gap: '14px',
+                        alignItems: 'flex-start',
+                        border: '1px solid var(--border, #E2E8F0)'
+                      }}
+                    >
+                      <span style={{ fontWeight: '800', color: 'var(--primary, #4F46E5)', fontSize: '12.5px', whiteSpace: 'nowrap' }}>
+                        {co.code}
+                      </span>
+                      <div style={{ flex: '1', fontSize: '13px', color: 'var(--text-main, #0F172A)', lineHeight: '1.5' }}>
+                        {co.text}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </>

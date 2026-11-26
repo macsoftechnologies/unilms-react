@@ -138,45 +138,51 @@ const LmsPortalTransport = () => {
       )}
 
       {/* Active Transit Pass Telemetry Card */}
-      <div
-        className="card"
-        style={{
-          padding: '16px 20px',
-          borderLeft: '4px solid #0284C7',
-          borderTop: '1px solid var(--border, #E2E8F0)',
-          borderRight: '1px solid var(--border, #E2E8F0)',
-          borderBottom: '1px solid var(--border, #E2E8F0)',
-          borderRadius: '14px',
-          background: 'var(--surface, #FFFFFF)',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
-          marginBottom: '20px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '12px'
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(2, 132, 199, 0.12)', color: '#0284C7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>
-            <i className="fa-solid fa-bus"></i>
+      {(() => {
+        const activePass = subscriptions.find(s => (s.status || '').toLowerCase() === 'active');
+        if (!activePass) return null;
+        return (
+          <div
+            className="card"
+            style={{
+              padding: '16px 20px',
+              borderLeft: '4px solid #0284C7',
+              borderTop: '1px solid var(--border, #E2E8F0)',
+              borderRight: '1px solid var(--border, #E2E8F0)',
+              borderBottom: '1px solid var(--border, #E2E8F0)',
+              borderRadius: '14px',
+              background: 'var(--surface, #FFFFFF)',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+              marginBottom: '20px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '12px'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(2, 132, 199, 0.12)', color: '#0284C7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>
+                <i className="fa-solid fa-bus"></i>
+              </div>
+              <div>
+                <div style={{ fontSize: '11px', color: '#64748B', fontWeight: '700', textTransform: 'uppercase' }}>
+                  Active Route &amp; Transit Status
+                </div>
+                <div style={{ fontSize: '17px', fontWeight: '800', color: '#0F172A', marginTop: '2px' }}>
+                  {activePass.route ? `${activePass.route.routeNumber || ''} - ${activePass.route.routeName || 'Campus Shuttle'}` : 'Active Commute Pass'}
+                </div>
+                <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px' }}>
+                  Pass ID: <strong>{activePass.id}</strong> &bull; Halt: <strong>{activePass.stop?.stopName || 'Designated Halt'}</strong>
+                </div>
+              </div>
+            </div>
+            <span className="badge" style={{ background: 'rgba(16, 185, 129, 0.12)', color: '#10B981', fontSize: '12px', padding: '6px 14px', borderRadius: '20px', fontWeight: '800' }}>
+              <i className="fa-solid fa-circle-check me-1"></i> VERIFIED &amp; ACTIVE PASS
+            </span>
           </div>
-          <div>
-            <div style={{ fontSize: '11px', color: '#64748B', fontWeight: '700', textTransform: 'uppercase' }}>
-              Active Route &amp; Transit Status
-            </div>
-            <div style={{ fontSize: '17px', fontWeight: '800', color: '#0F172A', marginTop: '2px' }}>
-              Route 101 - Koramangala Express
-            </div>
-            <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px' }}>
-              Bus: <strong>KA-01-F-4022</strong> &bull; Driver: <strong>+91 94488 12345 (M. Raghavan)</strong> &bull; Pickup Halt: <strong>Koramangala Sony World Signal</strong>
-            </div>
-          </div>
-        </div>
-        <span className="badge" style={{ background: 'rgba(16, 185, 129, 0.12)', color: '#10B981', fontSize: '12px', padding: '6px 14px', borderRadius: '20px', fontWeight: '800' }}>
-          <i className="fa-solid fa-circle-check me-1"></i> VERIFIED &amp; ACTIVE PASS
-        </span>
-      </div>
+        );
+      })()}
 
       <div className="lms-portal-grid-split">
         <div className="card" style={{ border: "1px solid var(--border)", borderRadius: "16px", minWidth: 0, width: "100%", boxSizing: "border-box" }}>

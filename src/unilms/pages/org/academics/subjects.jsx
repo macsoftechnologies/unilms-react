@@ -506,9 +506,6 @@ const OrgAcademicsSubjects = () => {
 
   return (
     <>
-      {/* Enterprise Confirmation Dialog */}
-      <ConfirmDialog />
-
       <section className="view-section active">
         {toastMsg && (
           <div style={{ background: '#10B981', color: '#fff', padding: '12px 18px', borderRadius: '10px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)' }}>
@@ -2025,6 +2022,9 @@ const OrgAcademicsSubjects = () => {
           </form>
         </div>
       </div>
+
+      {/* Enterprise Confirmation Dialog */}
+      <ConfirmDialog />
     </>
   );
 };

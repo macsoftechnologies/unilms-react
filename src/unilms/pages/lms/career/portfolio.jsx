@@ -61,33 +61,33 @@ const LmsCareerPortfolio = () => {
         <div className="analytics-card">
           <div className="ac-icon views"><i className="fa-solid fa-eye"></i></div>
           <div>
-            <div className="ac-value">234</div>
+            <div className="ac-value">0</div>
             <div className="ac-label">Total Views</div>
-            <div className="ac-change up">↑ 23% this week</div>
+            <div className="ac-change up" style={{ color: 'var(--text-muted, #64748B)' }}>New Portfolio</div>
           </div>
         </div>
         <div className="analytics-card">
           <div className="ac-icon clicks"><i className="fa-solid fa-mouse-pointer"></i></div>
           <div>
-            <div className="ac-value">89</div>
+            <div className="ac-value">0</div>
             <div className="ac-label">Project Clicks</div>
-            <div className="ac-change up">↑ 12% this week</div>
+            <div className="ac-change up" style={{ color: 'var(--text-muted, #64748B)' }}>No Clicks Yet</div>
           </div>
         </div>
         <div className="analytics-card">
           <div className="ac-icon recruiter"><i className="fa-solid fa-user-tie"></i></div>
           <div>
-            <div className="ac-value">14</div>
+            <div className="ac-value">0</div>
             <div className="ac-label">Recruiter Visits</div>
-            <div className="ac-change up">↑ 8% this week</div>
+            <div className="ac-change up" style={{ color: 'var(--text-muted, #64748B)' }}>Share Link to Track</div>
           </div>
         </div>
         <div className="analytics-card">
           <div className="ac-icon downloads"><i className="fa-solid fa-download"></i></div>
           <div>
-            <div className="ac-value">7</div>
+            <div className="ac-value">0</div>
             <div className="ac-label">Resume Downloads</div>
-            <div className="ac-change down">↓ 3% this week</div>
+            <div className="ac-change down" style={{ color: 'var(--text-muted, #64748B)' }}>0 Downloads</div>
           </div>
         </div>
       </div>

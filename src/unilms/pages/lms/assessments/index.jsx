@@ -1,167 +1,68 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import lmsStudentService from '../../../services/lmsStudent.service';
 
 const LmsAssessmentsIndex = () => {
   const [filter, setFilter] = useState('all');
   const [courseFilter, setCourseFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [selectedAssessmentModal, setSelectedAssessmentModal] = useState(null);
+  const [assessmentsData, setAssessmentsData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const assessmentsData = [
-    {
-      id: 1,
-      courseCode: 'CS502',
-      shortSubject: 'Cloud DevOps',
-      subject: 'Cloud Architecture & DevOps Microservices',
-      type: 'file_upload',
-      typeName: 'Lab Practical',
-      typeIcon: 'fa-solid fa-cloud-arrow-up',
-      typeBadgeBg: 'rgba(99, 102, 241, 0.1)',
-      typeTextColor: '#4F46E5',
-      accentColor: '#4F46E5',
-      title: 'Lab Milestone 1: Containerize Node & Python Microservices',
-      description: 'Implement multi-stage Dockerfiles for Node.js API and Python data worker. Submit structured Git repository or compressed bundle containing tested Dockerfiles.',
-      tags: ['Docker Multi-stage', 'Python Worker', 'Node.js', 'Alpine Security'],
-      maxMarks: '50.00 Pts',
-      weightage: '15% Grade',
-      dueDate: 'Oct 02, 2026',
-      relativeDue: 'Past Deadline',
-      isOverdue: false,
-      status: 'submitted',
-      score: '46.00 / 50.00',
-      grade: 'A+ (92%)',
-      feedback: 'Excellent container optimization! Image size reduced by 74% using Alpine multi-stage builds. Non-root user permissions verified.',
-      actionText: 'Review Submission',
-      actionLink: '/unilms/lms/assessments/file_submit'
-    },
-    {
-      id: 2,
-      courseCode: 'CS503',
-      shortSubject: 'Distributed DB',
-      subject: 'Database Internals & Distributed Systems',
-      type: 'cbt_quiz',
-      typeName: 'CBT Exam',
-      typeIcon: 'fa-solid fa-list-check',
-      typeBadgeBg: 'rgba(6, 182, 212, 0.1)',
-      typeTextColor: '#0891B2',
-      accentColor: '#0891B2',
-      title: 'Mid-Semester CBT Assessment: Distributed Systems & Raft Consensus',
-      description: 'Multiple choice conceptual examination evaluating distributed consensus, CAP theorem, split-brain scenarios, and Raft leader election protocols.',
-      tags: ['Raft Consensus', 'CAP Theorem', '2-Phase Commit', 'Quorum Logic'],
-      maxMarks: '30.00 Pts',
-      weightage: '20% Grade',
-      dueDate: 'Oct 15, 2026',
-      relativeDue: 'Past Deadline',
-      isOverdue: false,
-      status: 'submitted',
-      score: '28.00 / 30.00',
-      grade: 'A+ (93.3%)',
-      feedback: 'Superior conceptual accuracy in partition recovery and state machine safety questions. Top 5% cohort score.',
-      actionText: 'Review Answers',
-      actionLink: '/unilms/lms/assessments/cbt_player'
-    },
-    {
-      id: 3,
-      courseCode: 'CS505',
-      shortSubject: 'Cloud Security',
-      subject: 'Advanced Cloud Networks & Security',
-      type: 'interactive_video',
-      typeName: 'Interactive Video',
-      typeIcon: 'fa-solid fa-circle-play',
-      typeBadgeBg: 'rgba(236, 72, 153, 0.1)',
-      typeTextColor: '#DB2777',
-      accentColor: '#DB2777',
-      title: 'Interactive Video Checkpoint: Zero Trust Architecture & mTLS',
-      description: 'Watch the high-definition lecture module on service mesh security and solve embedded pop-up checkpoints on mutual TLS handshakes in real time.',
-      tags: ['Zero Trust', 'Mutual TLS', 'Istio Mesh', 'Certificate Rotation'],
-      maxMarks: '20.00 Pts',
-      weightage: '10% Grade',
-      dueDate: 'Oct 28, 2026',
-      relativeDue: 'Due in 5 Days',
-      isOverdue: false,
-      status: 'pending',
-      score: null,
-      grade: null,
-      actionText: 'Start Video Test',
-      actionLink: '/unilms/lms/assessments/video_player'
-    },
-    {
-      id: 4,
-      courseCode: 'CS501',
-      shortSubject: 'System Design',
-      subject: 'Software Engineering & System Architecture',
-      type: 'essay',
-      typeName: 'Synthesis Essay',
-      typeIcon: 'fa-solid fa-pen-nib',
-      typeBadgeBg: 'rgba(245, 158, 11, 0.12)',
-      typeTextColor: '#D97706',
-      accentColor: '#D97706',
-      title: 'Technical Synthesis Essay: Monolithic vs Event-Driven Microservices',
-      description: 'Submit a structured 1500-word critique analyzing database transactions, eventual consistency, message brokers, and operational overhead.',
-      tags: ['Event-Driven', 'Kafka / RabbitMQ', 'Eventual Consistency', 'Saga Pattern'],
-      maxMarks: '40.00 Pts',
-      weightage: '15% Grade',
-      dueDate: 'Nov 05, 2026',
-      relativeDue: 'Due in 13 Days',
-      isOverdue: false,
-      status: 'pending',
-      score: null,
-      grade: null,
-      actionText: 'Open Essay Editor',
-      actionLink: '/unilms/lms/assessments/essay_editor'
-    },
-    {
-      id: 5,
-      courseCode: 'CS501',
-      shortSubject: 'Algorithms',
-      subject: 'Advanced Algorithms & System Design',
-      type: 'coding_test',
-      typeName: 'Coding Sprint',
-      typeIcon: 'fa-solid fa-code',
-      typeBadgeBg: 'rgba(16, 185, 129, 0.12)',
-      typeTextColor: '#059669',
-      accentColor: '#10B981',
-      title: 'Weekly Coding Assessment: Dynamic Programming & Graph Sprints',
-      description: 'Timed 50-minute competitive coding test solving 3 algorithmic problems on shortest paths, bitmask dynamic programming, and topological sorting.',
-      tags: ['Dynamic Programming', 'Bellman-Ford', 'Graph Sprints', 'LeetCode Style'],
-      maxMarks: '25.00 Pts',
-      weightage: '10% Grade',
-      dueDate: 'Today, 11:59 PM',
-      relativeDue: 'Due Today • High Priority',
-      isOverdue: false,
-      isUrgent: true,
-      status: 'pending',
-      score: null,
-      grade: null,
-      actionText: 'Take Code Challenge',
-      actionLink: '/unilms/lms/assessments/cbt_player'
-    },
-    {
-      id: 6,
-      courseCode: 'CS502P',
-      shortSubject: 'DevOps Lab',
-      subject: 'Cloud & DevOps Engineering Lab Practical',
-      type: 'lab_exam',
-      typeName: 'Hands-on Exam',
-      typeIcon: 'fa-solid fa-flask',
-      typeBadgeBg: 'rgba(124, 58, 237, 0.1)',
-      typeTextColor: '#7C3AED',
-      accentColor: '#7C3AED',
-      title: 'Practical Lab Exam: Infrastructure as Code (Terraform & Helm)',
-      description: 'Live terminal practical exam writing declarative Terraform manifests to provision Kubernetes clusters and deploy Helm packaged applications.',
-      tags: ['Terraform HCL', 'Kubernetes Helm', 'IaC Pipeline', 'Live Terminal'],
-      maxMarks: '40.00 Pts',
-      weightage: '20% Grade',
-      dueDate: 'Nov 12, 2026',
-      relativeDue: 'Upcoming Term Exam',
-      isOverdue: false,
-      status: 'pending',
-      score: null,
-      grade: null,
-      actionText: 'View Exam Syllabus',
-      actionLink: '/unilms/lms/assessments/file_submit'
-    }
-  ];
+  useEffect(() => {
+    let isMounted = true;
+    lmsStudentService.getAssignments()
+      .then((res) => {
+        if (!isMounted) return;
+        if (res && Array.isArray(res.assignments) && res.assignments.length > 0) {
+          const mapped = res.assignments.map((item, idx) => {
+            const isGraded = item.submissionStatus === 'GRADED';
+            const isPending = item.submissionStatus === 'PENDING';
+            const due = item.dueDate ? new Date(item.dueDate) : null;
+            const isOverdue = due ? due < new Date() && isPending : false;
+
+            return {
+              id: item.id || idx + 1,
+              courseCode: item.courseCode || 'CS',
+              shortSubject: item.courseCode || 'Subject',
+              subject: item.courseName || 'Coursework Assignment',
+              type: 'file_upload',
+              typeName: 'Lab Practical',
+              typeIcon: 'fa-solid fa-cloud-arrow-up',
+              typeBadgeBg: 'rgba(99, 102, 241, 0.1)',
+              typeTextColor: '#4F46E5',
+              accentColor: '#4F46E5',
+              title: item.title,
+              description: item.description || 'Coursework evaluation and lab submission module.',
+              tags: [item.courseCode || 'Course', 'Assessment'],
+              maxMarks: `${item.maxScore || 50}.00 Pts`,
+              weightage: `${item.weightage || 20}% Grade`,
+              dueDate: due ? due.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'End of Term',
+              relativeDue: due ? 'Scheduled' : 'Term Work',
+              isOverdue,
+              status: isGraded ? 'submitted' : isPending ? 'pending' : 'submitted',
+              score: item.score !== null ? `${item.score}.00 / ${item.maxScore || 50}.00` : null,
+              grade: isGraded ? 'Graded' : null,
+              feedback: item.remarks || null,
+              actionText: isGraded ? 'Review Submission' : 'Submit Work',
+              actionLink: '/unilms/lms/assessments/file_submit'
+            };
+          });
+          setAssessmentsData(mapped);
+        } else {
+          setAssessmentsData([]);
+        }
+      })
+      .catch((err) => {
+        console.warn('Failed to fetch student assessments:', err);
+        if (isMounted) setAssessmentsData([]);
+      })
+      .finally(() => { if (isMounted) setLoading(false); });
+    return () => { isMounted = false; };
+  }, []);
+
+
 
   const filteredAssessments = assessmentsData.filter((item) => {
     const matchesFilter =
@@ -320,7 +221,7 @@ const LmsAssessmentsIndex = () => {
             {assessmentsData.length} <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>Assessments</span>
           </div>
           <div style={{ fontSize: '10px', color: 'var(--text-muted, #64748B)', fontWeight: '600', marginTop: '2px' }}>
-            <i className="fa-solid fa-list-check me-1"></i> 4 Core Academic Courses
+            <i className="fa-solid fa-list-check me-1"></i> {assessmentsData.length > 0 ? 'Assigned Coursework Tasks' : 'No Active Coursework'}
           </div>
         </div>
 
@@ -328,7 +229,7 @@ const LmsAssessmentsIndex = () => {
           className="card"
           style={{
             padding: '9px 13px',
-            borderLeft: '3.5px solid var(--warning, #F59E0B)',
+            borderLeft: `3.5px solid ${pendingCount > 0 ? 'var(--warning, #F59E0B)' : 'var(--success, #10B981)'}`,
             borderTop: '1px solid var(--border, #E2E8F0)',
             borderRight: '1px solid var(--border, #E2E8F0)',
             borderBottom: '1px solid var(--border, #E2E8F0)',
@@ -340,11 +241,11 @@ const LmsAssessmentsIndex = () => {
           <div style={{ fontSize: '9.5px', color: 'var(--text-muted, #64748B)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2px' }}>
             Action Required
           </div>
-          <div style={{ fontSize: '16.5px', fontWeight: '800', color: 'var(--warning, #F59E0B)', marginTop: '2px', lineHeight: '1.2' }}>
+          <div style={{ fontSize: '16.5px', fontWeight: '800', color: pendingCount > 0 ? 'var(--warning, #F59E0B)' : 'var(--success, #10B981)', marginTop: '2px', lineHeight: '1.2' }}>
             {pendingCount} Pending
           </div>
-          <div style={{ fontSize: '10px', color: '#DC2626', fontWeight: '700', marginTop: '2px' }}>
-            <i className="fa-solid fa-clock me-1"></i> 1 Milestone Due Today!
+          <div style={{ fontSize: '10px', color: pendingCount > 0 ? '#DC2626' : 'var(--success, #10B981)', fontWeight: '700', marginTop: '2px' }}>
+            <i className="fa-solid fa-clock me-1"></i> {pendingCount > 0 ? `${pendingCount} Milestones Pending` : 'All Work Up to Date'}
           </div>
         </div>
 

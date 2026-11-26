@@ -10,20 +10,20 @@ const LmsCareerResume = () => {
 
     const [profile, setProfile] = useState({
         fullName: user?.name || user?.fullName || 'Student',
-        title: 'Full Stack Software Engineer',
+        title: user?.program ? `${user.program} Student` : 'Computer Science Student',
         email: user?.email || 'student@institution.edu',
-        phone: user?.phone || '+91 98765 43210',
+        phone: user?.phone || '',
         linkedIn: user?.rollNumber ? `linkedin.com/in/${user.rollNumber.toLowerCase()}` : 'linkedin.com/in/student',
-        degree: 'B.Tech Computer Science & Engineering',
+        degree: user?.program || 'Bachelor of Technology in Computer Science & Engineering',
         institution: instName,
-        cgpa: '8.8 / 10',
-        duration: '2023 – 2027',
-        experienceRole: 'Software Engineering Intern',
-        company: 'Enterprise Tech Solutions',
-        experienceDesc: 'Built scalable RESTful APIs using Node.js and TypeScript. Implemented CI/CD workflows and Docker containerization.',
-        projectTitle: 'UniLMS — Next-Gen Campus ERP',
-        projectDesc: 'Designed and deployed multi-tenant education management platform supporting role-based access control and high-concurrency exams.',
-        skills: ['JavaScript', 'TypeScript', 'React.js', 'Node.js', 'PostgreSQL', 'Docker', 'Git', 'AWS']
+        cgpa: '',
+        duration: '2026 – 2030',
+        experienceRole: '',
+        company: '',
+        experienceDesc: '',
+        projectTitle: '',
+        projectDesc: '',
+        skills: ['C++', 'Python', 'Data Structures', 'Algorithms', 'Git', 'Linux']
     });
 
     const [newSkill, setNewSkill] = useState('');

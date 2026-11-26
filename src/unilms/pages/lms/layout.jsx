@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useTenant } from '../../context/TenantContext';
 import { getCurrentAcademicYear } from '../../utils/date';
+import studentsService from '../../services/students.service';
 import './lms.css';
 
 const LmsLayout = () => {
@@ -16,20 +17,42 @@ const LmsLayout = () => {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const userDropdownRef = useRef(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [studentInfo] = useState(() => {
+  const [studentInfo, setStudentInfo] = useState(() => {
     try {
       const stored = localStorage.getItem('unilms_user');
       if (stored) {
         const u = JSON.parse(stored);
+        const sem = u.semester || u.studentProfile?.currentSemester || u.currentSemester || '1';
         return {
           name: u.name || `${u.firstName || ''} ${u.lastName || ''}`.trim() || 'Enrolled Student',
           rollNumber: u.rollNumber || u.roll_number || 'STU-ONLINE',
-          program: u.program || 'Degree Program'
+          program: u.program || u.studentProfile?.program?.name || 'Degree Program',
+          semester: String(sem).replace(/semester/i, '').trim() || '1'
         };
       }
     } catch (e) {}
-    return { name: 'Enrolled Student', rollNumber: 'STU-ONLINE', program: 'Degree Program' };
+    return { name: 'Enrolled Student', rollNumber: 'STU-ONLINE', program: 'Degree Program', semester: '1' };
   });
+
+  useEffect(() => {
+    let isMounted = true;
+    studentsService.getSelfServiceSummary()
+      .then((res) => {
+        if (!isMounted || !res) return;
+        const prof = res.studentProfile || res.data?.studentProfile || res;
+        if (prof) {
+          setStudentInfo((prev) => ({
+            ...prev,
+            name: prof.name || prev.name,
+            rollNumber: prof.rollNumber || prev.rollNumber,
+            program: prof.program && prof.program !== 'N/A' ? prof.program : prev.program,
+            semester: prof.currentSemester ? String(prof.currentSemester) : prev.semester
+          }));
+        }
+      })
+      .catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
   const [currentTheme, setCurrentTheme] = useState(() => {
     return localStorage.getItem('unilms_student_theme') || 'purple';
   });
@@ -327,8 +350,8 @@ const LmsLayout = () => {
 
                 <div className="term-badge-header">
                   <i className="fa-solid fa-graduation-cap"></i>
-                  <span className="term-text-full">Semester 4 ({getCurrentAcademicYear()})</span>
-                  <span className="term-text-short">Sem 4</span>
+                  <span className="term-text-full">Semester {studentInfo.semester} ({getCurrentAcademicYear()})</span>
+                  <span className="term-text-short">Sem {studentInfo.semester}</span>
                 </div>
 
                 {/* Theme Palette & Dark Mode Controls */}

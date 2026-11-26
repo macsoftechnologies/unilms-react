@@ -208,13 +208,15 @@ const LmsFeesIndex = () => {
           <div style={{ fontSize: '9.5px', color: 'var(--text-muted, #64748B)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2px' }}>
             Fee Clearance
           </div>
-          <div style={{ fontSize: '16.5px', fontWeight: '800', color: 'var(--warning, #F59E0B)', marginTop: '2px', lineHeight: '1.2' }}>
+          <div style={{ fontSize: '16.5px', fontWeight: '800', color: summary.totalBilled > 0 ? 'var(--warning, #F59E0B)' : 'var(--text-muted, #64748B)', marginTop: '2px', lineHeight: '1.2' }}>
             {summary.totalBilled > 0
               ? `${((summary.totalPaid / summary.totalBilled) * 100).toFixed(1)}% Settled`
-              : '100% Settled'}
+              : 'No Invoices'}
           </div>
           <div style={{ fontSize: '10px', color: 'var(--text-muted, #64748B)', fontWeight: '600', marginTop: '2px' }}>
-            {Number(summary.totalBalance || 0) === 0 ? 'No Dues Certificate Active' : 'Fee Clearance Pending'}
+            {summary.totalBilled === 0
+              ? 'No fee invoices assigned'
+              : Number(summary.totalBalance || 0) === 0 ? 'No Dues Certificate Active' : 'Fee Clearance Pending'}
           </div>
         </div>
       </div>
@@ -226,14 +228,14 @@ const LmsFeesIndex = () => {
             <i className="fa-solid fa-file-invoice me-2" style={{ color: 'var(--primary, #4F46E5)' }}></i> Academic Fee Invoices &amp; Ledger
           </h2>
           <span className="badge" style={{
-            background: Number(summary.totalBalance || 0) === 0 ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
-            color: Number(summary.totalBalance || 0) === 0 ? '#10B981' : '#EF4444',
+            background: summary.totalBilled === 0 ? 'rgba(100, 116, 139, 0.12)' : Number(summary.totalBalance || 0) === 0 ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
+            color: summary.totalBilled === 0 ? '#64748B' : Number(summary.totalBalance || 0) === 0 ? '#10B981' : '#EF4444',
             fontWeight: '700',
             fontSize: '11.5px',
             padding: '4px 10px',
             borderRadius: '12px'
           }}>
-            {Number(summary.totalBalance || 0) === 0 ? 'Fully Settled' : 'Payment Action Required'}
+            {summary.totalBilled === 0 ? 'No Invoices' : Number(summary.totalBalance || 0) === 0 ? 'Fully Settled' : 'Payment Due'}
           </span>
         </div>
 

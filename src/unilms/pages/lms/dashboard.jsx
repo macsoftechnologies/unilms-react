@@ -27,13 +27,17 @@ const LmsDashboard = () => {
   const feeSummary = dashboardData?.fees?.summary || {};
   const timetable = dashboardData?.timetable || {};
   const todayClasses = Array.isArray(timetable.today) ? timetable.today : [];
+  const totalBilled = feeSummary.totalBilled !== undefined ? feeSummary.totalBilled : (feeSummary.totalFees || 0);
+  const balanceDue = feeSummary.totalBalance !== undefined ? feeSummary.totalBalance : 0;
+  const activeCieCount = dashboardData?.assessments?.activeCount || 0;
+  const videoCourses = Array.isArray(dashboardData?.courses) ? dashboardData.courses : [];
+  const assessmentsList = Array.isArray(dashboardData?.assessments?.list) ? dashboardData.assessments.list : [];
 
   const studentName = student.name || localStorage.getItem('org_user_name') || 'Student';
   const programName = student.program || 'Degree Program';
   const cohortName = student.cohort || 'General Section';
   const rollNo = student.rollNumber || '';
   const attendanceRate = attendance.attendanceRate !== undefined ? attendance.attendanceRate : (attendance.attendancePercentage || 0);
-  const balanceDue = feeSummary.totalBalance !== undefined ? feeSummary.totalBalance : 0;
   const todayFormatted = new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
 
   return (
@@ -197,10 +201,10 @@ const LmsDashboard = () => {
             <div style={{ fontSize: '9.5px', color: 'var(--text-muted, #64748B)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2px' }}>
               Continuous Evaluation
             </div>
-            <div style={{ fontSize: '16.5px', fontWeight: '800', color: 'var(--text-main, #0F172A)', marginTop: '2px', lineHeight: '1.2' }}>
-              CIE-1 Scheduled
+            <div style={{ fontSize: '16.5px', fontWeight: '800', color: activeCieCount > 0 ? 'var(--text-main, #0F172A)' : 'var(--text-muted, #64748B)', marginTop: '2px', lineHeight: '1.2' }}>
+              {activeCieCount > 0 ? `${activeCieCount} Active CIE` : 'No Active CIE'}
             </div>
-            <div style={{ fontSize: '10px', color: 'var(--warning, #F59E0B)', fontWeight: '700', marginTop: '2px' }}>
+            <div style={{ fontSize: '10px', color: activeCieCount > 0 ? 'var(--warning, #F59E0B)' : 'var(--text-muted, #64748B)', fontWeight: '700', marginTop: '2px' }}>
               <i className="fa-solid fa-clock me-1"></i> Continuous Internal Evaluation
             </div>
           </div>
@@ -244,7 +248,7 @@ const LmsDashboard = () => {
             className="card"
             style={{
               padding: '9px 13px',
-              borderLeft: `3.5px solid ${balanceDue > 0 ? 'var(--warning, #F59E0B)' : 'var(--success, #10B981)'}`,
+              borderLeft: `3.5px solid ${balanceDue > 0 ? 'var(--warning, #F59E0B)' : totalBilled === 0 ? 'var(--border, #CBD5E1)' : 'var(--success, #10B981)'}`,
               borderTop: '1px solid var(--border, #E2E8F0)',
               borderRight: '1px solid var(--border, #E2E8F0)',
               borderBottom: '1px solid var(--border, #E2E8F0)',
@@ -257,11 +261,11 @@ const LmsDashboard = () => {
             <div style={{ fontSize: '9.5px', color: 'var(--text-muted, #64748B)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2px' }}>
               Term Fee Balance
             </div>
-            <div style={{ fontSize: '16.5px', fontWeight: '800', color: balanceDue > 0 ? 'var(--warning, #F59E0B)' : 'var(--success, #10B981)', marginTop: '2px', lineHeight: '1.2' }}>
-              ₹{Number(balanceDue).toLocaleString('en-IN')}
+            <div style={{ fontSize: '16.5px', fontWeight: '800', color: balanceDue > 0 ? 'var(--warning, #F59E0B)' : totalBilled === 0 ? 'var(--text-muted, #64748B)' : 'var(--success, #10B981)', marginTop: '2px', lineHeight: '1.2' }}>
+              {totalBilled === 0 ? '₹0' : `₹${Number(balanceDue).toLocaleString('en-IN')}`}
             </div>
-            <div style={{ fontSize: '10px', color: balanceDue > 0 ? '#DC2626' : 'var(--success, #10B981)', fontWeight: '600', marginTop: '2px' }}>
-              {balanceDue > 0 ? 'Pending Dues' : '100% Cleared / No Dues'}
+            <div style={{ fontSize: '10px', color: balanceDue > 0 ? '#DC2626' : totalBilled === 0 ? 'var(--text-muted, #64748B)' : 'var(--success, #10B981)', fontWeight: '600', marginTop: '2px' }}>
+              {balanceDue > 0 ? 'Pending Dues' : totalBilled === 0 ? 'No Invoices Issued' : '100% Cleared / No Dues'}
             </div>
           </div>
         </Link>
@@ -282,38 +286,46 @@ const LmsDashboard = () => {
               </Link>
             </div>
 
-            <div className="quick-course-card">
-              <div className="quick-course-thumb">
-                <i className="fa-solid fa-play"></i>
-              </div>
-              <div style={{ flex: "1", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
-                    <span className="badge" style={{ background: "rgba(99, 102, 241, 0.1)", color: "var(--primary)", fontSize: "11px", fontWeight: "700", padding: "2px 8px", borderRadius: "12px" }}>
-                      Blended Learning
-                    </span>
-                    <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>
-                      <i className="fa-solid fa-layer-group me-1"></i> 12 Lessons
-                    </span>
-                  </div>
-                  <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: "16px", fontWeight: "700", marginBottom: "4px" }}>
-                    Cloud Architecture & Microservices 2026
-                  </h3>
-                  <p style={{ fontSize: "12.5px", color: "var(--text-muted)", margin: "0", lineHeight: "1.4" }}>
-                    Learn containerization, serverless microservices, and modern Kubernetes deployments...
-                  </p>
+            {videoCourses.length > 0 ? (
+              <div className="quick-course-card">
+                <div className="quick-course-thumb">
+                  <i className="fa-solid fa-play"></i>
                 </div>
+                <div style={{ flex: "1", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                      <span className="badge" style={{ background: "rgba(99, 102, 241, 0.1)", color: "var(--primary)", fontSize: "11px", fontWeight: "700", padding: "2px 8px", borderRadius: "12px" }}>
+                        Blended Learning
+                      </span>
+                      <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>
+                        <i className="fa-solid fa-layer-group me-1"></i> {videoCourses[0].lessons || 12} Lessons
+                      </span>
+                    </div>
+                    <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: "16px", fontWeight: "700", marginBottom: "4px" }}>
+                      {videoCourses[0].title}
+                    </h3>
+                    <p style={{ fontSize: "12.5px", color: "var(--text-muted)", margin: "0", lineHeight: "1.4" }}>
+                      {videoCourses[0].description}
+                    </p>
+                  </div>
 
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "10px", borderTop: "1px solid var(--border)", marginTop: "8px" }}>
-                  <div style={{ fontSize: "12px", color: "#10b981", fontWeight: "700" }}>
-                    <i className="fa-solid fa-circle-check me-1"></i> Active Course
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "10px", borderTop: "1px solid var(--border)", marginTop: "8px" }}>
+                    <div style={{ fontSize: "12px", color: "#10b981", fontWeight: "700" }}>
+                      <i className="fa-solid fa-circle-check me-1"></i> Active Course
+                    </div>
+                    <Link to="/unilms/lms/learn" className="btn btn-primary" style={{ padding: "6px 16px", fontSize: "12.5px", borderRadius: "20px" }}>
+                      Resume Video <i className="fa-solid fa-arrow-right ms-1"></i>
+                    </Link>
                   </div>
-                  <Link to="/unilms/lms/learn" className="btn btn-primary" style={{ padding: "6px 16px", fontSize: "12.5px", borderRadius: "20px" }}>
-                    Resume Video <i className="fa-solid fa-arrow-right ms-1"></i>
-                  </Link>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div style={{ padding: '28px 16px', textAlign: 'center', color: 'var(--text-muted)', background: 'var(--surface)', border: '1px dashed var(--border)', borderRadius: '12px' }}>
+                <i className="fa-solid fa-video-slash" style={{ fontSize: '26px', marginBottom: '8px', display: 'block', opacity: 0.5 }}></i>
+                <div style={{ fontSize: '13.5px', fontWeight: '700', color: 'var(--text-main, #0F172A)' }}>No published blended courses assigned yet</div>
+                <div style={{ fontSize: '12px', marginTop: '3px' }}>Course video masterclasses published by your faculty will appear here</div>
+              </div>
+            )}
           </div>
 
           <div className="card">
@@ -327,25 +339,35 @@ const LmsDashboard = () => {
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-              <div style={{ padding: "16px", border: "1px solid var(--border)", borderRadius: "14px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--surface)" }}>
-                <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-                    <span className="badge" style={{ background: "rgba(245, 158, 11, 0.12)", color: "#d97706", fontWeight: "700", fontSize: "11px", padding: "2px 8px", borderRadius: "10px" }}>
-                      <i className="fa-solid fa-clock me-1"></i> Pending Submission
-                    </span>
-                    <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>CS402 &bull; Cloud Architecture & DevOps</span>
+              {assessmentsList.length > 0 ? (
+                assessmentsList.map((asm, idx) => (
+                  <div key={idx} style={{ padding: "16px", border: "1px solid var(--border)", borderRadius: "14px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--surface)" }}>
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+                        <span className="badge" style={{ background: "rgba(245, 158, 11, 0.12)", color: "#d97706", fontWeight: "700", fontSize: "11px", padding: "2px 8px", borderRadius: "10px" }}>
+                          <i className="fa-solid fa-clock me-1"></i> {asm.status || 'Pending Submission'}
+                        </span>
+                        <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>{asm.subjectCode || 'Course'} &bull; {asm.subjectName || ''}</span>
+                      </div>
+                      <div style={{ fontWeight: "700", fontSize: "14px", marginBottom: "2px" }}>
+                        {asm.title}
+                      </div>
+                      <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>
+                        Due: {asm.dueDate || 'End of Term'} &bull; Max Marks: {asm.maxMarks || 25.00}
+                      </div>
+                    </div>
+                    <Link to="/unilms/lms/assessments" className="btn btn-outline" style={{ fontSize: "12px", padding: "6px 14px", borderRadius: "10px" }}>
+                      Submit Work
+                    </Link>
                   </div>
-                  <div style={{ fontWeight: "700", fontSize: "14px", marginBottom: "2px" }}>
-                    Lab Milestone 1: Microservices Docker Compose Setup
-                  </div>
-                  <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>
-                    Due: 18 Oct 2026, 11:59 PM &bull; Max Marks: 25.00
-                  </div>
+                ))
+              ) : (
+                <div style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--border)', borderRadius: '12px' }}>
+                  <i className="fa-regular fa-folder-open" style={{ fontSize: '26px', marginBottom: '8px', display: 'block', opacity: 0.5 }}></i>
+                  <div style={{ fontSize: '13.5px', fontWeight: '700', color: 'var(--text-main, #0F172A)' }}>No pending lab milestones or assessments</div>
+                  <div style={{ fontSize: '12px', marginTop: '3px' }}>Upcoming internal continuous evaluations will appear here</div>
                 </div>
-                <Link to="/unilms/lms/assessments" className="btn btn-outline" style={{ fontSize: "12px", padding: "6px 14px", borderRadius: "10px" }}>
-                  Submit Work
-                </Link>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -357,51 +379,32 @@ const LmsDashboard = () => {
                 <i className="fa-solid fa-calendar-day me-2" style={{ color: "var(--primary)" }}></i> Today's Schedule
               </h2>
               <span className="badge" style={{ background: "rgba(99, 102, 241, 0.1)", color: "var(--primary)", fontSize: "11px", fontWeight: "700", padding: "3px 8px", borderRadius: "10px" }}>
-                Today • Monday
+                Today • {new Date().toLocaleDateString('en-US', { weekday: 'long' })}
               </span>
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              <div className="timeline-item">
-                <div style={{ fontSize: "11.5px", color: "var(--text-muted)", fontWeight: "700", marginBottom: "2px" }}>
-                  09:00 AM - 09:50 AM • Period 1
-                </div>
-                <div style={{ fontWeight: "700", fontSize: "13.5px", marginBottom: "2px" }}>
-                  Advanced Algorithms & System Design
-                </div>
-                <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>
-                  <i className="fa-solid fa-user-tie me-1"></i> Prof. Ananya Iyer &bull; <i className="fa-solid fa-door-open me-1"></i> Lecture Hall 101
-                </div>
-              </div>
-
-              <div className="timeline-item">
-                <div style={{ fontSize: "11.5px", color: "var(--text-muted)", fontWeight: "700", marginBottom: "2px" }}>
-                  09:50 AM - 10:40 AM • Period 2
-                </div>
-                <div style={{ fontWeight: "700", fontSize: "13.5px", marginBottom: "2px" }}>
-                  Cloud Architecture & DevOps Microservices
-                </div>
-                <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>
-                  <i className="fa-solid fa-user-tie me-1"></i> Dr. Arvind Ramesh &bull; <i className="fa-solid fa-door-open me-1"></i> Cloud Lab 402
-                </div>
-              </div>
-
-              <div className="timeline-item active" style={{ background: "rgba(239, 68, 68, 0.05)", padding: "10px", borderRadius: "10px", borderLeft: "3px solid #ef4444" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "6px", marginBottom: "2px" }}>
-                  <div style={{ fontSize: "11.5px", color: "#dc2626", fontWeight: "700" }}>
-                    10:55 AM - 11:45 AM • Period 3 (Test)
+              {todayClasses.length > 0 ? (
+                todayClasses.map((item, idx) => (
+                  <div key={idx} className="timeline-item">
+                    <div style={{ fontSize: "11.5px", color: "var(--text-muted)", fontWeight: "700", marginBottom: "2px" }}>
+                      {item.startTime} - {item.endTime} {item.period ? `• Period ${item.period}` : ''}
+                    </div>
+                    <div style={{ fontWeight: "700", fontSize: "13.5px", marginBottom: "2px" }}>
+                      {item.subjectName || item.subject || 'Class Session'}
+                    </div>
+                    <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>
+                      <i className="fa-solid fa-user-tie me-1"></i> {item.facultyName || item.faculty || 'Faculty'} &bull; <i className="fa-solid fa-door-open me-1"></i> {item.room || 'Classroom'}
+                    </div>
                   </div>
-                  <span className="badge" style={{ background: "#ef4444", color: "white", fontSize: "10px", fontWeight: "800", padding: "2px 6px", borderRadius: "6px" }}>
-                    TEST LIVE NOW
-                  </span>
+                ))
+              ) : (
+                <div style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--border)', borderRadius: '12px' }}>
+                  <i className="fa-regular fa-calendar-xmark" style={{ fontSize: '26px', marginBottom: '8px', display: 'block', opacity: 0.5 }}></i>
+                  <div style={{ fontSize: '13.5px', fontWeight: '700', color: 'var(--text-main, #0F172A)' }}>No classes scheduled for today</div>
+                  <div style={{ fontSize: '12px', marginTop: '3px' }}>Check your full section weekly timetable grid</div>
                 </div>
-                <div style={{ fontWeight: "700", fontSize: "13.5px", marginBottom: "2px", color: "#991b1b" }}>
-                  WEEKLY TEST 1: Advanced Algorithms (CBT)
-                </div>
-                <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>
-                  <i className="fa-solid fa-user-tie me-1"></i> Prof. Ananya Iyer &bull; <i className="fa-solid fa-door-open me-1"></i> CBT Hall 2 (25 Marks)
-                </div>
-              </div>
+              )}
             </div>
 
             <div style={{ marginTop: "14px", paddingTop: "14px", borderTop: "1px solid var(--border)", textAlign: "center" }}>

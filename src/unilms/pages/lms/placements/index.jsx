@@ -2,102 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../../components';
 import placementsService from '../../../services/placements.service';
 
-const initialApplicationsList = [
-  {
-    id: 1,
-    driveId: 1,
-    company: 'Amazon Web Services',
-    role: 'Cloud Systems Software Engineer (New Grad 2027)',
-    currentRound: 'Technical Round 1',
-    remarks: 'Application verified by TPO. Online test scheduled for 14 Nov.',
-    appliedOn: '12 Oct 2026',
-    status: 'In Review'
-  },
-  {
-    id: 2,
-    driveId: 2,
-    company: 'Oracle Cloud Infrastructure (OCI)',
-    role: 'Member of Technical Staff - Systems & Networking',
-    currentRound: 'Coding Assessment',
-    remarks: 'Shortlisted for online hacker-rank technical assessment.',
-    appliedOn: '08 Oct 2026',
-    status: 'Shortlisted'
-  },
-  {
-    id: 3,
-    driveId: 3,
-    company: 'Goldman Sachs',
-    role: 'Full Stack Engineer - Fintech Platform',
-    currentRound: 'Application Screening',
-    remarks: 'Resume submitted & verified with TPO. Screening in progress.',
-    appliedOn: '05 Oct 2026',
-    status: 'In Review'
-  },
-  {
-    id: 4,
-    driveId: 4,
-    company: 'Microsoft India R&D',
-    role: 'Software Development Engineer I',
-    currentRound: 'Pre-Placement Talk',
-    remarks: 'Attended session. Online OA link will be sent to registered inbox.',
-    appliedOn: '28 Sep 2026',
-    status: 'Shortlisted'
-  },
-  {
-    id: 5,
-    driveId: 5,
-    company: 'Cisco Systems',
-    role: 'Network Automation Software Engineer',
-    currentRound: 'Technical Interview 2',
-    remarks: 'Cleared round 1 system design with panel. Round 2 pending.',
-    appliedOn: '20 Sep 2026',
-    status: 'In Review'
-  }
-];
-
 const LmsPlacementsIndex = () => {
+  const user = (() => { try { return JSON.parse(localStorage.getItem('unilms_user') || '{}'); } catch { return {}; } })();
+  const studentName = user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Student';
+  const rollNumber = user.rollNumber || user.roll_number || '';
+  const programName = user.program || 'Degree Program';
+  const cohortName = user.cohort || 'Class of 2030';
+
   const [loading, setLoading] = useState(false);
   const [appliedDrives, setAppliedDrives] = useState([]);
   const [selectedDrive, setSelectedDrive] = useState(null);
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [resumeFileName, setResumeFileName] = useState('');
   const [feedbackMsg, setFeedbackMsg] = useState(null);
-  const [myApplications, setMyApplications] = useState(initialApplicationsList);
-  const [drives, setDrives] = useState([
-    {
-      id: 1,
-      title: 'Cloud Systems Software Engineer (New Grad 2027)',
-      company: 'Amazon Web Services',
-      ctc: '₹28.5 LPA',
-      description: 'Campus hiring drive for core backend infrastructure, low-latency microservices, and distributed cloud services.',
-      driveDate: '12 Nov 2026',
-      location: 'Bengaluru / Hyderabad',
-      deadline: '28 Oct 2026',
-      minCgpa: '7.50'
-    },
-    {
-      id: 2,
-      title: 'Member of Technical Staff - Systems & Networking',
-      company: 'Oracle Cloud Infrastructure (OCI)',
-      ctc: '₹24.0 LPA',
-      description: 'Design and deploy high-performance software-defined network fabrics, virtualization controllers, and telemetry systems.',
-      driveDate: '18 Nov 2026',
-      location: 'Bengaluru, India',
-      deadline: '04 Nov 2026',
-      minCgpa: '7.00'
-    },
-    {
-      id: 3,
-      title: 'Full Stack Engineer - Fintech Platform',
-      company: 'Goldman Sachs',
-      ctc: '₹26.0 LPA',
-      description: 'Build robust transaction processing systems, real-time analytics engines, and resilient cloud financial platforms.',
-      driveDate: '24 Nov 2026',
-      location: 'Bengaluru / Hybrid',
-      deadline: '10 Nov 2026',
-      minCgpa: '8.00'
-    }
-  ]);
+  const [myApplications, setMyApplications] = useState([]);
+  const [drives, setDrives] = useState([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -124,26 +43,30 @@ const LmsPlacementsIndex = () => {
               minCgpa: d.minCgpa || '7.00'
             }));
             setDrives(mappedDrives);
+          } else {
+            setDrives([]);
           }
 
-          if (appsRes.status === 'fulfilled' && Array.isArray(appsRes.value) && appsRes.value.length > 0) {
+          if (appsRes.status === 'fulfilled' && Array.isArray(appsRes.value)) {
             const mappedApps = appsRes.value.value || appsRes.value;
-            const liveApps = mappedApps.map((a, idx) => ({
+            const liveApps = Array.isArray(mappedApps) ? mappedApps.map((a, idx) => ({
               id: a.id || idx + 1,
               driveId: a.driveId || a.drive?.id,
               company: a.drive?.company?.name || a.companyName || 'Corporate Partner',
               role: a.drive?.title || a.role || 'Software Engineer',
-              currentRound: a.stage || 'Application Screening',
-              remarks: a.remarks || 'Application registered with Campus TPO.',
+              currentRound: a.stage || 'In Review',
+              remarks: a.notes || 'Application submitted for campus drive screening.',
               appliedOn: a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-GB') : 'Recent',
-              status: a.stage === 'REJECTED' ? 'Rejected' : (a.stage === 'OFFERED' ? 'Offer Extended' : 'In Review')
-            }));
+              status: a.status || 'In Review'
+            })) : [];
             setMyApplications(liveApps);
             setAppliedDrives(liveApps.map((a) => a.driveId).filter(Boolean));
+          } else {
+            setMyApplications([]);
           }
         }
       } catch (err) {
-        console.warn('Failed to load placement drives & applications:', err);
+        console.warn('Failed to load placement data:', err);
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -274,7 +197,7 @@ const LmsPlacementsIndex = () => {
               Student Candidate
             </div>
             <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-main, #0F172A)', marginTop: '2px' }}>
-              Aarav Patel <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--primary, #4F46E5)' }}>(26CSE001)</span>
+              {studentName} {rollNumber && <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--primary, #4F46E5)' }}>({rollNumber})</span>}
             </div>
           </div>
           <div>
@@ -290,7 +213,7 @@ const LmsPlacementsIndex = () => {
               Program & Batch
             </div>
             <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--text-main, #0F172A)', marginTop: '2px' }}>
-              B.Tech CSE • Class of 2027
+              {programName} • {cohortName}
             </div>
           </div>
         </div>

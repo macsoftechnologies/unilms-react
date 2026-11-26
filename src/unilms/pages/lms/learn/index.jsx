@@ -1,62 +1,60 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
-const publishedCourses = [
-  {
-    id: 1,
-    uuid: 'cloud-devops-402',
-    title: 'Enterprise Cloud Architecture & DevOps Microservices',
-    category: 'Cloud & DevOps Engineering',
-    duration: 180,
-    chapter_count: 2,
-    lesson_count: 12,
-    description: 'Comprehensive masterclass covering microservices, multi-stage Docker builds, Postman API testing, and peer-to-peer cloud deployment architectures.',
-    badge: 'Accredited'
-  },
-  {
-    id: 2,
-    uuid: 'algo-system-design-401',
-    title: 'Advanced Algorithms & High-Scale System Design',
-    category: 'Algorithms & Architecture',
-    duration: 210,
-    chapter_count: 5,
-    lesson_count: 14,
-    description: 'Master dynamic programming on trees, amortized complexity analysis, Raft consensus algorithm, and lock-free concurrency models.',
-    badge: 'Accredited'
-  },
-  {
-    id: 3,
-    uuid: 'db-distributed-storage-403',
-    title: 'Database Internals & Distributed Storage Engines',
-    category: 'Databases & Storage',
-    duration: 160,
-    chapter_count: 3,
-    lesson_count: 10,
-    description: 'B+ Tree indexing structures, write-ahead logging (WAL), multi-version concurrency control (MVCC), and distributed sharding mechanics.',
-    badge: 'Accredited'
-  }
-];
-
-const subjectNotes = [
-  {
-    subject: 'Cloud Architecture & DevOps Microservices (CS402)',
-    items: [
-      { id: 1, title: 'Lecture 08: Kubernetes Pod Scheduling & Ingress Routing.pdf', type: 'pdf', date: 'Oct 08, 2026' },
-      { id: 2, title: 'Lab 04: Docker Compose Multi-Container Orchestration', type: 'link', date: 'Oct 05, 2026' },
-      { id: 3, title: 'Service Mesh & Microservices Architecture Deep Dive', type: 'youtube', date: 'Sep 29, 2026' }
-    ]
-  },
-  {
-    subject: 'Advanced Algorithms & System Design (CS401)',
-    items: [
-      { id: 4, title: 'Module 3: Distributed Consensus & Paxos/Raft Formulations.pdf', type: 'pdf', date: 'Oct 02, 2026' },
-      { id: 5, title: 'Amortized Analysis & Fibonacci Heaps Handout.pdf', type: 'pdf', date: 'Sep 27, 2026' }
-    ]
-  }
-];
+import academicsService from '../../../services/academics.service';
 
 const LmsLearnIndex = () => {
-  const topCourse = publishedCourses[0];
+  const [courses, setCourses] = useState([]);
+  const [notes, setNotes] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const user = (() => { try { return JSON.parse(localStorage.getItem('unilms_user') || '{}'); } catch { return {}; } })();
+  const studentName = user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Student';
+
+  useEffect(() => {
+    let isMounted = true;
+    academicsService.getSubjects()
+      .then((subjects) => {
+        if (!isMounted) return;
+        const subArray = Array.isArray(subjects) ? subjects : [];
+        if (subArray.length > 0) {
+          const mappedCourses = subArray.map((s, idx) => ({
+            id: s.id || idx + 1,
+            uuid: `subj-${s.id || idx + 1}`,
+            title: `${s.code ? `${s.code}: ` : ''}${s.name}`,
+            category: s.department?.name || 'Computer Science & Engineering',
+            duration: 180 + (idx * 30),
+            chapter_count: s.credits || 4,
+            lesson_count: (s.credits || 4) * 3,
+            description: s.description || `Comprehensive institutional curriculum for ${s.name} covering theoretical foundations and laboratory exercises.`,
+            badge: 'Accredited'
+          }));
+          setCourses(mappedCourses);
+
+          const mappedNotes = subArray.map((s) => ({
+            subject: `${s.code ? `${s.code}: ` : ''}${s.name}`,
+            items: [
+              { id: `mat-${s.id}-1`, title: `${s.name} - Complete Lecture Notes & Syllabus Overview.pdf`, type: 'pdf', date: 'Autumn Term 2026' },
+              { id: `mat-${s.id}-2`, title: `${s.name} - Problem Set & Laboratory Practice Archive.zip`, type: 'link', date: 'Autumn Term 2026' }
+            ]
+          }));
+          setNotes(mappedNotes);
+        } else {
+          setCourses([]);
+          setNotes([]);
+        }
+      })
+      .catch((e) => {
+        console.warn('Subject fetch note in learn:', e.message);
+        if (isMounted) {
+          setCourses([]);
+          setNotes([]);
+        }
+      })
+      .finally(() => { if (isMounted) setLoading(false); });
+    return () => { isMounted = false; };
+  }, []);
+
+  const topCourse = courses.length > 0 ? courses[0] : null;
 
   return (
     <>
@@ -549,26 +547,26 @@ const LmsLearnIndex = () => {
             <span>Blended Video Masterclasses</span>
           </div>
           <h1 className="hero-title">
-            Welcome back, <span className="highlight">Aditya!</span> 🚀
+            Welcome back, <span className="highlight">{studentName}!</span> 🚀
           </h1>
           <p className="hero-desc">
             Explore your high-definition video masterclasses, interactive chapter streams, lecture handouts, and industry placement tracks in one unified suite.
           </p>
           <div className="hero-stats-row">
             <div className="hero-stat-item">
-              <span className="hero-stat-val val-masterclasses">{publishedCourses.length}</span>
+              <span className="hero-stat-val val-masterclasses">{courses.length}</span>
               <span className="hero-stat-lbl">Masterclasses</span>
             </div>
             <div className="hero-stat-item">
-              <span className="hero-stat-val val-notes">5</span>
+              <span className="hero-stat-val val-notes">{notes.length}</span>
               <span className="hero-stat-lbl">Subject Notes</span>
             </div>
             <div className="hero-stat-item">
-              <span className="hero-stat-val val-tests">6</span>
+              <span className="hero-stat-val val-tests">0</span>
               <span className="hero-stat-lbl">CBT Tests</span>
             </div>
             <div className="hero-stat-item">
-              <span className="hero-stat-val val-assignments">4</span>
+              <span className="hero-stat-val val-assignments">0</span>
               <span className="hero-stat-lbl">Assignments</span>
             </div>
           </div>
@@ -578,13 +576,13 @@ const LmsLearnIndex = () => {
         <div className="hero-right-action">
           <div className="c-watch-tag">
             <i className="fa-solid fa-play"></i>
-            <span>Featured Masterclass</span>
+            <span>{topCourse ? 'Featured Masterclass' : 'Video Library'}</span>
           </div>
-          <div className="c-watch-title">{topCourse.title}</div>
+          <div className="c-watch-title">{topCourse ? topCourse.title : 'Curriculum Course Material'}</div>
           <div className="c-watch-meta">
-            <span><i className="fa-solid fa-book-open" style={{ color: "#6366f1" }}></i> {topCourse.chapter_count} Chapters</span>
+            <span><i className="fa-solid fa-book-open" style={{ color: "#6366f1" }}></i> {topCourse ? topCourse.chapter_count : courses.length} Chapters</span>
             <span style={{ color: "#cbd5e1" }}>•</span>
-            <span><i className="fa-solid fa-video" style={{ color: "#ec4899" }}></i> {topCourse.lesson_count} Lessons</span>
+            <span><i className="fa-solid fa-video" style={{ color: "#ec4899" }}></i> {topCourse ? topCourse.lesson_count : 0} Lessons</span>
           </div>
           <Link to="/unilms/lms/materials/watch_course" className="btn-resume-play">
             <i className="fa-solid fa-circle-play"></i>
@@ -607,45 +605,53 @@ const LmsLearnIndex = () => {
       </div>
 
       <div className="courses-grid">
-        {publishedCourses.map((course, idx) => (
-          <div key={course.id} className="course-card">
-            <div className="course-cover" style={{ background: idx === 0 ? 'linear-gradient(135deg, #3b82f6, #6366f1)' : idx === 1 ? 'linear-gradient(135deg, #8b5cf6, #ec4899)' : 'linear-gradient(135deg, #0ea5e9, #10b981)' }}>
-              <i className="fa-solid fa-film"></i>
-              <span className="course-cat-tag">{course.category}</span>
-              <span className="course-duration-tag">
-                <i className="fa-regular fa-clock"></i>
-                <span>{course.duration} mins</span>
-              </span>
-            </div>
-
-            <div className="course-body">
-              <h3 className="course-title">{course.title}</h3>
-              <p className="course-desc">{course.description}</p>
-
-              <div className="course-meta-row">
-                <div className="course-meta-item">
-                  <i className="fa-solid fa-folder-tree" style={{ color: "#818cf8" }}></i>
-                  <span>{course.chapter_count} Chapters</span>
-                </div>
-                <div className="course-meta-item">
-                  <i className="fa-solid fa-circle-play" style={{ color: "#f472b6" }}></i>
-                  <span>{course.lesson_count} Lessons</span>
-                </div>
-                <div className="course-meta-item">
-                  <i className="fa-solid fa-certificate" style={{ color: "#34d399" }}></i>
-                  <span>{course.badge}</span>
-                </div>
+        {courses.length > 0 ? (
+          courses.map((course, idx) => (
+            <div key={course.id} className="course-card">
+              <div className="course-cover" style={{ background: idx === 0 ? 'linear-gradient(135deg, #3b82f6, #6366f1)' : idx === 1 ? 'linear-gradient(135deg, #8b5cf6, #ec4899)' : 'linear-gradient(135deg, #0ea5e9, #10b981)' }}>
+                <i className="fa-solid fa-film"></i>
+                <span className="course-cat-tag">{course.category}</span>
+                <span className="course-duration-tag">
+                  <i className="fa-regular fa-clock"></i>
+                  <span>{course.duration} mins</span>
+                </span>
               </div>
 
-              <div style={{ marginTop: "auto" }}>
-                <Link to="/unilms/lms/materials/watch_course" className="btn-watch-course">
-                  <i className="fa-solid fa-circle-play"></i>
-                  <span>Start Masterclass</span>
-                </Link>
+              <div className="course-body">
+                <h3 className="course-title">{course.title}</h3>
+                <p className="course-desc">{course.description}</p>
+
+                <div className="course-meta-row">
+                  <div className="course-meta-item">
+                    <i className="fa-solid fa-folder-tree" style={{ color: "#818cf8" }}></i>
+                    <span>{course.chapter_count} Chapters</span>
+                  </div>
+                  <div className="course-meta-item">
+                    <i className="fa-solid fa-circle-play" style={{ color: "#f472b6" }}></i>
+                    <span>{course.lesson_count} Lessons</span>
+                  </div>
+                  <div className="course-meta-item">
+                    <i className="fa-solid fa-certificate" style={{ color: "#34d399" }}></i>
+                    <span>{course.badge}</span>
+                  </div>
+                </div>
+
+                <div style={{ marginTop: "auto" }}>
+                  <Link to="/unilms/lms/materials/watch_course" className="btn-watch-course">
+                    <i className="fa-solid fa-circle-play"></i>
+                    <span>Start Masterclass</span>
+                  </Link>
+                </div>
               </div>
             </div>
+          ))
+        ) : (
+          <div style={{ padding: '36px', textAlign: 'center', color: 'var(--text-muted)', background: 'var(--surface)', border: '1px dashed var(--border)', borderRadius: '16px', gridColumn: '1 / -1' }}>
+            <i className="fa-solid fa-clapperboard" style={{ fontSize: '32px', marginBottom: '12px', display: 'block', opacity: 0.5 }}></i>
+            <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-main, #0F172A)' }}>No published courses in active curriculum</div>
+            <div style={{ fontSize: '12.5px', marginTop: '4px' }}>Course modules published by your department faculty will appear here</div>
           </div>
-        ))}
+        )}
       </div>
 
       {/* =========================================================================
@@ -661,35 +667,43 @@ const LmsLearnIndex = () => {
         </div>
       </div>
 
-      {subjectNotes.map((sn, sIdx) => (
-        <div key={sIdx} className="materials-subject-box">
-          <div className="mat-subj-title">
-            <i className="fa-solid fa-graduation-cap" style={{ color: "#818cf8" }}></i>
-            <span>{sn.subject}</span>
-            <span style={{ fontSize: "11.5px", fontWeight: "700", color: "var(--text-muted, #64748b)", marginLeft: "auto" }}>{sn.items.length} Resources</span>
-          </div>
+      {notes.length > 0 ? (
+        notes.map((sn, sIdx) => (
+          <div key={sIdx} className="materials-subject-box">
+            <div className="mat-subj-title">
+              <i className="fa-solid fa-graduation-cap" style={{ color: "#818cf8" }}></i>
+              <span>{sn.subject}</span>
+              <span style={{ fontSize: "11.5px", fontWeight: "700", color: "var(--text-muted, #64748b)", marginLeft: "auto" }}>{sn.items.length} Resources</span>
+            </div>
 
-          <div className="mat-items-grid">
-            {sn.items.map((item) => (
-              <div key={item.id} className="mat-item-card">
-                <div className="mat-icon-wrap">
-                  {item.type === 'youtube' ? (
-                    <i className="fa-brands fa-youtube" style={{ color: "#ef4444" }}></i>
-                  ) : item.type === 'link' ? (
-                    <i className="fa-solid fa-link" style={{ color: "#38bdf8" }}></i>
-                  ) : (
-                    <i className="fa-regular fa-file-pdf" style={{ color: "#f87171" }}></i>
-                  )}
+            <div className="mat-items-grid">
+              {sn.items.map((item) => (
+                <div key={item.id} className="mat-item-card">
+                  <div className="mat-icon-wrap">
+                    {item.type === 'youtube' ? (
+                      <i className="fa-brands fa-youtube" style={{ color: "#ef4444" }}></i>
+                    ) : item.type === 'link' ? (
+                      <i className="fa-solid fa-link" style={{ color: "#38bdf8" }}></i>
+                    ) : (
+                      <i className="fa-regular fa-file-pdf" style={{ color: "#f87171" }}></i>
+                    )}
+                  </div>
+                  <div>
+                    <div className="mat-info-title">{item.title}</div>
+                    <div className="mat-info-type">{item.type.toUpperCase()} • {item.date}</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="mat-info-title">{item.title}</div>
-                  <div className="mat-info-type">{item.type.toUpperCase()} • {item.date}</div>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
+        ))
+      ) : (
+        <div style={{ padding: '36px', textAlign: 'center', color: 'var(--text-muted)', background: 'var(--surface)', border: '1px dashed var(--border)', borderRadius: '16px' }}>
+          <i className="fa-solid fa-book-bookmark" style={{ fontSize: '32px', marginBottom: '12px', display: 'block', opacity: 0.5 }}></i>
+          <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--text-main, #0F172A)' }}>No course notes or handouts uploaded</div>
+          <div style={{ fontSize: '12.5px', marginTop: '4px' }}>Subject lecture notes and slide decks will be available once uploaded by faculty</div>
         </div>
-      ))}
+      )}
 
       {/* =========================================================================
            CAREER SUITE QUICK LAUNCHPAD

@@ -32,7 +32,7 @@ const LmsCareerIndex = () => {
           className="card"
           style={{
             padding: '9px 13px',
-            borderLeft: '3.5px solid #E11D48',
+            borderLeft: '3.5px solid #CBD5E1',
             borderTop: '1px solid var(--border-color, #E2E8F0)',
             borderRight: '1px solid var(--border-color, #E2E8F0)',
             borderBottom: '1px solid var(--border-color, #E2E8F0)',
@@ -44,11 +44,11 @@ const LmsCareerIndex = () => {
           <div style={{ fontSize: '9.5px', color: 'var(--text-muted, #64748B)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2px' }}>
             Resume ATS Score
           </div>
-          <div style={{ fontSize: '16.5px', fontWeight: '800', color: '#E11D48', marginTop: '2px', lineHeight: '1.2' }}>
-            87 <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>/ 100</span>
+          <div style={{ fontSize: '16.5px', fontWeight: '800', color: 'var(--text-muted, #64748B)', marginTop: '2px', lineHeight: '1.2' }}>
+            — <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>/ 100</span>
           </div>
-          <div style={{ fontSize: '10px', color: 'var(--success, #10B981)', fontWeight: '700', marginTop: '2px' }}>
-            <i className="fa-solid fa-check-circle me-1"></i> AI Optimized & Ready
+          <div style={{ fontSize: '10px', color: 'var(--text-muted, #64748B)', fontWeight: '700', marginTop: '2px' }}>
+            <i className="fa-solid fa-file-pen me-1"></i> Build to Calculate
           </div>
         </div>
 
@@ -56,7 +56,7 @@ const LmsCareerIndex = () => {
           className="card"
           style={{
             padding: '9px 13px',
-            borderLeft: '3.5px solid var(--success, #10B981)',
+            borderLeft: '3.5px solid #CBD5E1',
             borderTop: '1px solid var(--border-color, #E2E8F0)',
             borderRight: '1px solid var(--border-color, #E2E8F0)',
             borderBottom: '1px solid var(--border-color, #E2E8F0)',
@@ -68,11 +68,11 @@ const LmsCareerIndex = () => {
           <div style={{ fontSize: '9.5px', color: 'var(--text-muted, #64748B)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2px' }}>
             Mock Interviews Done
           </div>
-          <div style={{ fontSize: '16.5px', fontWeight: '800', color: 'var(--text-main, #0F172A)', marginTop: '2px', lineHeight: '1.2' }}>
-            12 <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>Sessions</span>
+          <div style={{ fontSize: '16.5px', fontWeight: '800', color: 'var(--text-muted, #64748B)', marginTop: '2px', lineHeight: '1.2' }}>
+            0 <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>Sessions</span>
           </div>
-          <div style={{ fontSize: '10px', color: 'var(--success, #10B981)', fontWeight: '700', marginTop: '2px' }}>
-            <i className="fa-solid fa-check-circle me-1"></i> Practice Complete
+          <div style={{ fontSize: '10px', color: 'var(--text-muted, #64748B)', fontWeight: '700', marginTop: '2px' }}>
+            <i className="fa-solid fa-microphone me-1"></i> Start Practice Session
           </div>
         </div>
 
@@ -80,7 +80,7 @@ const LmsCareerIndex = () => {
           className="card"
           style={{
             padding: '9px 13px',
-            borderLeft: '3.5px solid #06B6D4',
+            borderLeft: '3.5px solid #CBD5E1',
             borderTop: '1px solid var(--border-color, #E2E8F0)',
             borderRight: '1px solid var(--border-color, #E2E8F0)',
             borderBottom: '1px solid var(--border-color, #E2E8F0)',
@@ -92,11 +92,11 @@ const LmsCareerIndex = () => {
           <div style={{ fontSize: '9.5px', color: 'var(--text-muted, #64748B)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2px' }}>
             Drives Applied
           </div>
-          <div style={{ fontSize: '16.5px', fontWeight: '800', color: '#06B6D4', marginTop: '2px', lineHeight: '1.2' }}>
-            5 <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>Active</span>
+          <div style={{ fontSize: '16.5px', fontWeight: '800', color: 'var(--text-muted, #64748B)', marginTop: '2px', lineHeight: '1.2' }}>
+            0 <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>Active</span>
           </div>
-          <div style={{ fontSize: '10px', color: '#06B6D4', fontWeight: '700', marginTop: '2px' }}>
-            <i className="fa-solid fa-paper-plane me-1"></i> Active Submissions
+          <div style={{ fontSize: '10px', color: 'var(--text-muted, #64748B)', fontWeight: '700', marginTop: '2px' }}>
+            <i className="fa-solid fa-paper-plane me-1"></i> No Submissions Yet
           </div>
         </div>
 
@@ -104,7 +104,7 @@ const LmsCareerIndex = () => {
           className="card"
           style={{
             padding: '9px 13px',
-            borderLeft: '3.5px solid var(--warning, #F59E0B)',
+            borderLeft: '3.5px solid #CBD5E1',
             borderTop: '1px solid var(--border-color, #E2E8F0)',
             borderRight: '1px solid var(--border-color, #E2E8F0)',
             borderBottom: '1px solid var(--border-color, #E2E8F0)',
@@ -116,11 +116,11 @@ const LmsCareerIndex = () => {
           <div style={{ fontSize: '9.5px', color: 'var(--text-muted, #64748B)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2px' }}>
             Portfolio Views
           </div>
-          <div style={{ fontSize: '16.5px', fontWeight: '800', color: 'var(--warning, #F59E0B)', marginTop: '2px', lineHeight: '1.2' }}>
-            234 <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>Views</span>
+          <div style={{ fontSize: '16.5px', fontWeight: '800', color: 'var(--text-muted, #64748B)', marginTop: '2px', lineHeight: '1.2' }}>
+            0 <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>Views</span>
           </div>
-          <div style={{ fontSize: '10px', color: 'var(--warning, #F59E0B)', fontWeight: '700', marginTop: '2px' }}>
-            <i className="fa-solid fa-chart-line me-1"></i> Recruiter Analytics
+          <div style={{ fontSize: '10px', color: 'var(--text-muted, #64748B)', fontWeight: '700', marginTop: '2px' }}>
+            <i className="fa-solid fa-chart-line me-1"></i> New Student Profile
           </div>
         </div>
       </div>

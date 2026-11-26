@@ -5,6 +5,9 @@ import placementsService from '../../../services/placements.service';
 const LmsCareerMockInterview = () => {
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState([]);
+  const [sessionStarted, setSessionStarted] = useState(false);
+  const [answerText, setAnswerText] = useState('');
+  const [currentQIndex, setCurrentQIndex] = useState(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -108,93 +111,106 @@ const LmsCareerMockInterview = () => {
         </div>
       </div>
 
-      <div className="interview-sim-container">
-        <div className="sim-main-area">
-          <div className="sim-question-bar">
-            <div className="sim-q-badge"><i className="fa-solid fa-circle-question"></i> Question 3 of 10</div>
-            <div className="sim-timer"><i className="fa-solid fa-clock"></i> 02:34</div>
+      {!sessionStarted ? (
+        <div className="card" style={{ padding: '36px', textAlign: 'center', background: 'var(--surface, #FFFFFF)', border: '1px solid var(--border, #E2E8F0)', borderRadius: '16px', marginBottom: '24px' }}>
+          <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'rgba(99, 102, 241, 0.1)', color: 'var(--primary, #4F46E5)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', marginBottom: '14px' }}>
+            <i className="fa-solid fa-microphone-lines"></i>
+          </div>
+          <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '18px', fontWeight: '800', margin: '0 0 6px', color: 'var(--text-main, #0F172A)' }}>
+            Ready to Begin Mock Technical Interview?
+          </h3>
+          <p style={{ color: 'var(--text-muted, #64748B)', fontSize: '13px', maxWidth: '520px', margin: '0 auto 20px', lineHeight: '1.5' }}>
+            Test your domain knowledge, coding conceptual foundations, and behavioral responses. AI evaluates your technical accuracy and communication in real time.
+          </p>
+          <button
+            type="button"
+            onClick={() => setSessionStarted(true)}
+            className="btn btn-primary"
+            style={{ padding: '10px 24px', fontSize: '14px', borderRadius: '24px', fontWeight: '700' }}
+          >
+            <i className="fa-solid fa-play me-2"></i> Start Practice Session
+          </button>
+        </div>
+      ) : (
+        <div className="interview-sim-container">
+          <div className="sim-main-area">
+            <div className="sim-question-bar">
+              <div className="sim-q-badge"><i className="fa-solid fa-circle-question"></i> Question {currentQIndex + 1} of 5</div>
+              <div className="sim-timer"><i className="fa-solid fa-clock"></i> 05:00</div>
+            </div>
+
+            <div className="sim-question-text">
+              Explain the difference between an abstract class and an interface in Object-Oriented Programming. When would you use one over the other?
+            </div>
+
+            <div className="answer-options-bar">
+              <div className="answer-opt-btn active"><i className="fa-solid fa-keyboard"></i> Text Answer</div>
+              <div className="answer-opt-btn"><i className="fa-solid fa-video"></i> Video Answer</div>
+              <div className="answer-opt-btn"><i className="fa-solid fa-microphone"></i> Voice Answer</div>
+            </div>
+
+            <div className="sim-answer-area">
+              <textarea
+                value={answerText}
+                onChange={(e) => setAnswerText(e.target.value)}
+                placeholder="Type your answer here... Be detailed and use examples to demonstrate your understanding."
+              />
+            </div>
+
+            <div className="sim-nav-buttons">
+              <button className="btn btn-outline" onClick={() => setSessionStarted(false)}><i className="fa-solid fa-xmark"></i> End Practice</button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button className="btn btn-outline" onClick={() => setAnswerText('')}><i className="fa-solid fa-trash-can"></i> Clear</button>
+                <button className="btn btn-primary" onClick={() => { alert('Practice response submitted! Detailed AI feedback will be computed.'); setAnswerText(''); setSessionStarted(false); }}><i className="fa-solid fa-paper-plane"></i> Submit Answer</button>
+              </div>
+            </div>
           </div>
 
-          <div className="sim-question-text">
-            Explain the difference between an abstract class and an interface in Java. When would you use one over the other? Provide a real-world example.
-          </div>
+          <div className="feedback-sidebar">
+            <div className="feedback-title"><i className="fa-solid fa-star"></i> AI Evaluator</div>
 
-          <div className="answer-options-bar">
-            <div className="answer-opt-btn active"><i className="fa-solid fa-keyboard"></i> Text Answer</div>
-            <div className="answer-opt-btn"><i className="fa-solid fa-video"></i> Video Answer</div>
-            <div className="answer-opt-btn"><i className="fa-solid fa-microphone"></i> Voice Answer</div>
-          </div>
+            <div className="feedback-score-ring">
+              <svg viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="40" className="fsr-bg"/>
+                <circle cx="50" cy="50" r="40" className="fsr-fill" style={{ strokeDashoffset: '251' }}/>
+              </svg>
+              <div className="fsr-label">
+                <div className="fsr-value">—</div>
+                <div className="fsr-text">Score</div>
+              </div>
+            </div>
 
-          <div className="sim-answer-area">
-            <textarea defaultValue={`An abstract class can have both abstract and concrete methods, along with instance variables and constructors. It supports single inheritance through the 'extends' keyword.
+            <div className="feedback-metrics">
+              <div className="fb-metric">
+                <span className="fb-metric-label">Accuracy</span>
+                <div className="fb-metric-bar-wrap">
+                  <div className="fb-metric-bar"><div className="fb-metric-bar-fill" style={{ width: '0%', background: '#10b981' }}></div></div>
+                  <span className="fb-metric-val">0</span>
+                </div>
+              </div>
+              <div className="fb-metric">
+                <span className="fb-metric-label">Communication</span>
+                <div className="fb-metric-bar-wrap">
+                  <div className="fb-metric-bar"><div className="fb-metric-bar-fill" style={{ width: '0%', background: '#f59e0b' }}></div></div>
+                  <span className="fb-metric-val">0</span>
+                </div>
+              </div>
+              <div className="fb-metric">
+                <span className="fb-metric-label">Depth</span>
+                <div className="fb-metric-bar-wrap">
+                  <div className="fb-metric-bar"><div className="fb-metric-bar-fill" style={{ width: '0%', background: '#f59e0b' }}></div></div>
+                  <span className="fb-metric-val">0</span>
+                </div>
+              </div>
+            </div>
 
-An interface, on the other hand, defines a contract with only abstract methods (prior to Java 8), and a class can implement multiple interfaces.
-
-Real-world example: Consider a Vehicle abstract class with common properties like speed and fuel, and an interface Chargeable for electric vehicles. A Tesla class would extend Vehicle and implement Chargeable.`} placeholder="Type your answer here... Be detailed and use examples to demonstrate your understanding." />
-          </div>
-
-          <div className="sim-nav-buttons">
-            <button className="btn btn-outline"><i className="fa-solid fa-arrow-left"></i> Previous</button>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button className="btn btn-outline"><i className="fa-solid fa-forward"></i> Skip</button>
-              <button className="btn btn-primary"><i className="fa-solid fa-paper-plane"></i> Submit Answer</button>
+            <div className="fb-tips-box">
+              <div className="fb-tips-title"><i className="fa-solid fa-lightbulb"></i> Tips</div>
+              <div className="fb-tip-item">Be clear, structured, and provide concrete code or design examples.</div>
             </div>
           </div>
         </div>
-
-        <div className="feedback-sidebar">
-          <div className="feedback-title"><i className="fa-solid fa-star"></i> AI Feedback</div>
-
-          <div className="feedback-score-ring">
-            <svg viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="40" className="fsr-bg"/>
-              <circle cx="50" cy="50" r="40" className="fsr-fill"/>
-            </svg>
-            <div className="fsr-label">
-              <div className="fsr-value">75</div>
-              <div className="fsr-text">Score</div>
-            </div>
-          </div>
-
-          <div className="feedback-metrics">
-            <div className="fb-metric">
-              <span className="fb-metric-label">Accuracy</span>
-              <div className="fb-metric-bar-wrap">
-                <div className="fb-metric-bar"><div className="fb-metric-bar-fill" style={{ width: '85%', background: '#10b981' }}></div></div>
-                <span className="fb-metric-val">85</span>
-              </div>
-            </div>
-            <div className="fb-metric">
-              <span className="fb-metric-label">Communication</span>
-              <div className="fb-metric-bar-wrap">
-                <div className="fb-metric-bar"><div className="fb-metric-bar-fill" style={{ width: '72%', background: '#f59e0b' }}></div></div>
-                <span className="fb-metric-val">72</span>
-              </div>
-            </div>
-            <div className="fb-metric">
-              <span className="fb-metric-label">Depth</span>
-              <div className="fb-metric-bar-wrap">
-                <div className="fb-metric-bar"><div className="fb-metric-bar-fill" style={{ width: '68%', background: '#f59e0b' }}></div></div>
-                <span className="fb-metric-val">68</span>
-              </div>
-            </div>
-            <div className="fb-metric">
-              <span className="fb-metric-label">Examples</span>
-              <div className="fb-metric-bar-wrap">
-                <div className="fb-metric-bar"><div className="fb-metric-bar-fill" style={{ width: '90%', background: '#10b981' }}></div></div>
-                <span className="fb-metric-val">90</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="fb-tips-box">
-            <div className="fb-tips-title"><i className="fa-solid fa-lightbulb"></i> Improvement Tips</div>
-            <div className="fb-tip-item">Mention Java 8+ default methods in interfaces for depth.</div>
-            <div className="fb-tip-item">Add a comparison table for better structure.</div>
-            <div className="fb-tip-item">Great real-world example with Tesla — keep this pattern!</div>
-          </div>
-        </div>
-      </div>
+      )}
 
       <div className="section-header" style={{ marginTop: '28px' }}>
         <div>

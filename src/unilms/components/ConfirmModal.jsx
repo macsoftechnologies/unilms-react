@@ -91,7 +91,7 @@ export const ConfirmModal = ({
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 99999,
+        zIndex: 999999,
         background: 'rgba(15, 23, 42, 0.65)',
         backdropFilter: 'blur(5px)',
         WebkitBackdropFilter: 'blur(5px)',

@@ -10,20 +10,7 @@ const LmsPortalExamApplications = () => {
 
   const [loading, setLoading] = useState(true);
   const [applications, setApplications] = useState([]);
-  const [availableExams, setAvailableExams] = useState([
-    {
-      id: 'exam-reg-01',
-      name: 'Winter SEE 2026 Regular Exams',
-      type: 'Semester End Examination (Theory & Lab)',
-      fee: '₹2,500'
-    },
-    {
-      id: 'exam-supp-02',
-      name: 'Winter Supplementary Examination (2026-27)',
-      type: 'Supplementary Theory & Lab Re-test',
-      fee: '₹1,500'
-    }
-  ]);
+  const [availableExams, setAvailableExams] = useState([]);
 
   const [toastMsg, setToastMsg] = useState(null);
   const [previewTicket, setPreviewTicket] = useState(null);
@@ -170,7 +157,7 @@ const LmsPortalExamApplications = () => {
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {availableExams.length === 0 ? (
               <div style={{ padding: "24px", textAlign: "center", background: "var(--bg-canvas)", borderRadius: "12px", border: "1px dashed var(--border)", color: "var(--text-muted)", fontSize: "13px" }}>
-                <i className="fa-solid fa-circle-check text-success me-1"></i> You are enrolled in all active examination cycles.
+                <i className="fa-solid fa-calendar-xmark me-2 text-muted"></i> No open examination registration windows at this time.
               </div>
             ) : (
               availableExams.map((exam) => (

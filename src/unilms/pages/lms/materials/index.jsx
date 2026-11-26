@@ -118,7 +118,13 @@ const LmsMaterialsIndex = () => {
         <i className="fa-solid fa-book-open"></i> Subject Study Materials & Handouts
       </h2>
 
-      {subjectMaterialsList.map((subj, idx) => (
+      {subjectMaterialsList.length === 0 ? (
+        <div style={{ padding: '32px', textAlign: 'center', background: '#fff', borderRadius: '12px', border: '1px solid var(--border)' }}>
+          <i className="fa-solid fa-book-open" style={{ fontSize: '32px', color: '#94A3B8', marginBottom: '8px' }}></i>
+          <p style={{ margin: 0, color: 'var(--text-muted)' }}>No study materials or handouts uploaded yet for this department.</p>
+        </div>
+      ) : (
+        subjectMaterialsList.map((subj, idx) => (
         <div key={idx} style={{ marginBottom: "32px" }}>
           <h3 style={{ margin: "0 0 16px", fontSize: "17px", color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "8px" }}>
             <i className="fa-solid fa-folder-closed" style={{ color: "var(--primary)" }}></i> {subj.subject}
@@ -165,7 +171,7 @@ const LmsMaterialsIndex = () => {
             ))}
           </div>
         </div>
-      ))}
+      )))}
     </>
   );
 };

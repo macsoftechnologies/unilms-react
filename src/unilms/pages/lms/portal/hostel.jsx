@@ -120,45 +120,51 @@ const LmsPortalHostel = () => {
       )}
 
       {/* Active Hostel Room Status Card */}
-      <div
-        className="card"
-        style={{
-          padding: '16px 20px',
-          borderLeft: '4px solid #06B6D4',
-          borderTop: '1px solid var(--border, #E2E8F0)',
-          borderRight: '1px solid var(--border, #E2E8F0)',
-          borderBottom: '1px solid var(--border, #E2E8F0)',
-          borderRadius: '14px',
-          background: 'var(--surface, #FFFFFF)',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
-          marginBottom: '20px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '12px'
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(6, 182, 212, 0.12)', color: '#06B6D4', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>
-            <i className="fa-solid fa-hotel"></i>
+      {(() => {
+        const activeAlloc = allocations.find(a => (a.status || '').toLowerCase() === 'approved' || (a.status || '').toLowerCase() === 'active');
+        if (!activeAlloc) return null;
+        return (
+          <div
+            className="card"
+            style={{
+              padding: '16px 20px',
+              borderLeft: '4px solid #06B6D4',
+              borderTop: '1px solid var(--border, #E2E8F0)',
+              borderRight: '1px solid var(--border, #E2E8F0)',
+              borderBottom: '1px solid var(--border, #E2E8F0)',
+              borderRadius: '14px',
+              background: 'var(--surface, #FFFFFF)',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+              marginBottom: '20px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '12px'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'rgba(6, 182, 212, 0.12)', color: '#06B6D4', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>
+                <i className="fa-solid fa-hotel"></i>
+              </div>
+              <div>
+                <div style={{ fontSize: '11px', color: '#64748B', fontWeight: '700', textTransform: 'uppercase' }}>
+                  Current Residential Allotment
+                </div>
+                <div style={{ fontSize: '17px', fontWeight: '800', color: '#0F172A', marginTop: '2px' }}>
+                  {activeAlloc.room?.roomNumber ? `Room ${activeAlloc.room.roomNumber} (${activeAlloc.bedNumber || 'Bed Assigned'})` : (activeAlloc.bedNumber || 'Hostel Room Allotted')}
+                </div>
+                <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px' }}>
+                  {activeAlloc.room?.block?.name || 'Campus Residence'} &bull; Resident: {studentName} ({rollNumber})
+                </div>
+              </div>
+            </div>
+            <span className="badge" style={{ background: 'rgba(16, 185, 129, 0.12)', color: '#10B981', fontSize: '12px', padding: '6px 14px', borderRadius: '20px', fontWeight: '800' }}>
+              <i className="fa-solid fa-circle-check me-1"></i> ACTIVE &amp; ALLOTTED
+            </span>
           </div>
-          <div>
-            <div style={{ fontSize: '11px', color: '#64748B', fontWeight: '700', textTransform: 'uppercase' }}>
-              Current Residential Allotment
-            </div>
-            <div style={{ fontSize: '17px', fontWeight: '800', color: '#0F172A', marginTop: '2px' }}>
-              Block B - Room 304 (Key #B304)
-            </div>
-            <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px' }}>
-              Aryabhata Residency &bull; Resident: {studentName} ({rollNumber})
-            </div>
-          </div>
-        </div>
-        <span className="badge" style={{ background: 'rgba(16, 185, 129, 0.12)', color: '#10B981', fontSize: '12px', padding: '6px 14px', borderRadius: '20px', fontWeight: '800' }}>
-          <i className="fa-solid fa-circle-check me-1"></i> ACTIVE &amp; ALLOTTED
-        </span>
-      </div>
+        );
+      })()}
 
       <div className="lms-portal-grid-split">
         <div className="card" style={{ border: "1px solid var(--border)", borderRadius: "16px", minWidth: 0, width: "100%", boxSizing: "border-box" }}>

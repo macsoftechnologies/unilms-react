@@ -3,93 +3,10 @@ import { Link } from 'react-router-dom';
 import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../../components';
 import placementsService from '../../../services/placements.service';
 
-const initialApplications = [
-  {
-    id: 1,
-    company: 'Amazon Web Services (AWS)',
-    role: 'Cloud Engineering & DevOps Intern',
-    mode: 'Hybrid (Bengaluru)',
-    stipend: '₹45,000.00/mo',
-    status: 'in_progress',
-    statusText: 'In Progress (Grade: A+)',
-    actionLink: '/unilms/lms/internships/workspace'
-  },
-  {
-    id: 2,
-    company: 'Microsoft India R&D',
-    role: 'Backend Systems & Distributed DB Intern',
-    mode: 'Remote',
-    stipend: '₹50,000.00/mo',
-    status: 'offered',
-    statusText: 'Offer Letter Received',
-    actionLink: '/unilms/lms/internships/workspace'
-  },
-  {
-    id: 3,
-    company: 'Google Cloud India',
-    role: 'Site Reliability Engineering Intern',
-    mode: 'On-Site (Hyderabad)',
-    stipend: '₹60,000.00/mo',
-    status: 'in_progress',
-    statusText: 'Interview Shortlisted',
-    actionLink: '/unilms/lms/internships/workspace'
-  },
-  {
-    id: 4,
-    company: 'Razorpay Software',
-    role: 'Payments Platform Intern',
-    mode: 'Hybrid (Bengaluru)',
-    stipend: '₹40,000.00/mo',
-    status: 'offered',
-    statusText: 'Offer Under Review',
-    actionLink: '/unilms/lms/internships/workspace'
-  },
-  {
-    id: 5,
-    company: 'Cisco Systems',
-    role: 'Network & Cloud Security Intern',
-    mode: 'Hybrid (Bengaluru)',
-    stipend: '₹42,000.00/mo',
-    status: 'in_progress',
-    statusText: 'Application Submitted',
-    actionLink: '/unilms/lms/internships/workspace'
-  }
-];
-
-const corporateOpenings = [
-  {
-    company: 'Google Cloud India',
-    role: 'Site Reliability Engineering Intern',
-    location: 'Hyderabad, India',
-    mode: 'On-Site',
-    stipend: '₹60,000.00/mo',
-    eligibility: 'B.Tech CSE (Min 8.0 CGPA)',
-    deadline: 'Nov 15, 2026'
-  },
-  {
-    company: 'Razorpay Software',
-    role: 'Payments Platform & Golang Intern',
-    location: 'Bengaluru, India',
-    mode: 'Hybrid',
-    stipend: '₹40,000.00/mo',
-    eligibility: 'B.Tech CSE / IT (Min 7.5 CGPA)',
-    deadline: 'Nov 20, 2026'
-  },
-  {
-    company: 'Cisco Systems',
-    role: 'Cloud Security & Service Mesh Intern',
-    location: 'Bengaluru, India',
-    mode: 'Hybrid',
-    stipend: '₹42,000.00/mo',
-    eligibility: 'All Engineering Batches',
-    deadline: 'Nov 30, 2026'
-  }
-];
-
 const LmsInternshipsIndex = () => {
   const [loading, setLoading] = useState(false);
-  const [applications, setApplications] = useState(initialApplications);
-  const [openings, setOpenings] = useState(corporateOpenings);
+  const [applications, setApplications] = useState([]);
+  const [openings, setOpenings] = useState([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -103,7 +20,7 @@ const LmsInternshipsIndex = () => {
         ]);
 
         if (isMounted) {
-          if (internshipsRes.status === 'fulfilled' && Array.isArray(internshipsRes.value) && internshipsRes.value.length > 0) {
+          if (internshipsRes.status === 'fulfilled' && Array.isArray(internshipsRes.value)) {
             const mappedOpenings = internshipsRes.value.map((item) => ({
               company: item.company?.name || item.companyName || 'Corporate Partner',
               role: item.title || item.role || 'Software Engineering Intern',
@@ -114,9 +31,11 @@ const LmsInternshipsIndex = () => {
               deadline: item.deadline ? new Date(item.deadline).toLocaleDateString('en-GB') : 'Open',
             }));
             setOpenings(mappedOpenings);
+          } else {
+            setOpenings([]);
           }
 
-          if (appsRes.status === 'fulfilled' && Array.isArray(appsRes.value) && appsRes.value.length > 0) {
+          if (appsRes.status === 'fulfilled' && Array.isArray(appsRes.value)) {
             const mappedApps = appsRes.value.map((app, idx) => ({
               id: app.id || idx + 1,
               company: app.drive?.company?.name || app.companyName || 'Corporate Partner',
@@ -128,6 +47,8 @@ const LmsInternshipsIndex = () => {
               actionLink: '/unilms/lms/internships/workspace'
             }));
             setApplications(mappedApps);
+          } else {
+            setApplications([]);
           }
         }
       } catch (err) {
@@ -189,7 +110,7 @@ const LmsInternshipsIndex = () => {
             {applications.length} <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>Applications</span>
           </div>
           <div style={{ fontSize: '10px', color: 'var(--text-muted, #64748B)', fontWeight: '600', marginTop: '2px' }}>
-            <i className="fa-solid fa-briefcase me-1"></i> AWS &amp; Microsoft India
+            <i className="fa-solid fa-briefcase me-1"></i> {applications.length > 0 ? 'Applied internships' : 'No Active Applications'}
           </div>
         </div>
 
@@ -210,10 +131,10 @@ const LmsInternshipsIndex = () => {
             Top Stipend
           </div>
           <div style={{ fontSize: '16.5px', fontWeight: '800', color: 'var(--text-main, #0F172A)', marginTop: '2px', lineHeight: '1.2' }}>
-            ₹60,000 <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>/ mo</span>
+            {applications.length > 0 ? '₹45,000' : '—'} <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>{applications.length > 0 ? '/ mo' : ''}</span>
           </div>
-          <div style={{ fontSize: '10px', color: 'var(--success, #10B981)', fontWeight: '700', marginTop: '2px' }}>
-            <i className="fa-solid fa-arrow-trend-up me-1"></i> Verified Offer Letter
+          <div style={{ fontSize: '10px', color: applications.length > 0 ? 'var(--success, #10B981)' : 'var(--text-muted, #64748B)', fontWeight: '700', marginTop: '2px' }}>
+            <i className="fa-solid fa-arrow-trend-up me-1"></i> {applications.length > 0 ? 'Verified Offer Letter' : 'No Active Offers'}
           </div>
         </div>
 
@@ -234,10 +155,10 @@ const LmsInternshipsIndex = () => {
             Campus Openings
           </div>
           <div style={{ fontSize: '16.5px', fontWeight: '800', color: '#06B6D4', marginTop: '2px', lineHeight: '1.2' }}>
-            {corporateOpenings.length} <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>Drives Live</span>
+            {openings.length} <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>Drives Live</span>
           </div>
-          <div style={{ fontSize: '10px', color: 'var(--success, #10B981)', fontWeight: '700', marginTop: '2px' }}>
-            <i className="fa-solid fa-building me-1"></i> Google, Razorpay, Cisco
+          <div style={{ fontSize: '10px', color: openings.length > 0 ? 'var(--success, #10B981)' : 'var(--text-muted, #64748B)', fontWeight: '700', marginTop: '2px' }}>
+            <i className="fa-solid fa-building me-1"></i> {openings.length > 0 ? 'Verified Partner Drives' : 'No Active Drives'}
           </div>
         </div>
 
@@ -256,6 +177,12 @@ const LmsInternshipsIndex = () => {
         >
           <div style={{ fontSize: '9.5px', color: 'var(--text-muted, #64748B)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2px' }}>
             Internship Credits
+          </div>
+          <div style={{ fontSize: '16.5px', fontWeight: '800', color: 'var(--warning, #F59E0B)', marginTop: '2px', lineHeight: '1.2' }}>
+            {applications.length > 0 ? '08' : '00'} <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>/ 12 Earned</span>
+          </div>
+          <div style={{ fontSize: '10px', color: applications.length > 0 ? 'var(--warning, #F59E0B)' : 'var(--text-muted, #64748B)', fontWeight: '700', marginTop: '2px' }}>
+            <i className="fa-solid fa-clock me-1"></i> {applications.length > 0 ? 'Evaluation Pending' : 'No Credits Logged'}
           </div>
           <div style={{ fontSize: '16.5px', fontWeight: '800', color: 'var(--warning, #F59E0B)', marginTop: '2px', lineHeight: '1.2' }}>
             4 Credits
