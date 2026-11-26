@@ -90,7 +90,7 @@ const ExecutiveAnalyticsLayout = () => {
         const active = list.find(y => y.status === 'active' || y.isCurrent) || list[0];
         if (active && !session) setSession(active.name || active.year);
       }
-    }).catch(() => {});
+    }).catch(() => { });
   }, []);
 
   // Dropdown & Mobile Menu States
@@ -383,7 +383,7 @@ const ExecutiveAnalyticsLayout = () => {
 
         {/* Right: Session Selector, Print Dossier, Theme Popover, Profile, Mobile Toggle */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          
+
           {/* Academic Session Selector */}
           <div className="hide-on-mobile" style={{
             display: 'flex',
