@@ -94,6 +94,11 @@ class AdmissionsService {
     }
   }
 
+  async uploadDocument(applicationId, data) {
+    const res = await apiClient.post(`/admissions/documents/${applicationId}`, data);
+    return res.data || res;
+  }
+
   async updateDocumentVerification(id, data) {
     const res = await apiClient.patch(`/admissions/documents/${id}`, data);
     return res.data || res;
