@@ -517,7 +517,26 @@ const SuperAdminLayout = () => {
                                                 }}
                                                 title="Click to view Executive Intelligence & Account Options"
                                             >
-                                                <img src="https://i.pravatar.cc/150?img=11" alt="Super Admin" className="avatar" style={{ width: '34px', height: '34px', borderRadius: '50%' }} />
+                                                <div
+                                                    className="avatar"
+                                                    style={{
+                                                        width: '34px',
+                                                        height: '34px',
+                                                        minWidth: '34px',
+                                                        borderRadius: '50%',
+                                                        background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)',
+                                                        color: '#FFFFFF',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        fontWeight: '800',
+                                                        fontSize: '13px',
+                                                        boxShadow: '0 2px 6px rgba(79, 70, 229, 0.35)',
+                                                        textTransform: 'uppercase'
+                                                    }}
+                                                >
+                                                    {(user?.name || user?.email || 'SA').slice(0, 2)}
+                                                </div>
                                                 <div className="user-info" style={{ textAlign: 'left', lineHeight: '1.2' }}>
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                                                         <span className="user-name" style={{ fontWeight: '700', fontSize: '13px', color: 'var(--text-main)' }}>{user?.name || 'Chief Administrator'}</span>
@@ -546,7 +565,25 @@ const SuperAdminLayout = () => {
                                                 >
                                                     {/* User Identity Header */}
                                                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingBottom: '12px', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                                                        <img src="https://i.pravatar.cc/150?img=11" alt="Super Admin" style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
+                                                        <div
+                                                            style={{
+                                                                width: '40px',
+                                                                height: '40px',
+                                                                minWidth: '40px',
+                                                                borderRadius: '50%',
+                                                                background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)',
+                                                                color: '#FFFFFF',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                fontWeight: '800',
+                                                                fontSize: '15px',
+                                                                boxShadow: '0 2px 8px rgba(79, 70, 229, 0.35)',
+                                                                textTransform: 'uppercase'
+                                                            }}
+                                                        >
+                                                            {(user?.name || user?.email || 'SA').slice(0, 2)}
+                                                        </div>
                                                         <div>
                                                             <div style={{ fontWeight: '800', fontSize: '13.5px', color: 'var(--text-main)' }}>{user?.name || 'Root Administrator'}</div>
                                                             <div style={{ fontSize: '11px', color: '#059669', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '600' }}>

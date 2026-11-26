@@ -560,7 +560,25 @@ const ExecutiveAnalyticsLayout = () => {
             background: 'rgba(255, 255, 255, 0.08)',
             border: '1px solid rgba(255, 255, 255, 0.12)'
           }}>
-            <img src="https://i.pravatar.cc/150?img=11" alt="Root Admin" style={{ width: '30px', height: '30px', borderRadius: '50%' }} />
+            <div
+              style={{
+                width: '30px',
+                height: '30px',
+                minWidth: '30px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)',
+                color: '#FFFFFF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: '800',
+                fontSize: '12px',
+                boxShadow: '0 2px 6px rgba(79, 70, 229, 0.35)',
+                textTransform: 'uppercase'
+              }}
+            >
+              RA
+            </div>
             <div className="hide-on-mobile">
               <div style={{ fontSize: '11.5px', fontWeight: '800', color: '#ffffff', lineHeight: '1.1' }}>Root Administrator</div>
               <div style={{ fontSize: '9.5px', color: '#10B981', fontWeight: '700' }}>Chief Academic Officer</div>
