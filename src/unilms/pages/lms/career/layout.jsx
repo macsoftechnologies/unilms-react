@@ -10,6 +10,8 @@ const LmsCareerLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const path = location.pathname;
+  const user = (() => { try { return JSON.parse(localStorage.getItem('unilms_user') || '{}'); } catch { return {}; } })();
+  const studentInitial = (user.name || user.firstName || 'Student').charAt(0).toUpperCase();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showPalette, setShowPalette] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -454,7 +456,7 @@ const LmsCareerLayout = () => {
             fontSize: '14px',
             boxShadow: '0 3px 10px rgba(99, 102, 241, 0.4)'
           }}>
-            A
+            {studentInitial}
           </div>
 
           <button

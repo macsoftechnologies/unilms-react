@@ -43,6 +43,15 @@ const LmsCareerResume = () => {
         setProfile(prev => ({ ...prev, skills: prev.skills.filter(s => s !== skillToRemove) }));
     };
 
+    const atsScore = Math.min(100, 
+        (profile.fullName ? 20 : 0) + 
+        (profile.email ? 15 : 0) + 
+        (profile.phone ? 10 : 0) + 
+        (profile.degree ? 20 : 0) + 
+        Math.min(20, (profile.skills?.length || 0) * 3) + 
+        (profile.experienceRole ? 15 : 0)
+    );
+
     return (
         <>
             <div className="resume-hero">
@@ -69,7 +78,7 @@ const LmsCareerResume = () => {
                             <circle cx="60" cy="60" r="55" className="ats-ring-progress" />
                         </svg>
                         <div className="ats-ring-label">
-                            <div className="ats-ring-value">87</div>
+                            <div className="ats-ring-value">{atsScore}</div>
                             <div className="ats-ring-text">ATS Score</div>
                         </div>
                     </div>

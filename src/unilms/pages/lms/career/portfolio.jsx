@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 const LmsCareerPortfolio = () => {
   const [selectedTheme, setSelectedTheme] = useState('minimal');
   const [copied, setCopied] = useState(false);
+  const [projects, setProjects] = useState([]);
 
   const qrCells = [
     1, 1, 1, 0, 1, 1, 1,
@@ -201,10 +202,9 @@ const LmsCareerPortfolio = () => {
                 <div className="pb-section-name">About Me</div>
                 <div className="pb-section-desc">Introduction, bio, profile photo</div>
             </div>
-            <span className="pb-section-status complete"><i className="fa-solid fa-check-circle"></i> Complete</span>
+            <span className="pb-section-status draft"><i className="fa-solid fa-clock"></i> Draft</span>
             <div className="pb-section-actions">
-                <button className="pb-edit-btn"><i className="fa-solid fa-pen"></i></button>
-                <button className="pb-edit-btn"><i className="fa-solid fa-eye"></i></button>
+                <button className="pb-edit-btn" title="Edit"><i className="fa-solid fa-pen"></i></button>
             </div>
         </div>
         <div className="pb-section-item">
@@ -212,12 +212,13 @@ const LmsCareerPortfolio = () => {
             <div className="pb-section-icon pb-si-projects"><i className="fa-solid fa-diagram-project"></i></div>
             <div className="pb-section-info">
                 <div className="pb-section-name">Projects</div>
-                <div className="pb-section-desc">3 projects added with descriptions</div>
+                <div className="pb-section-desc">{projects.length > 0 ? `${projects.length} projects showcased` : 'Add your academic & personal projects'}</div>
             </div>
-            <span className="pb-section-status complete"><i className="fa-solid fa-check-circle"></i> Complete</span>
+            <span className={`pb-section-status ${projects.length > 0 ? 'complete' : 'empty'}`}>
+                <i className={`fa-solid ${projects.length > 0 ? 'fa-check-circle' : 'fa-exclamation-circle'}`}></i> {projects.length > 0 ? 'Complete' : 'Empty'}
+            </span>
             <div className="pb-section-actions">
-                <button className="pb-edit-btn"><i className="fa-solid fa-pen"></i></button>
-                <button className="pb-edit-btn"><i className="fa-solid fa-eye"></i></button>
+                <button className="pb-edit-btn" title="Edit"><i className="fa-solid fa-pen"></i></button>
             </div>
         </div>
         <div className="pb-section-item">
@@ -225,12 +226,11 @@ const LmsCareerPortfolio = () => {
             <div className="pb-section-icon pb-si-skills"><i className="fa-solid fa-chart-bar"></i></div>
             <div className="pb-section-info">
                 <div className="pb-section-name">Skills & Expertise</div>
-                <div className="pb-section-desc">8 skills with proficiency levels</div>
+                <div className="pb-section-desc">Add technical skills and proficiency levels</div>
             </div>
-            <span className="pb-section-status complete"><i className="fa-solid fa-check-circle"></i> Complete</span>
+            <span className="pb-section-status draft"><i className="fa-solid fa-clock"></i> Draft</span>
             <div className="pb-section-actions">
-                <button className="pb-edit-btn"><i className="fa-solid fa-pen"></i></button>
-                <button className="pb-edit-btn"><i className="fa-solid fa-eye"></i></button>
+                <button className="pb-edit-btn" title="Edit"><i className="fa-solid fa-pen"></i></button>
             </div>
         </div>
         <div className="pb-section-item">
@@ -238,12 +238,11 @@ const LmsCareerPortfolio = () => {
             <div className="pb-section-icon pb-si-experience"><i className="fa-solid fa-briefcase"></i></div>
             <div className="pb-section-info">
                 <div className="pb-section-name">Experience</div>
-                <div className="pb-section-desc">1 internship added</div>
+                <div className="pb-section-desc">Add internships, co-ops or freelance work</div>
             </div>
-            <span className="pb-section-status draft"><i className="fa-solid fa-clock"></i> Draft</span>
+            <span className="pb-section-status empty"><i className="fa-solid fa-exclamation-circle"></i> Empty</span>
             <div className="pb-section-actions">
-                <button className="pb-edit-btn"><i className="fa-solid fa-pen"></i></button>
-                <button className="pb-edit-btn"><i className="fa-solid fa-eye"></i></button>
+                <button className="pb-edit-btn" title="Edit"><i className="fa-solid fa-pen"></i></button>
             </div>
         </div>
         <div className="pb-section-item">
@@ -251,11 +250,11 @@ const LmsCareerPortfolio = () => {
             <div className="pb-section-icon pb-si-education"><i className="fa-solid fa-graduation-cap"></i></div>
             <div className="pb-section-info">
                 <div className="pb-section-name">Education</div>
-                <div className="pb-section-desc">Add your academic background</div>
+                <div className="pb-section-desc">{user.program || 'Degree Program Enrolled'}</div>
             </div>
-            <span className="pb-section-status empty"><i className="fa-solid fa-exclamation-circle"></i> Empty</span>
+            <span className="pb-section-status complete"><i className="fa-solid fa-check-circle"></i> Enrolled</span>
             <div className="pb-section-actions">
-                <button className="pb-edit-btn"><i className="fa-solid fa-pen"></i></button>
+                <button className="pb-edit-btn" title="View"><i className="fa-solid fa-eye"></i></button>
             </div>
         </div>
         <div className="pb-section-item">
@@ -263,12 +262,11 @@ const LmsCareerPortfolio = () => {
             <div className="pb-section-icon pb-si-contact"><i className="fa-solid fa-envelope"></i></div>
             <div className="pb-section-info">
                 <div className="pb-section-name">Contact</div>
-                <div className="pb-section-desc">Email, LinkedIn, GitHub links</div>
+                <div className="pb-section-desc">{user.email || 'Email and student contact'}</div>
             </div>
             <span className="pb-section-status complete"><i className="fa-solid fa-check-circle"></i> Complete</span>
             <div className="pb-section-actions">
-                <button className="pb-edit-btn"><i className="fa-solid fa-pen"></i></button>
-                <button className="pb-edit-btn"><i className="fa-solid fa-eye"></i></button>
+                <button className="pb-edit-btn" title="Edit"><i className="fa-solid fa-pen"></i></button>
             </div>
         </div>
     </div>
@@ -280,51 +278,29 @@ const LmsCareerPortfolio = () => {
     <p className="section-subtitle">These projects are showcased on your public portfolio</p>
 
     <div className="projects-grid">
-        <div className="project-card">
-            <div className="project-thumb" style={{"background":"linear-gradient(135deg, #1e1b4b, #4338ca)"}}>
-                <div className="project-thumb-overlay"></div>
-                <i className="fa-solid fa-graduation-cap" style={{"color":"rgba(255,255,255,0.3)"}}></i>
+        {projects.length === 0 ? (
+            <div style={{ gridColumn: '1 / -1', padding: '36px', textAlign: 'center', background: 'var(--surface)', border: '1px dashed var(--border)', borderRadius: '16px' }}>
+                <i className="fa-solid fa-folder-open" style={{ fontSize: '32px', color: '#94a3b8', marginBottom: '8px', display: 'block' }}></i>
+                <div style={{ fontWeight: '800', fontSize: '15px', color: 'var(--text-main, #0F172A)' }}>No Showcase Projects Added Yet</div>
+                <div style={{ fontSize: '12.5px', color: 'var(--text-muted, #64748B)', marginTop: '4px' }}>Add your academic assignments, capstone projects, and GitHub repositories to showcase to recruiters.</div>
             </div>
-            <div className="project-body">
-                <div className="project-name">UniLMS — Learning Platform</div>
-                <div className="project-desc">Full-stack LMS with RBAC, video streaming, timetable engine, and real-time quiz system.</div>
-                <div className="project-tech-tags">
-                    <span className="project-tech-tag">CodeIgniter 4</span>
-                    <span className="project-tech-tag">MySQL</span>
-                    <span className="project-tech-tag">JavaScript</span>
+        ) : (
+            projects.map((p, idx) => (
+                <div key={idx} className="project-card">
+                    <div className="project-thumb" style={{"background":"linear-gradient(135deg, #1e1b4b, #4338ca)"}}>
+                        <div className="project-thumb-overlay"></div>
+                        <i className="fa-solid fa-graduation-cap" style={{"color":"rgba(255,255,255,0.3)"}}></i>
+                    </div>
+                    <div className="project-body">
+                        <div className="project-name">{p.name}</div>
+                        <div className="project-desc">{p.desc}</div>
+                        <div className="project-tech-tags">
+                            {p.tags?.map((t, tidx) => <span key={tidx} className="project-tech-tag">{t}</span>)}
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div className="project-card">
-            <div className="project-thumb" style={{"background":"linear-gradient(135deg, #064e3b, #10b981)"}}>
-                <div className="project-thumb-overlay"></div>
-                <i className="fa-solid fa-cart-shopping" style={{"color":"rgba(255,255,255,0.3)"}}></i>
-            </div>
-            <div className="project-body">
-                <div className="project-name">E-Commerce API</div>
-                <div className="project-desc">RESTful API with JWT auth, payment gateway integration, and order management.</div>
-                <div className="project-tech-tags">
-                    <span className="project-tech-tag">Node.js</span>
-                    <span className="project-tech-tag">Express</span>
-                    <span className="project-tech-tag">MongoDB</span>
-                </div>
-            </div>
-        </div>
-        <div className="project-card">
-            <div className="project-thumb" style={{"background":"linear-gradient(135deg, #831843, #ec4899)"}}>
-                <div className="project-thumb-overlay"></div>
-                <i className="fa-solid fa-robot" style={{"color":"rgba(255,255,255,0.3)"}}></i>
-            </div>
-            <div className="project-body">
-                <div className="project-name">AI Chatbot</div>
-                <div className="project-desc">Conversational AI bot with NLP, sentiment analysis, and multi-language support.</div>
-                <div className="project-tech-tags">
-                    <span className="project-tech-tag">Python</span>
-                    <span className="project-tech-tag">TensorFlow</span>
-                    <span className="project-tech-tag">Flask</span>
-                </div>
-            </div>
-        </div>
+            ))
+        )}
     </div>
 </div>
 
