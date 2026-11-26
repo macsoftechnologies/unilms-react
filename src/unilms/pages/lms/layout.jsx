@@ -19,17 +19,17 @@ const LmsLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [studentInfo, setStudentInfo] = useState(() => {
     try {
+      const cachedProf = studentsService.getCachedSelfServiceSummary();
+      const prof = cachedProf?.studentProfile || cachedProf?.data?.studentProfile || cachedProf;
       const stored = localStorage.getItem('unilms_user');
-      if (stored) {
-        const u = JSON.parse(stored);
-        const sem = u.semester || u.studentProfile?.currentSemester || u.currentSemester || '1';
-        return {
-          name: u.name || `${u.firstName || ''} ${u.lastName || ''}`.trim() || 'Enrolled Student',
-          rollNumber: u.rollNumber || u.roll_number || 'STU-ONLINE',
-          program: u.program || u.studentProfile?.program?.name || 'Degree Program',
-          semester: String(sem).replace(/semester/i, '').trim() || '1'
-        };
-      }
+      const u = stored ? JSON.parse(stored) : {};
+      const sem = prof?.currentSemester || u.semester || u.studentProfile?.currentSemester || u.currentSemester || '1';
+      return {
+        name: prof?.name || u.name || `${u.firstName || ''} ${u.lastName || ''}`.trim() || 'Enrolled Student',
+        rollNumber: prof?.rollNumber || u.rollNumber || u.roll_number || 'STU-ONLINE',
+        program: (prof?.program && prof.program !== 'N/A') ? prof.program : (u.program || u.studentProfile?.program?.name || 'Degree Program'),
+        semester: String(sem).replace(/semester/i, '').trim() || '1'
+      };
     } catch (e) {}
     return { name: 'Enrolled Student', rollNumber: 'STU-ONLINE', program: 'Degree Program', semester: '1' };
   });
@@ -489,7 +489,13 @@ const LmsLayout = () => {
 
             {/* Sub-Page Content Container */}
             <main className="lms-page-container">
-              <Outlet />
+              <React.Suspense fallback={
+                <div style={{ padding: '40px', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+                  <div style={{ width: '28px', height: '28px', border: '2.5px solid rgba(99,102,241,0.2)', borderTopColor: '#6366f1', borderRadius: '50%', animation: 'unilmsSpin 0.75s linear infinite' }} />
+                </div>
+              }>
+                <Outlet />
+              </React.Suspense>
             </main>
           </div>
 

@@ -1,6 +1,16 @@
 import apiClient from './api';
 
+let _cachedQuizzes = null;
+try {
+  const stored = sessionStorage.getItem('unilms_swr_cbt_quizzes');
+  if (stored) _cachedQuizzes = JSON.parse(stored);
+} catch (e) {}
+
 export const cbtService = {
+  // Synchronous cache getters
+  getCachedQuizzes: () => _cachedQuizzes,
+  hasCachedQuizzes: () => Boolean(_cachedQuizzes && Array.isArray(_cachedQuizzes) && _cachedQuizzes.length > 0),
+
   // Session / Exam Player
   startOrResumeSession: async (data) => {
     return apiClient.post('/cbt/start', data);
@@ -22,10 +32,15 @@ export const cbtService = {
   getQuizzes: async () => {
     try {
       const res = await apiClient.get('/cbt/quizzes');
-      return Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
+      const list = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
+      _cachedQuizzes = list;
+      try {
+        sessionStorage.setItem('unilms_swr_cbt_quizzes', JSON.stringify(list));
+      } catch (e) {}
+      return list;
     } catch (e) {
       console.warn('Backend quizzes fetch failed:', e.message);
-      return [];
+      return _cachedQuizzes || [];
     }
   },
 

@@ -3,8 +3,8 @@ import lmsStudentService from '../../../services/lmsStudent.service';
 
 const LmsAttendanceIndex = () => {
   const [selectedDay, setSelectedDay] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [attendanceData, setAttendanceData] = useState(null);
+  const [attendanceData, setAttendanceData] = useState(() => lmsStudentService.getCachedAttendance());
+  const [loading, setLoading] = useState(() => !lmsStudentService.getCachedAttendance());
   const [viewDate, setViewDate] = useState(new Date());
 
   useEffect(() => {

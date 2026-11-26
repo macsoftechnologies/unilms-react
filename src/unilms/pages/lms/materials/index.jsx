@@ -3,10 +3,50 @@ import { Link } from 'react-router-dom';
 import lmsService from '../../../services/lms.service';
 import academicsService from '../../../services/academics.service';
 
+const mapMaterialsCourses = (raw) => {
+  const list = Array.isArray(raw?.data) ? raw.data : (Array.isArray(raw) ? raw : []);
+  if (list.length === 0) return [];
+  return list.map((c, idx) => ({
+    id: c.id || idx + 1,
+    title: c.title,
+    category: c.category || 'General',
+    duration: c.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0) * 15, 0) || 60,
+    lessons: c.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) || (c._count?.modules || 0),
+    chapters: c.modules?.length || 1,
+    description: c.description || 'Comprehensive interactive course.',
+    watchUrl: `/unilms/lms/materials/watch_course?courseId=${c.id}`
+  }));
+};
+
+const mapGroupedMaterials = (raw) => {
+  const list = Array.isArray(raw?.data) ? raw.data : (Array.isArray(raw) ? raw : []);
+  if (list.length === 0) return [];
+  const grouped = {};
+  list.forEach(m => {
+    const sName = m.subject?.name || 'General Coursework';
+    if (!grouped[sName]) grouped[sName] = [];
+    grouped[sName].push({
+      id: m.id,
+      title: m.title,
+      date: m.createdAt ? new Date(m.createdAt).toLocaleDateString('en-IN') : 'Recent',
+      description: m.description || 'Official lecture notes and syllabus resources.',
+      type: (m.type || 'pdf').toLowerCase(),
+      fileUrl: m.fileUrl || '#',
+      size: m.fileName || 'Resource Document'
+    });
+  });
+  return Object.keys(grouped).map(subject => ({
+    subject,
+    materials: grouped[subject]
+  }));
+};
+
 const LmsMaterialsIndex = () => {
-  const [coursesList, setCoursesList] = useState([]);
-  const [subjectMaterialsList, setSubjectMaterialsList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const cachedCourses = lmsService.getCachedCourses();
+  const cachedMats = academicsService.getCachedStudyMaterials();
+  const [coursesList, setCoursesList] = useState(() => mapMaterialsCourses(cachedCourses));
+  const [subjectMaterialsList, setSubjectMaterialsList] = useState(() => mapGroupedMaterials(cachedMats));
+  const [loading, setLoading] = useState(() => !cachedCourses && !cachedMats);
 
   useEffect(() => {
     let isMounted = true;
@@ -18,51 +58,16 @@ const LmsMaterialsIndex = () => {
 
       // 1. Live LMS Video Courses published from Content Creator Studio
       const rawCourses = coursesRes.status === 'fulfilled' ? (coursesRes.value?.data || coursesRes.value || []) : [];
-      if (Array.isArray(rawCourses) && rawCourses.length > 0) {
-        const mappedCourses = rawCourses.map((c, idx) => ({
-          id: c.id || idx + 1,
-          title: c.title,
-          category: c.category || 'General',
-          duration: c.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0) * 15, 0) || 60,
-          lessons: c.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) || (c._count?.modules || 0),
-          chapters: c.modules?.length || 1,
-          description: c.description || 'Comprehensive interactive course.',
-          watchUrl: `/unilms/lms/materials/watch_course?courseId=${c.id}`
-        }));
-        setCoursesList(mappedCourses);
-      } else {
-        setCoursesList([]);
-      }
+      setCoursesList(mapMaterialsCourses(rawCourses));
 
       // 2. Live Subject Study Materials uploaded in Academics / Faculty desk
       const rawMats = matsRes.status === 'fulfilled' ? (matsRes.value?.data || matsRes.value || []) : [];
-      if (Array.isArray(rawMats) && rawMats.length > 0) {
-        const grouped = {};
-        rawMats.forEach(m => {
-          const sName = m.subject?.name || 'General Coursework';
-          if (!grouped[sName]) grouped[sName] = [];
-          grouped[sName].push({
-            id: m.id,
-            title: m.title,
-            date: m.createdAt ? new Date(m.createdAt).toLocaleDateString('en-IN') : 'Recent',
-            description: m.description || 'Official lecture notes and syllabus resources.',
-            type: (m.type || 'pdf').toLowerCase(),
-            fileUrl: m.fileUrl || '#',
-            size: m.fileName || 'Resource Document'
-          });
-        });
-        const mappedMaterials = Object.keys(grouped).map(subject => ({
-          subject,
-          materials: grouped[subject]
-        }));
-        setSubjectMaterialsList(mappedMaterials);
-      } else {
-        setSubjectMaterialsList([]);
-      }
-    })
-    .catch((e) => console.warn('Materials fetch note:', e.message))
-    .finally(() => { if (isMounted) setLoading(false); });
-
+      setSubjectMaterialsList(mapGroupedMaterials(rawMats));
+    }).catch((e) => {
+      console.warn('Materials fetch note:', e.message);
+    }).finally(() => {
+      if (isMounted) setLoading(false);
+    });
     return () => { isMounted = false; };
   }, []);
   return (

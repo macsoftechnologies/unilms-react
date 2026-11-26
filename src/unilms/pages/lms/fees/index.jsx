@@ -3,11 +3,61 @@ import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../
 import lmsStudentService from '../../../services/lmsStudent.service';
 import { getCurrentAcademicYear } from '../../../utils/date';
 
+const formatInvoices = (rawInvoices) => {
+  if (!Array.isArray(rawInvoices)) return [];
+  return rawInvoices.map((inv) => {
+    const billed = Number(inv.totalAmount || inv.amount || 0);
+    const paid = Number(inv.paidAmount || 0);
+    const bal = Number(inv.balanceAmount ?? (billed - paid));
+    const isPaid = inv.status === 'PAID' || bal <= 0;
+    const isPartial = inv.status === 'PARTIAL' || (paid > 0 && bal > 0);
+
+    return {
+      id: inv.id,
+      invoiceNumber: inv.invoiceNumber || 'INV-DUE',
+      name: inv.title || 'Term Academic Tuition & Package',
+      academicYear: inv.academicYear || getCurrentAcademicYear(),
+      semester: inv.semester || 'Semester 1',
+      dueDate: inv.dueDate ? new Date(inv.dueDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—',
+      due: billed.toLocaleString('en-IN', { minimumFractionDigits: 2 }),
+      paid: paid.toLocaleString('en-IN', { minimumFractionDigits: 2 }),
+      balance: bal.toLocaleString('en-IN', { minimumFractionDigits: 2 }),
+      status: isPaid ? 'Paid' : isPartial ? 'Partial' : 'Pending',
+      statusColor: isPaid ? '#10B981' : isPartial ? '#F59E0B' : '#EF4444',
+      statusBg: isPaid ? 'rgba(16, 185, 129, 0.12)' : isPartial ? 'rgba(245, 158, 11, 0.12)' : 'rgba(239, 68, 68, 0.12)',
+      icon: isPaid ? 'fa-circle-check' : isPartial ? 'fa-clock' : 'fa-triangle-exclamation'
+    };
+  });
+};
+
+const formatReceipts = (rawInvoices) => {
+  if (!Array.isArray(rawInvoices)) return [];
+  const extractedReceipts = [];
+  rawInvoices.forEach((inv) => {
+    if (Array.isArray(inv.payments)) {
+      inv.payments.forEach((p) => {
+        extractedReceipts.push({
+          id: p.id,
+          receiptNo: p.receiptNumber || 'RCP-ONLINE',
+          date: p.paidAt ? new Date(p.paidAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—',
+          method: `${p.paymentMode || 'Digital'} Gateway`,
+          transactionRef: p.transactionRef || 'TXN-SETTLED',
+          amount: Number(p.amountPaid || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }),
+          status: 'Verified'
+        });
+      });
+    }
+  });
+  return extractedReceipts;
+};
+
 const LmsFeesIndex = () => {
-  const [loading, setLoading] = useState(true);
-  const [invoices, setInvoices] = useState([]);
-  const [receipts, setReceipts] = useState([]);
-  const [summary, setSummary] = useState({
+  const cachedFees = lmsStudentService.getCachedFees();
+  const cachedData = (cachedFees && cachedFees.data) ? cachedFees.data : cachedFees;
+  const [loading, setLoading] = useState(() => !cachedData);
+  const [invoices, setInvoices] = useState(() => formatInvoices(cachedData?.invoices));
+  const [receipts, setReceipts] = useState(() => formatReceipts(cachedData?.invoices));
+  const [summary, setSummary] = useState(() => cachedData?.summary || {
     totalBilled: 0,
     totalPaid: 0,
     totalBalance: 0,
@@ -16,7 +66,6 @@ const LmsFeesIndex = () => {
 
   useEffect(() => {
     const fetchFees = async () => {
-      setLoading(true);
       try {
         const res = await lmsStudentService.getFees();
         const data = (res && res.data) ? res.data : res;
@@ -25,49 +74,8 @@ const LmsFeesIndex = () => {
             setSummary(data.summary);
           }
           if (Array.isArray(data.invoices)) {
-            const formattedInvoices = data.invoices.map((inv) => {
-              const billed = Number(inv.totalAmount || inv.amount || 0);
-              const paid = Number(inv.paidAmount || 0);
-              const bal = Number(inv.balanceAmount ?? (billed - paid));
-              const isPaid = inv.status === 'PAID' || bal <= 0;
-              const isPartial = inv.status === 'PARTIAL' || (paid > 0 && bal > 0);
-
-              return {
-                id: inv.id,
-                invoiceNumber: inv.invoiceNumber || 'INV-DUE',
-                name: inv.title || 'Term Academic Tuition & Package',
-                academicYear: inv.academicYear || getCurrentAcademicYear(),
-                semester: inv.semester || 'Semester 1',
-                dueDate: inv.dueDate ? new Date(inv.dueDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—',
-                due: billed.toLocaleString('en-IN', { minimumFractionDigits: 2 }),
-                paid: paid.toLocaleString('en-IN', { minimumFractionDigits: 2 }),
-                balance: bal.toLocaleString('en-IN', { minimumFractionDigits: 2 }),
-                status: isPaid ? 'Paid' : isPartial ? 'Partial' : 'Pending',
-                statusColor: isPaid ? '#10B981' : isPartial ? '#F59E0B' : '#EF4444',
-                statusBg: isPaid ? 'rgba(16, 185, 129, 0.12)' : isPartial ? 'rgba(245, 158, 11, 0.12)' : 'rgba(239, 68, 68, 0.12)',
-                icon: isPaid ? 'fa-circle-check' : isPartial ? 'fa-clock' : 'fa-triangle-exclamation'
-              };
-            });
-            setInvoices(formattedInvoices);
-
-            // Extract all verified receipts from nested payments
-            const extractedReceipts = [];
-            data.invoices.forEach((inv) => {
-              if (Array.isArray(inv.payments)) {
-                inv.payments.forEach((p) => {
-                  extractedReceipts.push({
-                    id: p.id,
-                    receiptNo: p.receiptNumber || 'RCP-ONLINE',
-                    date: p.paidAt ? new Date(p.paidAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—',
-                    method: `${p.paymentMode || 'Digital'} Gateway`,
-                    transactionRef: p.transactionRef || 'TXN-SETTLED',
-                    amount: Number(p.amountPaid || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }),
-                    status: 'Verified'
-                  });
-                });
-              }
-            });
-            setReceipts(extractedReceipts);
+            setInvoices(formatInvoices(data.invoices));
+            setReceipts(formatReceipts(data.invoices));
           }
         }
       } catch (e) {

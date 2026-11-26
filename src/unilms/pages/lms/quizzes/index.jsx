@@ -2,12 +2,36 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import cbtService from '../../../services/cbt.service';
 
+const mapQuizList = (list) => {
+  if (!Array.isArray(list) || list.length === 0) return [];
+  return list.map((q, idx) => ({
+    id: q.id || idx + 1,
+    code: q.subject?.code || `CBT${101 + idx}`,
+    courseName: q.subject?.name || 'Academic Assessment',
+    title: q.title || 'Course Objective Evaluation',
+    description: q.description || 'Proctored computer-based test evaluating subject concepts and curriculum learning outcomes.',
+    timeLimit: `${q.durationMinutes || 45} mins`,
+    attempts: '0 / 1',
+    status: 'pending',
+    score: null,
+    percentage: null,
+    grade: null,
+    accentColor: idx % 2 === 0 ? '#4F46E5' : '#0284C7',
+    badgeBg: idx % 2 === 0 ? 'rgba(79, 70, 229, 0.1)' : 'rgba(2, 132, 199, 0.1)',
+    tags: ['Proctored CBT', 'MCQs', 'Curriculum Gate'],
+    questionsCount: `${q.questions?.length || 20} MCQs`,
+    actionText: 'Start Exam',
+    actionLink: `/unilms/lms/assessments/cbt_player?quizId=${q.id}`,
+    feedback: null
+  }));
+};
+
 const LmsQuizzesIndex = () => {
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [selectedQuizModal, setSelectedQuizModal] = useState(null);
-  const [quizzes, setQuizzes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [quizzes, setQuizzes] = useState(() => mapQuizList(cbtService.getCachedQuizzes()));
+  const [loading, setLoading] = useState(() => !cbtService.getCachedQuizzes());
 
   useEffect(() => {
     let isMounted = true;
@@ -16,27 +40,7 @@ const LmsQuizzesIndex = () => {
         if (!isMounted) return;
         const list = Array.isArray(data) ? data : [];
         if (list.length > 0) {
-          const mapped = list.map((q, idx) => ({
-            id: q.id || idx + 1,
-            code: q.subject?.code || `CBT${101 + idx}`,
-            courseName: q.subject?.name || 'Academic Assessment',
-            title: q.title || 'Course Objective Evaluation',
-            description: q.description || 'Proctored computer-based test evaluating subject concepts and curriculum learning outcomes.',
-            timeLimit: `${q.durationMinutes || 45} mins`,
-            attempts: '0 / 1',
-            status: 'pending',
-            score: null,
-            percentage: null,
-            grade: null,
-            accentColor: idx % 2 === 0 ? '#4F46E5' : '#0284C7',
-            badgeBg: idx % 2 === 0 ? 'rgba(79, 70, 229, 0.1)' : 'rgba(2, 132, 199, 0.1)',
-            tags: ['Proctored CBT', 'MCQs', 'Curriculum Gate'],
-            questionsCount: `${q.questions?.length || 20} MCQs`,
-            actionText: 'Start Exam',
-            actionLink: `/unilms/lms/assessments/cbt_player?quizId=${q.id}`,
-            feedback: null
-          }));
-          setQuizzes(mapped);
+          setQuizzes(mapQuizList(list));
         }
       })
       .catch((err) => console.warn('CBT quizzes fetch note:', err.message))

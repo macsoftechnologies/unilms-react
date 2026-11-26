@@ -3,15 +3,15 @@ import { Link } from 'react-router-dom';
 import lmsStudentService from '../../services/lmsStudent.service';
 
 const LmsDashboard = () => {
-  const [loading, setLoading] = useState(true);
-  const [dashboardData, setDashboardData] = useState(null);
+  const [dashboardData, setDashboardData] = useState(() => lmsStudentService.getCachedDashboardData());
+  const [loading, setLoading] = useState(() => !lmsStudentService.getCachedDashboardData());
 
   useEffect(() => {
     let isMounted = true;
     const fetchDashboard = async () => {
       try {
         const data = await lmsStudentService.getDashboardData();
-        if (isMounted) setDashboardData(data);
+        if (isMounted && data) setDashboardData(data);
       } catch (err) {
         console.warn('Failed to load live student data:', err);
       } finally {

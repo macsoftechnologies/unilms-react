@@ -3,10 +3,48 @@ import { Link } from 'react-router-dom';
 import lmsService from '../../../services/lms.service';
 import academicsService from '../../../services/academics.service';
 
+const mapLearnCourses = (raw) => {
+  const list = Array.isArray(raw?.data) ? raw.data : (Array.isArray(raw) ? raw : []);
+  if (list.length === 0) return [];
+  return list.map((c, idx) => ({
+    id: c.id || idx + 1,
+    uuid: c.id,
+    title: c.title,
+    category: c.category || 'General',
+    duration: c.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0) * 15, 0) || 60,
+    chapter_count: c.modules?.length || 1,
+    lesson_count: c.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) || (c._count?.modules || 0),
+    description: c.description || 'Comprehensive interactive course.',
+    badge: 'Accredited'
+  }));
+};
+
+const mapLearnNotes = (raw) => {
+  const list = Array.isArray(raw?.data) ? raw.data : (Array.isArray(raw) ? raw : []);
+  if (list.length === 0) return [];
+  const grouped = {};
+  list.forEach(m => {
+    const sName = m.subject?.name || 'General Coursework';
+    if (!grouped[sName]) grouped[sName] = [];
+    grouped[sName].push({
+      id: m.id,
+      title: m.title,
+      type: (m.type || 'pdf').toLowerCase(),
+      date: m.createdAt ? new Date(m.createdAt).toLocaleDateString('en-IN') : 'Recent'
+    });
+  });
+  return Object.keys(grouped).map(subject => ({
+    subject,
+    items: grouped[subject]
+  }));
+};
+
 const LmsLearnIndex = () => {
-  const [courses, setCourses] = useState([]);
-  const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const cachedCourses = lmsService.getCachedCourses();
+  const cachedMats = academicsService.getCachedStudyMaterials();
+  const [courses, setCourses] = useState(() => mapLearnCourses(cachedCourses));
+  const [notes, setNotes] = useState(() => mapLearnNotes(cachedMats));
+  const [loading, setLoading] = useState(() => !cachedCourses && !cachedMats);
 
   const user = (() => { try { return JSON.parse(localStorage.getItem('unilms_user') || '{}'); } catch { return {}; } })();
   const studentName = user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Student';
@@ -21,55 +59,16 @@ const LmsLearnIndex = () => {
 
       // 1. Live LMS Masterclasses created in Content Creator Studio
       const rawCourses = coursesRes.status === 'fulfilled' ? (coursesRes.value?.data || coursesRes.value || []) : [];
-      if (Array.isArray(rawCourses) && rawCourses.length > 0) {
-        const mappedCourses = rawCourses.map((c, idx) => ({
-          id: c.id || idx + 1,
-          uuid: c.id,
-          title: c.title,
-          category: c.category || 'General',
-          duration: c.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0) * 15, 0) || 60,
-          chapter_count: c.modules?.length || 1,
-          lesson_count: c.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) || (c._count?.modules || 0),
-          description: c.description || 'Comprehensive interactive course.',
-          badge: 'Accredited'
-        }));
-        setCourses(mappedCourses);
-      } else {
-        setCourses([]);
-      }
+      setCourses(mapLearnCourses(rawCourses));
 
       // 2. Live Subject Study Notes uploaded in Academics / Faculty desk
       const rawMats = matsRes.status === 'fulfilled' ? (matsRes.value?.data || matsRes.value || []) : [];
-      if (Array.isArray(rawMats) && rawMats.length > 0) {
-        const grouped = {};
-        rawMats.forEach(m => {
-          const sName = m.subject?.name || 'General Coursework';
-          if (!grouped[sName]) grouped[sName] = [];
-          grouped[sName].push({
-            id: m.id,
-            title: m.title,
-            type: (m.type || 'pdf').toLowerCase(),
-            date: m.createdAt ? new Date(m.createdAt).toLocaleDateString('en-IN') : 'Recent'
-          });
-        });
-        const mappedNotes = Object.keys(grouped).map(subject => ({
-          subject,
-          items: grouped[subject]
-        }));
-        setNotes(mappedNotes);
-      } else {
-        setNotes([]);
-      }
-    })
-    .catch((e) => {
+      setNotes(mapLearnNotes(rawMats));
+    }).catch((e) => {
       console.warn('Learn fetch note:', e.message);
-      if (isMounted) {
-        setCourses([]);
-        setNotes([]);
-      }
-    })
-    .finally(() => { if (isMounted) setLoading(false); });
-
+    }).finally(() => {
+      if (isMounted) setLoading(false);
+    });
     return () => { isMounted = false; };
   }, []);
 

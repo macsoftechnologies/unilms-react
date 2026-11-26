@@ -67,17 +67,22 @@ const getTypeBadge = (type, marks) => {
 };
 
 const LmsTimetableIndex = () => {
-  const [loading, setLoading] = useState(true);
+  const cached = lmsStudentService.getCachedTimetable();
+  const [loading, setLoading] = useState(() => !cached || !cached.periods?.length);
   const [selectedDayFilter, setSelectedDayFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeModalSlot, setActiveModalSlot] = useState(null);
-  const [periods, setPeriods] = useState([]);
-  const [rawSlots, setRawSlots] = useState([]);
-  const [ward, setWard] = useState(null);
+  const [periods, setPeriods] = useState(() => {
+    if (cached && Array.isArray(cached.periods)) {
+      return [...cached.periods].sort((a, b) => (a.periodNumber || 0) - (b.periodNumber || 0));
+    }
+    return [];
+  });
+  const [rawSlots, setRawSlots] = useState(() => (cached && Array.isArray(cached.slots)) ? cached.slots : []);
+  const [ward, setWard] = useState(() => cached?.ward || null);
 
   useEffect(() => {
     const fetchTimetable = async () => {
-      setLoading(true);
       try {
         const data = await lmsStudentService.getTimetable();
         if (data) {

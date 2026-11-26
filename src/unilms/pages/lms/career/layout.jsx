@@ -496,7 +496,13 @@ const LmsCareerLayout = () => {
 
       {/* Page Body */}
       <main className="career-main-content">
-        <Outlet />
+        <React.Suspense fallback={
+          <div style={{ padding: '40px', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+            <div style={{ width: '28px', height: '28px', border: '2.5px solid rgba(99,102,241,0.2)', borderTopColor: '#6366f1', borderRadius: '50%', animation: 'unilmsSpin 0.75s linear infinite' }} />
+          </div>
+        }>
+          <Outlet />
+        </React.Suspense>
       </main>
 
       {/* Logout Confirmation Modal */}

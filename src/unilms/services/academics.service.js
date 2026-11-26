@@ -1,6 +1,15 @@
 import apiClient from './api';
 
+let _cachedStudyMaterials = null;
+try {
+  const stored = sessionStorage.getItem('unilms_swr_study_materials');
+  if (stored) _cachedStudyMaterials = JSON.parse(stored);
+} catch (e) {}
+
 class AcademicsService {
+  getCachedStudyMaterials() {
+    return _cachedStudyMaterials;
+  }
   // --- DEPARTMENTS ---
   async getDepartments() {
     try {
@@ -280,10 +289,15 @@ class AcademicsService {
   async getStudyMaterials(params) {
     try {
       const res = await apiClient.get('/academics/materials', { params });
-      return res.data || res;
+      const data = res.data || res;
+      _cachedStudyMaterials = data;
+      try {
+        sessionStorage.setItem('unilms_swr_study_materials', JSON.stringify(data));
+      } catch (e) {}
+      return data;
     } catch (e) {
       console.warn('Backend materials fetch failed:', e.message);
-      return [];
+      return _cachedStudyMaterials || [];
     }
   }
 

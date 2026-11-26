@@ -1,6 +1,15 @@
 import apiClient from './api';
 
+let _cachedSelfService = null;
+try {
+  const stored = sessionStorage.getItem('unilms_swr_self_service');
+  if (stored) _cachedSelfService = JSON.parse(stored);
+} catch (e) {}
+
 class StudentsService {
+  getCachedSelfServiceSummary() {
+    return _cachedSelfService;
+  }
   async getStudents(query = {}) {
     try {
       const res = await apiClient.get('/students', { params: query });
@@ -43,8 +52,19 @@ class StudentsService {
 
   // --- STUDENT PORTAL & DIGITAL ID ---
   async getSelfServiceSummary(studentId) {
-    const res = await apiClient.get('/students/portal/self-service-summary', { params: { studentId } });
-    return res.data || res;
+    try {
+      const res = await apiClient.get('/students/portal/self-service-summary', { params: { studentId } });
+      const data = res.data || res;
+      if (data) {
+        _cachedSelfService = data;
+        try {
+          sessionStorage.setItem('unilms_swr_self_service', JSON.stringify(data));
+        } catch (e) {}
+      }
+      return data;
+    } catch (e) {
+      return _cachedSelfService || null;
+    }
   }
 
   async getDigitalId(studentId) {

@@ -3,6 +3,32 @@ import parentService from './parent.service';
 import studentsService from './students.service';
 import academicsService from './academics.service';
 
+// In-memory + sessionStorage SWR Cache to eliminate tab-switching layout jumps and flickering
+const _swrCache = new Map();
+
+function getCachedItem(key) {
+  const mem = _swrCache.get(key);
+  if (mem) return mem.data;
+  try {
+    const raw = sessionStorage.getItem(`unilms_swr_${key}`);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      _swrCache.set(key, { data: parsed, time: Date.now() });
+      return parsed;
+    }
+  } catch (e) {}
+  return null;
+}
+
+function setCachedItem(key, data) {
+  if (data !== undefined && data !== null) {
+    _swrCache.set(key, { data, time: Date.now() });
+    try {
+      sessionStorage.setItem(`unilms_swr_${key}`, JSON.stringify(data));
+    } catch (e) {}
+  }
+}
+
 class LmsStudentService {
   /**
    * Resolve active student ID from session token context.
@@ -19,19 +45,47 @@ class LmsStudentService {
     return null;
   }
 
+  // --- SYNCHRONOUS SWR GETTERS FOR INSTANT ZERO-FLICKER RENDERING ---
+  getCachedDashboardData() {
+    return getCachedItem('dashboard');
+  }
+
+  getCachedTimetable() {
+    return getCachedItem('timetable');
+  }
+
+  getCachedAttendance() {
+    return getCachedItem('attendance');
+  }
+
+  getCachedFees() {
+    return getCachedItem('fees');
+  }
+
+  getCachedMarks(semester) {
+    return getCachedItem(`marks_${semester || 'all'}`);
+  }
+
+  getCachedAssignments() {
+    return getCachedItem('assignments');
+  }
+
   /**
    * Get student dashboard overview (Profile, Attendance, Fees, Today's Classes)
    */
   async getDashboardData() {
     const studentId = await this.getActiveStudentId();
-    if (!studentId) return null;
+    if (!studentId) return getCachedItem('dashboard');
 
     try {
       const overview = await parentService.getStudentOverview(studentId);
-      return overview;
+      if (overview) {
+        setCachedItem('dashboard', overview);
+      }
+      return overview || getCachedItem('dashboard');
     } catch (err) {
       console.warn('Failed to fetch student dashboard data:', err);
-      return null;
+      return getCachedItem('dashboard');
     }
   }
 
@@ -40,22 +94,24 @@ class LmsStudentService {
    */
   async getTimetable() {
     const studentId = await this.getActiveStudentId();
-    if (!studentId) return { periods: [], slots: [] };
+    if (!studentId) return getCachedItem('timetable') || { periods: [], slots: [] };
 
     try {
       const res = await parentService.getTimetable(studentId);
       const data = (res && res.data) ? res.data : res;
       if (data && data.periods) {
-        return {
+        const payload = {
           periods: Array.isArray(data.periods) ? data.periods : [],
           slots: Array.isArray(data.slots) ? data.slots : [],
           ward: data.ward || null
         };
+        setCachedItem('timetable', payload);
+        return payload;
       }
-      return { periods: [], slots: [] };
+      return getCachedItem('timetable') || { periods: [], slots: [] };
     } catch (err) {
       console.warn('Failed to fetch timetable:', err);
-      return { periods: [], slots: [] };
+      return getCachedItem('timetable') || { periods: [], slots: [] };
     }
   }
 
@@ -64,13 +120,17 @@ class LmsStudentService {
    */
   async getAttendance() {
     const studentId = await this.getActiveStudentId();
-    if (!studentId) return null;
+    if (!studentId) return getCachedItem('attendance');
 
     try {
-      return await parentService.getAttendance(studentId);
+      const res = await parentService.getAttendance(studentId);
+      if (res) {
+        setCachedItem('attendance', res);
+      }
+      return res || getCachedItem('attendance');
     } catch (err) {
       console.warn('Failed to fetch attendance:', err);
-      return null;
+      return getCachedItem('attendance');
     }
   }
 
@@ -79,13 +139,18 @@ class LmsStudentService {
    */
   async getFees() {
     const studentId = await this.getActiveStudentId();
-    if (!studentId) return null;
+    if (!studentId) return getCachedItem('fees');
 
     try {
-      return await parentService.getFees(studentId);
+      const res = await parentService.getFees(studentId);
+      const data = (res && res.data) ? res.data : res;
+      if (data) {
+        setCachedItem('fees', data);
+      }
+      return data || getCachedItem('fees');
     } catch (err) {
       console.warn('Failed to fetch fees:', err);
-      return null;
+      return getCachedItem('fees');
     }
   }
 
@@ -94,14 +159,19 @@ class LmsStudentService {
    */
   async getMarks(semester) {
     const studentId = await this.getActiveStudentId();
-    if (!studentId) return null;
+    const cacheKey = `marks_${semester || 'all'}`;
+    if (!studentId) return getCachedItem(cacheKey);
 
     try {
       const res = await parentService.getMarks(studentId, semester);
-      return (res && res.data) ? res.data : res;
+      const data = (res && res.data) ? res.data : res;
+      if (data) {
+        setCachedItem(cacheKey, data);
+      }
+      return data || getCachedItem(cacheKey);
     } catch (err) {
       console.warn('Failed to fetch marks:', err);
-      return null;
+      return getCachedItem(cacheKey);
     }
   }
 
@@ -110,18 +180,20 @@ class LmsStudentService {
    */
   async getAssignments() {
     const studentId = await this.getActiveStudentId();
-    if (!studentId) return { assignments: [], materials: [] };
+    if (!studentId) return getCachedItem('assignments') || { assignments: [], materials: [] };
 
     try {
       const res = await parentService.getHomework(studentId);
       const data = (res && res.data) ? res.data : res;
-      return {
+      const payload = {
         assignments: Array.isArray(data?.assignments) ? data.assignments : [],
         materials: Array.isArray(data?.materials) ? data.materials : []
       };
+      setCachedItem('assignments', payload);
+      return payload;
     } catch (err) {
       console.warn('Failed to fetch assignments:', err);
-      return { assignments: [], materials: [] };
+      return getCachedItem('assignments') || { assignments: [], materials: [] };
     }
   }
 }
