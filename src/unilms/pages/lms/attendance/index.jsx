@@ -5,6 +5,7 @@ const LmsAttendanceIndex = () => {
   const [selectedDay, setSelectedDay] = useState(null);
   const [loading, setLoading] = useState(true);
   const [attendanceData, setAttendanceData] = useState(null);
+  const [viewDate, setViewDate] = useState(new Date());
 
   useEffect(() => {
     let isMounted = true;
@@ -30,11 +31,15 @@ const LmsAttendanceIndex = () => {
   const presentCount = summary.presentCount !== undefined ? summary.presentCount : records.filter(r => r.status === 'PRESENT').length;
   const absentCount = summary.absentCount !== undefined ? summary.absentCount : records.filter(r => r.status === 'ABSENT').length;
   const lateCount = summary.lateCount !== undefined ? summary.lateCount : records.filter(r => r.status === 'LATE').length;
-  const attendanceRate = summary.attendanceRate !== undefined ? summary.attendanceRate : (totalSessions > 0 ? Number(((presentCount / totalSessions) * 100).toFixed(1)) : 100);
+  const attendanceRate = summary.attendanceRate !== undefined ? summary.attendanceRate : (totalSessions > 0 ? Number(((presentCount / totalSessions) * 100).toFixed(1)) : 0);
+
+  const viewYear = viewDate.getFullYear();
+  const viewMonth = viewDate.getMonth();
+  const monthName = viewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   const overall = {
-    percentage: attendanceRate,
-    statusText: attendanceRate >= 75 ? 'Safe Zone (Good Standing)' : 'Detention Risk (<75%)',
+    percentage: totalSessions > 0 ? attendanceRate : 0,
+    statusText: totalSessions === 0 ? 'No Sessions Recorded' : (attendanceRate >= 75 ? 'Safe Zone (Good Standing)' : 'Detention Risk (<75%)'),
     present: presentCount,
     late: lateCount,
     absent: absentCount,
@@ -43,8 +48,8 @@ const LmsAttendanceIndex = () => {
   };
 
   const monthStats = {
-    name: 'Current Term 2026',
-    percentage: attendanceRate,
+    name: monthName,
+    percentage: totalSessions > 0 ? attendanceRate : 0,
     present: presentCount,
     absent: absentCount,
     total: totalSessions,
@@ -74,38 +79,59 @@ const LmsAttendanceIndex = () => {
 
   const subjects = Object.values(subjectMap).map(s => ({
     ...s,
-    percentage: s.total > 0 ? Number(((s.attended / s.total) * 100).toFixed(1)) : 100,
+    percentage: s.total > 0 ? Number(((s.attended / s.total) * 100).toFixed(1)) : 0,
     safeBunk: Math.max(0, Math.floor(s.attended - s.total * 0.75))
   }));
 
-  // Dynamically calculate calendar days for active month & year
+  // Dynamically calculate calendar days and leading blanks for active month & year
   const now = new Date();
-  const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth();
-  const todayDate = now.getDate();
-  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+  const firstDayOfWeek = new Date(viewYear, viewMonth, 1).getDay(); // 0 = Sun, 1 = Mon ...
+  const leadingOffset = (firstDayOfWeek + 6) % 7; // In Mon-Sun grid: Mon=0, ..., Sun=6
+
+  const recordMapByDate = {};
+  records.forEach(r => {
+    const dStr = r.date ? (typeof r.date === 'string' ? r.date.split('T')[0] : new Date(r.date).toISOString().split('T')[0]) : null;
+    if (dStr) {
+      if (!recordMapByDate[dStr]) recordMapByDate[dStr] = [];
+      recordMapByDate[dStr].push(r);
+    }
+  });
+
+  const enrolledDateStr = student.enrolledAt ? (typeof student.enrolledAt === 'string' ? student.enrolledAt.split('T')[0] : new Date(student.enrolledAt).toISOString().split('T')[0]) : null;
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
   const calendarDays = Array.from({ length: daysInMonth }, (_, i) => {
     const day = i + 1;
-    const dateObj = new Date(currentYear, currentMonth, day);
+    const dateObj = new Date(viewYear, viewMonth, day);
     const dayOfWeek = dateObj.getDay(); // 0 = Sun, 6 = Sat
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-    const isToday = day === todayDate;
-    const isPastOrToday = day <= todayDate;
+    const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const isToday = dateStr === todayStr;
+    const isFuture = dateStr > todayStr;
+    const isBeforeEnrollment = enrolledDateStr ? (dateStr < enrolledDateStr) : false;
 
+    const dayRecords = recordMapByDate[dateStr] || [];
     let status = 'upcoming';
-    let count = 0;
+    let count = dayRecords.length;
+
     if (isWeekend) {
       status = 'weekend';
-    } else if (isPastOrToday) {
-      status = 'present';
-      count = 4;
-    } else {
+    } else if (dayRecords.length > 0) {
+      const pCount = dayRecords.filter(r => r.status?.toUpperCase() === 'PRESENT' || r.status?.toUpperCase() === 'LATE').length;
+      const aCount = dayRecords.filter(r => r.status?.toUpperCase() === 'ABSENT').length;
+      if (aCount === 0) status = 'present';
+      else if (pCount > 0) status = 'partial';
+      else status = 'absent';
+    } else if (isFuture) {
       status = 'upcoming';
-      count = 4;
+    } else if (isBeforeEnrollment) {
+      status = 'pre_enrollment';
+    } else {
+      status = 'no_session'; // Weekday with no attendance sessions conducted
     }
 
-    return { day, status, count, isToday };
+    return { day, dateStr, status, count, isToday };
   });
 
   return (
@@ -153,14 +179,26 @@ const LmsAttendanceIndex = () => {
           borderRadius: '14px',
           padding: '6px 12px'
         }}>
-          <button type="button" className="btn-month-nav" style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#64748B' }}>
+          <button 
+            type="button" 
+            className="btn-month-nav" 
+            onClick={() => setViewDate(new Date(viewYear, viewMonth - 1, 1))}
+            style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#64748B', padding: '4px 8px' }}
+            title="Previous Month"
+          >
             <i className="fa-solid fa-chevron-left"></i>
           </button>
           <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: '16px', fontWeight: '800', color: 'var(--text-main, #0F172A)' }}>
             <i className="fa-solid fa-calendar-days text-primary me-2" style={{ color: '#4F46E5' }}></i>
-            October 2026
+            {monthName}
           </div>
-          <button type="button" className="btn-month-nav" style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#64748B' }}>
+          <button 
+            type="button" 
+            className="btn-month-nav" 
+            onClick={() => setViewDate(new Date(viewYear, viewMonth + 1, 1))}
+            style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#64748B', padding: '4px 8px' }}
+            title="Next Month"
+          >
             <i className="fa-solid fa-chevron-right"></i>
           </button>
         </div>
@@ -191,11 +229,12 @@ const LmsAttendanceIndex = () => {
           <div style={{ fontSize: '9.5px', color: 'var(--text-muted, #64748B)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2px' }}>
             Semester Attendance
           </div>
-          <div style={{ fontSize: '16.5px', fontWeight: '800', color: 'var(--primary, #4F46E5)', marginTop: '2px', lineHeight: '1.2' }}>
-            {overall.percentage}% <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>Overall</span>
+          <div style={{ fontSize: '16.5px', fontWeight: '800', color: totalSessions === 0 ? 'var(--text-muted, #64748B)' : 'var(--primary, #4F46E5)', marginTop: '2px', lineHeight: '1.2' }}>
+            {totalSessions === 0 ? '—' : `${overall.percentage}%`} <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>Overall</span>
           </div>
-          <div style={{ fontSize: '10px', color: 'var(--success, #10B981)', fontWeight: '700', marginTop: '2px' }}>
-            <i className="fa-solid fa-arrow-trend-up me-1"></i> Safe Standing ({overall.present}/{overall.total})
+          <div style={{ fontSize: '10px', color: totalSessions === 0 ? 'var(--text-muted, #64748B)' : 'var(--success, #10B981)', fontWeight: '700', marginTop: '2px' }}>
+            <i className={`fa-solid ${totalSessions === 0 ? 'fa-clock' : 'fa-arrow-trend-up'} me-1`}></i>
+            {totalSessions === 0 ? 'No Sessions Recorded' : `Safe Standing (${overall.present}/${overall.total})`}
           </div>
         </div>
 
@@ -218,8 +257,8 @@ const LmsAttendanceIndex = () => {
           <div style={{ fontSize: '16.5px', fontWeight: '800', color: 'var(--text-main, #0F172A)', marginTop: '2px', lineHeight: '1.2' }}>
             +{overall.safeBunkCount} Sessions
           </div>
-          <div style={{ fontSize: '10px', color: 'var(--success, #10B981)', fontWeight: '700', marginTop: '2px' }}>
-            <i className="fa-solid fa-shield-halved me-1"></i> Safe Zone (Min 75% Cutoff)
+          <div style={{ fontSize: '10px', color: totalSessions === 0 ? 'var(--text-muted, #64748B)' : 'var(--success, #10B981)', fontWeight: '700', marginTop: '2px' }}>
+            <i className="fa-solid fa-shield-halved me-1"></i> {totalSessions === 0 ? 'Program Just Commenced' : 'Safe Zone (Min 75% Cutoff)'}
           </div>
         </div>
 
@@ -237,12 +276,12 @@ const LmsAttendanceIndex = () => {
           }}
         >
           <div style={{ fontSize: '9.5px', color: 'var(--text-muted, #64748B)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2px' }}>
-            October 2026 Monthly
+            {monthName} Monthly
           </div>
-          <div style={{ fontSize: '16.5px', fontWeight: '800', color: '#06B6D4', marginTop: '2px', lineHeight: '1.2' }}>
-            {monthStats.percentage}% <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>Rate</span>
+          <div style={{ fontSize: '16.5px', fontWeight: '800', color: totalSessions === 0 ? 'var(--text-muted, #64748B)' : '#06B6D4', marginTop: '2px', lineHeight: '1.2' }}>
+            {totalSessions === 0 ? '—' : `${monthStats.percentage}%`} <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>Rate</span>
           </div>
-          <div style={{ fontSize: '10px', color: 'var(--success, #10B981)', fontWeight: '700', marginTop: '2px' }}>
+          <div style={{ fontSize: '10px', color: totalSessions === 0 ? 'var(--text-muted, #64748B)' : 'var(--success, #10B981)', fontWeight: '700', marginTop: '2px' }}>
             <i className="fa-solid fa-circle-check me-1"></i> {monthStats.present} Present • {monthStats.absent} Absent
           </div>
         </div>
@@ -263,11 +302,11 @@ const LmsAttendanceIndex = () => {
           <div style={{ fontSize: '9.5px', color: 'var(--text-muted, #64748B)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2px' }}>
             CIE Eligibility
           </div>
-          <div style={{ fontSize: '16.5px', fontWeight: '800', color: 'var(--warning, #F59E0B)', marginTop: '2px', lineHeight: '1.2' }}>
-            100% Eligible
+          <div style={{ fontSize: '16.5px', fontWeight: '800', color: totalSessions === 0 ? 'var(--text-muted, #64748B)' : 'var(--warning, #F59E0B)', marginTop: '2px', lineHeight: '1.2' }}>
+            {totalSessions === 0 ? 'Eligible' : '100% Eligible'}
           </div>
           <div style={{ fontSize: '10px', color: 'var(--text-muted, #64748B)', fontWeight: '600', marginTop: '2px' }}>
-            Hall Ticket &amp; Exams Cleared
+            {totalSessions === 0 ? 'Awaiting First CIE Cycle' : 'Hall Ticket & Exams Cleared'}
           </div>
         </div>
       </div>
@@ -276,9 +315,9 @@ const LmsAttendanceIndex = () => {
       <div className="card" style={{ padding: '20px', borderRadius: '18px', border: '1px solid var(--border, #E2E8F0)', marginBottom: '24px', overflow: 'hidden' }}>
         <div style={{ marginBottom: '18px' }}>
           <h2 style={{ margin: '0', fontSize: '18px', fontWeight: '800', fontFamily: "'Outfit', sans-serif", color: 'var(--text-main, #0F172A)' }}>
-            October 2026 Attendance Grid
+            {monthName} Attendance Grid
           </h2>
-          <small style={{ color: 'var(--text-muted, #64748B)' }}>Click on any class day to inspect period timings, topics taught, and faculty sign-offs.</small>
+          <small style={{ color: 'var(--text-muted, #64748B)' }}>Inspect period timings, topics taught, and faculty sign-offs for actual recorded classes.</small>
         </div>
 
         {/* Scrollable Container on Mobile */}
@@ -291,10 +330,10 @@ const LmsAttendanceIndex = () => {
 
             {/* Calendar Tiles */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px' }}>
-              {/* Offset 3 empty tiles for Oct 1 (Thu) */}
-              <div style={{ minHeight: '75px', borderRadius: '12px', background: 'transparent' }}></div>
-              <div style={{ minHeight: '75px', borderRadius: '12px', background: 'transparent' }}></div>
-              <div style={{ minHeight: '75px', borderRadius: '12px', background: 'transparent' }}></div>
+              {/* Dynamic leading blanks based on month's 1st day */}
+              {Array.from({ length: leadingOffset }, (_, bIdx) => (
+                <div key={`blank-${bIdx}`} style={{ minHeight: '75px', borderRadius: '12px', background: 'transparent' }}></div>
+              ))}
 
               {calendarDays.map((d) => (
                 <div
@@ -310,12 +349,15 @@ const LmsAttendanceIndex = () => {
                       d.status === 'partial' ? 'rgba(245, 158, 11, 0.08)' :
                       d.status === 'absent' ? 'rgba(239, 68, 68, 0.08)' :
                       d.status === 'holiday' ? 'rgba(14, 165, 233, 0.08)' :
-                      d.status === 'weekend' ? 'var(--bg-canvas, #F8FAFC)' : 'var(--card-bg, #FFFFFF)',
+                      d.status === 'weekend' ? 'var(--bg-canvas, #F8FAFC)' :
+                      d.status === 'pre_enrollment' ? 'var(--bg-canvas, #F8FAFC)' :
+                      d.status === 'no_session' ? 'var(--surface, #FFFFFF)' : 'var(--card-bg, #FFFFFF)',
                     cursor: 'pointer',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
-                    transition: 'all 0.15s ease'
+                    transition: 'all 0.15s ease',
+                    opacity: d.status === 'pre_enrollment' ? 0.6 : 1
                   }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -332,17 +374,17 @@ const LmsAttendanceIndex = () => {
                   <div>
                     {d.status === 'present' && (
                       <span style={{ fontSize: '10px', fontWeight: '700', color: '#059669', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                        <i className="fa-solid fa-circle-check"></i> Present
+                        <i className="fa-solid fa-circle-check"></i> Present ({d.count})
                       </span>
                     )}
                     {d.status === 'partial' && (
                       <span style={{ fontSize: '10px', fontWeight: '700', color: '#D97706', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                        <i className="fa-solid fa-circle-exclamation"></i> Late/Part
+                        <i className="fa-solid fa-circle-exclamation"></i> Late/Part ({d.count})
                       </span>
                     )}
                     {d.status === 'absent' && (
                       <span style={{ fontSize: '10px', fontWeight: '700', color: '#DC2626', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                        <i className="fa-solid fa-circle-xmark"></i> Absent
+                        <i className="fa-solid fa-circle-xmark"></i> Absent ({d.count})
                       </span>
                     )}
                     {d.status === 'holiday' && (
@@ -353,8 +395,14 @@ const LmsAttendanceIndex = () => {
                     {d.status === 'weekend' && (
                       <span style={{ fontSize: '10px', color: '#94A3B8' }}>Weekend</span>
                     )}
+                    {d.status === 'pre_enrollment' && (
+                      <span style={{ fontSize: '9.5px', color: '#94A3B8' }}>Pre-Term</span>
+                    )}
+                    {d.status === 'no_session' && (
+                      <span style={{ fontSize: '9.5px', color: '#94A3B8' }}>No Class</span>
+                    )}
                     {d.status === 'upcoming' && (
-                      <span style={{ fontSize: '10px', color: '#94A3B8' }}>Scheduled</span>
+                      <span style={{ fontSize: '10px', color: '#94A3B8' }}>Upcoming</span>
                     )}
                   </div>
                 </div>
