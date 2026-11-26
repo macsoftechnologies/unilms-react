@@ -83,15 +83,21 @@ const LmsAttendanceIndex = () => {
     const slots = Array.isArray(timetableData?.slots) ? timetableData.slots : [];
     const scheduled = new Set();
     slots.forEach(s => {
-      if (s.day) {
-        const key = String(s.day).toLowerCase().trim();
+      const rawDay = s.day || s.dayOfWeek;
+      if (rawDay) {
+        const key = String(rawDay).toLowerCase().trim();
         if (DAY_NAME_TO_INDEX[key] !== undefined) {
           scheduled.add(DAY_NAME_TO_INDEX[key]);
         }
       }
     });
-    // If timetable has defined days (e.g. Mon-Sat or Mon-Fri), use them. Default fallback: Mon-Fri (1,2,3,4,5)
-    return scheduled.size > 0 ? scheduled : new Set([1, 2, 3, 4, 5]);
+
+    // In UniLMS and university timetables (as configured in Master Timetable Builder),
+    // academic instruction runs Monday through Saturday (6-Day week).
+    // Saturday is an active instructional class day; only Sunday (0) is the weekly non-instructional off-day.
+    const weekDays = new Set([1, 2, 3, 4, 5, 6]);
+    scheduled.forEach(d => weekDays.add(d));
+    return weekDays;
   }, [timetableData]);
 
   // Overall attendance statistics
@@ -405,7 +411,7 @@ const LmsAttendanceIndex = () => {
           <div style={{ display: 'flex', gap: '12px', fontSize: '12px', fontWeight: '700' }}>
             <span style={{ color: '#4F46E5', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
               <i className="fa-solid fa-calendar-week"></i>
-              Timetable: {activeDayIndices.has(6) ? '6-Day Instructional Week' : '5-Day Instructional Week'}
+              Timetable: 6-Day Instructional Week (Mon–Sat)
             </span>
           </div>
         </div>
@@ -420,10 +426,8 @@ const LmsAttendanceIndex = () => {
               <div>Wed</div>
               <div>Thu</div>
               <div>Fri</div>
-              <div style={{ color: activeDayIndices.has(6) ? '#0F172A' : '#64748B' }}>
-                Sat {activeDayIndices.has(6) ? '(Class)' : ''}
-              </div>
-              <div style={{ color: '#EC4899' }}>Sun</div>
+              <div style={{ color: '#0F172A' }}>Sat</div>
+              <div style={{ color: '#EC4899' }}>Sun (Off)</div>
             </div>
 
             {/* Calendar Tiles */}
@@ -491,7 +495,9 @@ const LmsAttendanceIndex = () => {
                       </span>
                     )}
                     {d.status === 'weekend' && (
-                      <span style={{ fontSize: '9.5px', color: '#94A3B8', fontWeight: '600' }}>Off-Day</span>
+                      <span style={{ fontSize: '9.5px', color: '#94A3B8', fontWeight: '600' }}>
+                        {d.dayOfWeek === 0 ? 'Sunday Off' : 'Off-Day'}
+                      </span>
                     )}
                     {d.status === 'pre_enrollment' && (
                       <span style={{ fontSize: '9.5px', color: '#94A3B8' }}>Pre-Term</span>
@@ -640,10 +646,12 @@ const LmsAttendanceIndex = () => {
                     <i className="fa-solid fa-calendar-minus"></i>
                   </div>
                   <h4 style={{ margin: '0 0 8px', fontSize: '17px', fontWeight: '800', color: 'var(--text-main, #0F172A)' }}>
-                    Non-Instructional Day
+                    {selectedDay.dayOfWeek === 0 ? 'Sunday Weekly Off' : 'Non-Instructional Day'}
                   </h4>
                   <p style={{ margin: 0, color: 'var(--text-muted, #64748B)', fontSize: '13.5px', lineHeight: 1.5 }}>
-                    According to the cohort's active class timetable, no lectures or laboratories are scheduled for {selectedDay.dayName}s.
+                    {selectedDay.dayOfWeek === 0
+                      ? 'Sunday is the standard weekly non-instructional off-day across the campus.'
+                      : `According to the cohort's active class timetable, no lectures or laboratories are scheduled for ${selectedDay.dayName}s.`}
                   </p>
                 </div>
               ) : selectedDay.status === 'pre_enrollment' ? (
