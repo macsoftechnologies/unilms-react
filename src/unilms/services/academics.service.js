@@ -1,14 +1,20 @@
 import apiClient from './api';
 
 let _cachedStudyMaterials = null;
+let _cachedSubjects = null;
 try {
   const stored = sessionStorage.getItem('unilms_swr_study_materials');
   if (stored) _cachedStudyMaterials = JSON.parse(stored);
+  const storedSubs = sessionStorage.getItem('unilms_swr_subjects');
+  if (storedSubs) _cachedSubjects = JSON.parse(storedSubs);
 } catch (e) {}
 
 class AcademicsService {
   getCachedStudyMaterials() {
     return _cachedStudyMaterials;
+  }
+  getCachedSubjects() {
+    return _cachedSubjects;
   }
   // --- DEPARTMENTS ---
   async getDepartments() {
@@ -170,10 +176,17 @@ class AcademicsService {
   async getSubjects() {
     try {
       const res = await apiClient.get('/academics/subjects');
-      return res.data || res;
+      const data = res.data || res;
+      if (Array.isArray(data)) {
+        _cachedSubjects = data;
+        try {
+          sessionStorage.setItem('unilms_swr_subjects', JSON.stringify(data));
+        } catch (e) {}
+      }
+      return data;
     } catch (e) {
       console.warn('Backend subjects fetch failed:', e.message);
-      return [];
+      return _cachedSubjects || [];
     }
   }
 

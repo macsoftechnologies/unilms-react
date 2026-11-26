@@ -1,6 +1,16 @@
 import apiClient from './api';
 
+let _cachedPos = null;
+try {
+  const stored = sessionStorage.getItem('unilms_swr_pos');
+  if (stored) _cachedPos = JSON.parse(stored);
+} catch (e) {}
+
 class ObeService {
+  getCachedPos() {
+    return _cachedPos;
+  }
+
   async getCos(subjectId) {
     try {
       const res = await apiClient.get('/obe/cos', { params: subjectId ? { subjectId } : {} });
@@ -19,10 +29,17 @@ class ObeService {
   async getPos(programId) {
     try {
       const res = await apiClient.get('/obe/pos', { params: programId ? { programId } : {} });
-      return res.data || res;
+      const data = res.data || res;
+      if (!programId && Array.isArray(data)) {
+        _cachedPos = data;
+        try {
+          sessionStorage.setItem('unilms_swr_pos', JSON.stringify(data));
+        } catch (e) {}
+      }
+      return data;
     } catch (e) {
       console.warn('Backend POs fetch failed:', e.message);
-      return [];
+      return (!programId && _cachedPos) ? _cachedPos : [];
     }
   }
 
@@ -61,4 +78,3 @@ class ObeService {
 
 export const obeService = new ObeService();
 export default obeService;
-

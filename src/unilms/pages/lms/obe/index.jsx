@@ -2,10 +2,41 @@ import React, { useState, useEffect } from 'react';
 import academicsService from '../../../services/academics.service';
 import obeService from '../../../services/obe.service';
 
+const mapSubjectsCos = (list) => {
+  if (!Array.isArray(list) || list.length === 0) return [];
+  return list.map(s => ({
+    name: s.name,
+    code: s.code || 'CS',
+    cos: (Array.isArray(s.courseOutcomes) && s.courseOutcomes.length > 0 ? s.courseOutcomes : [
+      { code: 'CO1', text: `Understand foundational concepts, theoretical principles and problem specifications of ${s.name}.` },
+      { code: 'CO2', text: `Apply design methodologies, algorithms, and practical implementations for ${s.name}.` },
+      { code: 'CO3', text: `Analyze performance benchmarks, system trade-offs and evaluate solutions in ${s.name}.` }
+    ])
+  }));
+};
+
+const mapPosList = (list) => {
+  if (!Array.isArray(list) || list.length === 0) {
+    return [
+      { code: 'PO1', title: 'Engineering Knowledge', desc: 'Apply mathematics, science, computing foundations, and engineering specialization to solve complex problems.', status: 'Accredited' },
+      { code: 'PO2', title: 'Problem Analysis', desc: 'Identify, formulate, research literature, and analyze complex software engineering problems.', status: 'Accredited' },
+      { code: 'PO3', title: 'Design & Development', desc: 'Design scalable solutions for complex computing problems, architectures, and components.', status: 'Accredited' }
+    ];
+  }
+  return list.map(p => ({
+    code: p.code || 'PO',
+    title: p.title || p.name || 'Graduate Attribute',
+    desc: p.description || p.desc || 'Accredited engineering outcome.',
+    status: 'Accredited'
+  }));
+};
+
 const LmsObeIndex = () => {
-  const [subjectsCOs, setSubjectsCOs] = useState([]);
-  const [programOutcomes, setProgramOutcomes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const cachedSubs = academicsService.getCachedSubjects();
+  const cachedPos = obeService.getCachedPos();
+  const [subjectsCOs, setSubjectsCOs] = useState(() => mapSubjectsCos(cachedSubs));
+  const [programOutcomes, setProgramOutcomes] = useState(() => mapPosList(cachedPos));
+  const [loading, setLoading] = useState(() => !cachedSubs && !cachedPos);
 
   useEffect(() => {
     let isMounted = true;
@@ -15,34 +46,11 @@ const LmsObeIndex = () => {
     ]).then(([subRes, posRes]) => {
       if (!isMounted) return;
       if (subRes.status === 'fulfilled' && Array.isArray(subRes.value) && subRes.value.length > 0) {
-        const mapped = subRes.value.map(s => ({
-          name: s.name,
-          code: s.code || 'CS',
-          cos: (Array.isArray(s.courseOutcomes) && s.courseOutcomes.length > 0 ? s.courseOutcomes : [
-            { code: 'CO1', text: `Understand foundational concepts, theoretical principles and problem specifications of ${s.name}.` },
-            { code: 'CO2', text: `Apply design methodologies, algorithms, and practical implementations for ${s.name}.` },
-            { code: 'CO3', text: `Analyze performance benchmarks, system trade-offs and evaluate solutions in ${s.name}.` }
-          ])
-        }));
-        setSubjectsCOs(mapped);
-      } else {
-        setSubjectsCOs([]);
+        setSubjectsCOs(mapSubjectsCos(subRes.value));
       }
 
       if (posRes.status === 'fulfilled' && Array.isArray(posRes.value) && posRes.value.length > 0) {
-        const mappedPos = posRes.value.map(p => ({
-          code: p.code || 'PO',
-          title: p.title || p.name || 'Graduate Attribute',
-          desc: p.description || p.desc || 'Accredited engineering outcome.',
-          status: 'Accredited'
-        }));
-        setProgramOutcomes(mappedPos);
-      } else {
-        setProgramOutcomes([
-          { code: 'PO1', title: 'Engineering Knowledge', desc: 'Apply mathematics, science, computing foundations, and engineering specialization to solve complex problems.', status: 'Accredited' },
-          { code: 'PO2', title: 'Problem Analysis', desc: 'Identify, formulate, research literature, and analyze complex software engineering problems.', status: 'Accredited' },
-          { code: 'PO3', title: 'Design & Development', desc: 'Design scalable solutions for complex computing problems, architectures, and components.', status: 'Accredited' }
-        ]);
+        setProgramOutcomes(mapPosList(posRes.value));
       }
     }).finally(() => { if (isMounted) setLoading(false); });
     return () => { isMounted = false; };
