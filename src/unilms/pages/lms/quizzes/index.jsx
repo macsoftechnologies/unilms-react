@@ -61,6 +61,10 @@ const LmsQuizzesIndex = () => {
 
   const completedCount = quizzes.filter(q => q.status === 'completed').length;
   const pendingCount = quizzes.filter(q => q.status === 'pending').length;
+  const completedWithScore = quizzes.filter(q => q.status === 'completed' && q.percentage !== null && !isNaN(q.percentage));
+  const avgCbtScore = completedWithScore.length > 0 
+    ? (completedWithScore.reduce((acc, q) => acc + Number(q.percentage), 0) / completedWithScore.length).toFixed(1)
+    : null;
 
   return (
     <>
@@ -197,7 +201,7 @@ const LmsQuizzesIndex = () => {
             {quizzes.length} <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>Assigned</span>
           </div>
           <div style={{ fontSize: '10px', color: 'var(--text-muted, #64748B)', fontWeight: '600', marginTop: '2px' }}>
-            <i className="fa-solid fa-layer-group me-1"></i> 3 Technical Modules
+            <i className="fa-solid fa-layer-group me-1"></i> {quizzes.length > 0 ? `${quizzes.length} Active Modules` : 'No Assessments Assigned'}
           </div>
         </div>
 
@@ -205,7 +209,7 @@ const LmsQuizzesIndex = () => {
           className="card"
           style={{
             padding: '9px 13px',
-            borderLeft: '3.5px solid var(--warning, #F59E0B)',
+            borderLeft: `3.5px solid ${pendingCount > 0 ? 'var(--warning, #F59E0B)' : 'var(--border, #CBD5E1)'}`,
             borderTop: '1px solid var(--border, #E2E8F0)',
             borderRight: '1px solid var(--border, #E2E8F0)',
             borderBottom: '1px solid var(--border, #E2E8F0)',
@@ -217,11 +221,11 @@ const LmsQuizzesIndex = () => {
           <div style={{ fontSize: '9.5px', color: 'var(--text-muted, #64748B)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2px' }}>
             Ready To Attempt
           </div>
-          <div style={{ fontSize: '16.5px', fontWeight: '800', color: 'var(--warning, #F59E0B)', marginTop: '2px', lineHeight: '1.2' }}>
+          <div style={{ fontSize: '16.5px', fontWeight: '800', color: pendingCount > 0 ? 'var(--warning, #F59E0B)' : 'var(--text-muted, #64748B)', marginTop: '2px', lineHeight: '1.2' }}>
             {pendingCount} Test Active
           </div>
-          <div style={{ fontSize: '10px', color: '#B45309', fontWeight: '700', marginTop: '2px' }}>
-            <i className="fa-solid fa-play me-1"></i> CS201 Data Structures
+          <div style={{ fontSize: '10px', color: pendingCount > 0 ? '#B45309' : 'var(--text-muted, #64748B)', fontWeight: '700', marginTop: '2px' }}>
+            <i className="fa-solid fa-play me-1"></i> {pendingCount > 0 ? (quizzes.find(q => q.status === 'pending')?.courseName || 'Active Test Window') : 'No Active Tests'}
           </div>
         </div>
 
@@ -229,7 +233,7 @@ const LmsQuizzesIndex = () => {
           className="card"
           style={{
             padding: '9px 13px',
-            borderLeft: '3.5px solid #06B6D4',
+            borderLeft: `3.5px solid ${completedCount > 0 ? '#06B6D4' : 'var(--border, #CBD5E1)'}`,
             borderTop: '1px solid var(--border, #E2E8F0)',
             borderRight: '1px solid var(--border, #E2E8F0)',
             borderBottom: '1px solid var(--border, #E2E8F0)',
@@ -241,11 +245,11 @@ const LmsQuizzesIndex = () => {
           <div style={{ fontSize: '9.5px', color: 'var(--text-muted, #64748B)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2px' }}>
             Completed &amp; Graded
           </div>
-          <div style={{ fontSize: '16.5px', fontWeight: '800', color: '#06B6D4', marginTop: '2px', lineHeight: '1.2' }}>
+          <div style={{ fontSize: '16.5px', fontWeight: '800', color: completedCount > 0 ? '#06B6D4' : 'var(--text-muted, #64748B)', marginTop: '2px', lineHeight: '1.2' }}>
             {completedCount} <span style={{ fontSize: '11.5px', color: 'var(--text-muted, #64748B)', fontWeight: '600' }}>Evaluated</span>
           </div>
-          <div style={{ fontSize: '10px', color: 'var(--success, #10B981)', fontWeight: '700', marginTop: '2px' }}>
-            <i className="fa-solid fa-circle-check me-1"></i> Detailed Analysis Ready
+          <div style={{ fontSize: '10px', color: completedCount > 0 ? 'var(--success, #10B981)' : 'var(--text-muted, #64748B)', fontWeight: '700', marginTop: '2px' }}>
+            <i className="fa-solid fa-circle-check me-1"></i> {completedCount > 0 ? 'Detailed Analysis Ready' : 'No Submissions Yet'}
           </div>
         </div>
 
@@ -253,7 +257,7 @@ const LmsQuizzesIndex = () => {
           className="card"
           style={{
             padding: '9px 13px',
-            borderLeft: '3.5px solid var(--success, #10B981)',
+            borderLeft: `3.5px solid ${avgCbtScore !== null ? 'var(--success, #10B981)' : 'var(--border, #CBD5E1)'}`,
             borderTop: '1px solid var(--border, #E2E8F0)',
             borderRight: '1px solid var(--border, #E2E8F0)',
             borderBottom: '1px solid var(--border, #E2E8F0)',
@@ -265,11 +269,15 @@ const LmsQuizzesIndex = () => {
           <div style={{ fontSize: '9.5px', color: 'var(--text-muted, #64748B)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.2px' }}>
             Average CBT Score
           </div>
-          <div style={{ fontSize: '16.5px', fontWeight: '800', color: 'var(--text-main, #0F172A)', marginTop: '2px', lineHeight: '1.2' }}>
-            95.5%
+          <div style={{ fontSize: '16.5px', fontWeight: '800', color: avgCbtScore !== null ? 'var(--text-main, #0F172A)' : 'var(--text-muted, #64748B)', marginTop: '2px', lineHeight: '1.2' }}>
+            {avgCbtScore !== null ? `${avgCbtScore}%` : '—'}
           </div>
-          <div style={{ fontSize: '10px', color: 'var(--success, #10B981)', fontWeight: '700', marginTop: '2px' }}>
-            <i className="fa-solid fa-arrow-trend-up me-1"></i> 52.50 / 55.00 Pts (Top Tier)
+          <div style={{ fontSize: '10px', color: avgCbtScore !== null ? 'var(--success, #10B981)' : 'var(--text-muted, #64748B)', fontWeight: '700', marginTop: '2px' }}>
+            {avgCbtScore !== null ? (
+              <><i className="fa-solid fa-arrow-trend-up me-1"></i> Evaluated Standing</>
+            ) : (
+              <><i className="fa-solid fa-clock me-1"></i> No Quizzes Attempted Yet</>
+            )}
           </div>
         </div>
       </div>
