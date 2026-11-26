@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import lmsService from '../../../services/lms.service';
 import academicsService from '../../../services/academics.service';
 
 const LmsMaterialsIndex = () => {
@@ -9,49 +10,59 @@ const LmsMaterialsIndex = () => {
 
   useEffect(() => {
     let isMounted = true;
-    academicsService.getSubjects()
-      .then((subjects) => {
-        if (!isMounted) return;
-        const subArray = Array.isArray(subjects) ? subjects : [];
-        if (subArray.length > 0) {
-          const mappedCourses = subArray.map((s, idx) => ({
-            id: s.id || idx + 1,
-            title: `${s.code ? `${s.code}: ` : ''}${s.name}`,
-            category: s.department?.name || 'Computer Science',
-            duration: 180 + (idx * 30),
-            lessons: (s.credits || 4) * 3,
-            chapters: s.credits || 4,
-            description: s.description || `Comprehensive institutional curriculum for ${s.name} covering theoretical foundations and hands-on laboratory exercises.`,
-            watchUrl: `/unilms/lms/materials/watch?subjectId=${s.id}`
-          }));
-          setCoursesList(mappedCourses);
+    Promise.allSettled([
+      lmsService.getCourses({ isPublished: true }),
+      academicsService.getStudyMaterials()
+    ]).then(([coursesRes, matsRes]) => {
+      if (!isMounted) return;
 
-          const mappedMaterials = subArray.map((s) => ({
-            subject: `${s.code ? `${s.code}: ` : ''}${s.name}`,
-            materials: [
-              {
-                id: `mat-${s.id}-1`,
-                title: `${s.name} - Complete Lecture Notes & Syllabus Overview.pdf`,
-                date: 'Autumn Term 2026',
-                description: `Official faculty lecture slides and syllabus notes for ${s.name}.`,
-                type: 'pdf',
-                size: '3.2 MB'
-              },
-              {
-                id: `mat-${s.id}-2`,
-                title: `${s.name} - Problem Set & Laboratory Practice Archive.zip`,
-                date: 'Autumn Term 2026',
-                description: `Curated practice problems, code skeletons and reference documentation.`,
-                type: 'link',
-                size: 'Practice Pack'
-              }
-            ]
-          }));
-          setSubjectMaterialsList(mappedMaterials);
-        }
-      })
-      .catch((e) => console.warn('Subject fetch note:', e.message))
-      .finally(() => { if (isMounted) setLoading(false); });
+      // 1. Live LMS Video Courses published from Content Creator Studio
+      const rawCourses = coursesRes.status === 'fulfilled' ? (coursesRes.value?.data || coursesRes.value || []) : [];
+      if (Array.isArray(rawCourses) && rawCourses.length > 0) {
+        const mappedCourses = rawCourses.map((c, idx) => ({
+          id: c.id || idx + 1,
+          title: c.title,
+          category: c.category || 'General',
+          duration: c.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0) * 15, 0) || 60,
+          lessons: c.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) || (c._count?.modules || 0),
+          chapters: c.modules?.length || 1,
+          description: c.description || 'Comprehensive interactive course.',
+          watchUrl: `/unilms/lms/materials/watch_course?courseId=${c.id}`
+        }));
+        setCoursesList(mappedCourses);
+      } else {
+        setCoursesList([]);
+      }
+
+      // 2. Live Subject Study Materials uploaded in Academics / Faculty desk
+      const rawMats = matsRes.status === 'fulfilled' ? (matsRes.value?.data || matsRes.value || []) : [];
+      if (Array.isArray(rawMats) && rawMats.length > 0) {
+        const grouped = {};
+        rawMats.forEach(m => {
+          const sName = m.subject?.name || 'General Coursework';
+          if (!grouped[sName]) grouped[sName] = [];
+          grouped[sName].push({
+            id: m.id,
+            title: m.title,
+            date: m.createdAt ? new Date(m.createdAt).toLocaleDateString('en-IN') : 'Recent',
+            description: m.description || 'Official lecture notes and syllabus resources.',
+            type: (m.type || 'pdf').toLowerCase(),
+            fileUrl: m.fileUrl || '#',
+            size: m.fileName || 'Resource Document'
+          });
+        });
+        const mappedMaterials = Object.keys(grouped).map(subject => ({
+          subject,
+          materials: grouped[subject]
+        }));
+        setSubjectMaterialsList(mappedMaterials);
+      } else {
+        setSubjectMaterialsList([]);
+      }
+    })
+    .catch((e) => console.warn('Materials fetch note:', e.message))
+    .finally(() => { if (isMounted) setLoading(false); });
+
     return () => { isMounted = false; };
   }, []);
   return (

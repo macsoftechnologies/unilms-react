@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import lmsService from '../../../services/lms.service';
 import academicsService from '../../../services/academics.service';
 
 const LmsLearnIndex = () => {
@@ -12,45 +13,63 @@ const LmsLearnIndex = () => {
 
   useEffect(() => {
     let isMounted = true;
-    academicsService.getSubjects()
-      .then((subjects) => {
-        if (!isMounted) return;
-        const subArray = Array.isArray(subjects) ? subjects : [];
-        if (subArray.length > 0) {
-          const mappedCourses = subArray.map((s, idx) => ({
-            id: s.id || idx + 1,
-            uuid: `subj-${s.id || idx + 1}`,
-            title: `${s.code ? `${s.code}: ` : ''}${s.name}`,
-            category: s.department?.name || 'Computer Science & Engineering',
-            duration: 180 + (idx * 30),
-            chapter_count: s.credits || 4,
-            lesson_count: (s.credits || 4) * 3,
-            description: s.description || `Comprehensive institutional curriculum for ${s.name} covering theoretical foundations and laboratory exercises.`,
-            badge: 'Accredited'
-          }));
-          setCourses(mappedCourses);
+    Promise.allSettled([
+      lmsService.getCourses({ isPublished: true }),
+      academicsService.getStudyMaterials()
+    ]).then(([coursesRes, matsRes]) => {
+      if (!isMounted) return;
 
-          const mappedNotes = subArray.map((s) => ({
-            subject: `${s.code ? `${s.code}: ` : ''}${s.name}`,
-            items: [
-              { id: `mat-${s.id}-1`, title: `${s.name} - Complete Lecture Notes & Syllabus Overview.pdf`, type: 'pdf', date: 'Autumn Term 2026' },
-              { id: `mat-${s.id}-2`, title: `${s.name} - Problem Set & Laboratory Practice Archive.zip`, type: 'link', date: 'Autumn Term 2026' }
-            ]
-          }));
-          setNotes(mappedNotes);
-        } else {
-          setCourses([]);
-          setNotes([]);
-        }
-      })
-      .catch((e) => {
-        console.warn('Subject fetch note in learn:', e.message);
-        if (isMounted) {
-          setCourses([]);
-          setNotes([]);
-        }
-      })
-      .finally(() => { if (isMounted) setLoading(false); });
+      // 1. Live LMS Masterclasses created in Content Creator Studio
+      const rawCourses = coursesRes.status === 'fulfilled' ? (coursesRes.value?.data || coursesRes.value || []) : [];
+      if (Array.isArray(rawCourses) && rawCourses.length > 0) {
+        const mappedCourses = rawCourses.map((c, idx) => ({
+          id: c.id || idx + 1,
+          uuid: c.id,
+          title: c.title,
+          category: c.category || 'General',
+          duration: c.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0) * 15, 0) || 60,
+          chapter_count: c.modules?.length || 1,
+          lesson_count: c.modules?.reduce((acc, m) => acc + (m.lessons?.length || 0), 0) || (c._count?.modules || 0),
+          description: c.description || 'Comprehensive interactive course.',
+          badge: 'Accredited'
+        }));
+        setCourses(mappedCourses);
+      } else {
+        setCourses([]);
+      }
+
+      // 2. Live Subject Study Notes uploaded in Academics / Faculty desk
+      const rawMats = matsRes.status === 'fulfilled' ? (matsRes.value?.data || matsRes.value || []) : [];
+      if (Array.isArray(rawMats) && rawMats.length > 0) {
+        const grouped = {};
+        rawMats.forEach(m => {
+          const sName = m.subject?.name || 'General Coursework';
+          if (!grouped[sName]) grouped[sName] = [];
+          grouped[sName].push({
+            id: m.id,
+            title: m.title,
+            type: (m.type || 'pdf').toLowerCase(),
+            date: m.createdAt ? new Date(m.createdAt).toLocaleDateString('en-IN') : 'Recent'
+          });
+        });
+        const mappedNotes = Object.keys(grouped).map(subject => ({
+          subject,
+          items: grouped[subject]
+        }));
+        setNotes(mappedNotes);
+      } else {
+        setNotes([]);
+      }
+    })
+    .catch((e) => {
+      console.warn('Learn fetch note:', e.message);
+      if (isMounted) {
+        setCourses([]);
+        setNotes([]);
+      }
+    })
+    .finally(() => { if (isMounted) setLoading(false); });
+
     return () => { isMounted = false; };
   }, []);
 
