@@ -48,6 +48,11 @@ class ObeService {
     return res.data || res;
   }
 
+  async seedStandardPos(programId) {
+    const res = await apiClient.post(`/obe/pos/seed/${programId}`);
+    return res.data || res;
+  }
+
   async getMatrix(subjectId) {
     try {
       const res = await apiClient.get(`/obe/matrix/${subjectId}`);

@@ -70,6 +70,21 @@ const FacultyPoSetup = () => {
     setTimeout(() => setToastMsg(null), 3000);
   };
 
+  const handleSeedStandard = async () => {
+    if (!selectedProgram) return;
+    setLoading(true);
+    try {
+      await obeService.seedStandardPos(selectedProgram);
+      showToast('Standard NBA accreditation outcomes (PO1-PO12, PSO1-PSO2) provisioned into database!');
+      await loadPos(selectedProgram);
+    } catch (err) {
+      showToast('Outcomes already provisioned or updated.');
+      await loadPos(selectedProgram);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleOpenAdd = () => {
     setFormData({
       code: `PO${outcomes.filter(o => o.type === 'PO').length + 1}`,
@@ -134,6 +149,15 @@ const FacultyPoSetup = () => {
           </div>
 
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={handleSeedStandard}
+              className="btn"
+              style={{ padding: '10px 16px', fontSize: '13px', fontWeight: '700', borderRadius: '10px', background: 'rgba(124, 58, 237, 0.1)', color: '#7C3AED', border: '1px solid rgba(124, 58, 237, 0.25)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+              title="Ensure standard NBA/NAAC POs (PO1-PO12, PSO1-PSO2) are saved in the database"
+            >
+              <i className="fa-solid fa-wand-magic-sparkles"></i> Provision Standard POs
+            </button>
             <button
               type="button"
               onClick={handleOpenAdd}

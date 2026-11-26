@@ -17,11 +17,7 @@ const mapSubjectsCos = (list) => {
 
 const mapPosList = (list) => {
   if (!Array.isArray(list) || list.length === 0) {
-    return [
-      { code: 'PO1', title: 'Engineering Knowledge', desc: 'Apply mathematics, science, computing foundations, and engineering specialization to solve complex problems.', status: 'Accredited' },
-      { code: 'PO2', title: 'Problem Analysis', desc: 'Identify, formulate, research literature, and analyze complex software engineering problems.', status: 'Accredited' },
-      { code: 'PO3', title: 'Design & Development', desc: 'Design scalable solutions for complex computing problems, architectures, and components.', status: 'Accredited' }
-    ];
+    return [];
   }
   return list.map(p => ({
     code: p.code || 'PO',
@@ -185,36 +181,46 @@ const LmsObeIndex = () => {
           </span>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
-          {programOutcomes.map((po, idx) => (
-            <div
-              key={idx}
-              style={{
-                border: '1px solid var(--border, #E2E8F0)',
-                borderRadius: '12px',
-                padding: '18px',
-                background: 'var(--bg-canvas, #F8FAFC)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between'
-              }}
-            >
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                  <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: '800', fontSize: '15px', color: 'var(--primary, #4F46E5)' }}>
-                    {po.code}: {po.title}
-                  </span>
-                  <span className="badge" style={{ background: 'rgba(16, 185, 129, 0.12)', color: 'var(--success, #10B981)', fontSize: '11px', fontWeight: '700', padding: '3px 8px', borderRadius: '8px' }}>
-                    {po.status}
-                  </span>
+        {programOutcomes.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '36px 20px', color: 'var(--text-muted, #64748B)' }}>
+            <i className="fa-solid fa-bullseye" style={{ fontSize: '32px', color: 'var(--border, #CBD5E1)', marginBottom: '8px' }}></i>
+            <div style={{ fontWeight: '700', fontSize: '14px', color: 'var(--text-main, #0F172A)' }}>No Program Outcomes Configured Yet</div>
+            <p style={{ fontSize: '12.5px', color: 'var(--text-muted, #64748B)', margin: '4px 0 0' }}>
+              Accredited program outcomes will appear here once provisioned for your academic degree branch.
+            </p>
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+            {programOutcomes.map((po, idx) => (
+              <div
+                key={idx}
+                style={{
+                  border: '1px solid var(--border, #E2E8F0)',
+                  borderRadius: '12px',
+                  padding: '18px',
+                  background: 'var(--bg-canvas, #F8FAFC)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }}
+              >
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                    <span style={{ fontFamily: "'Outfit', sans-serif", fontWeight: '800', fontSize: '15px', color: 'var(--primary, #4F46E5)' }}>
+                      {po.code}: {po.title}
+                    </span>
+                    <span className="badge" style={{ background: 'rgba(16, 185, 129, 0.12)', color: 'var(--success, #10B981)', fontSize: '11px', fontWeight: '700', padding: '3px 8px', borderRadius: '8px' }}>
+                      {po.status}
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '12.5px', color: 'var(--text-muted, #64748B)', lineHeight: '1.5', margin: '0' }}>
+                    {po.desc}
+                  </p>
                 </div>
-                <p style={{ fontSize: '12.5px', color: 'var(--text-muted, #64748B)', lineHeight: '1.5', margin: '0' }}>
-                  {po.desc}
-                </p>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Enrolled Subject Course Outcomes (COs) */}
