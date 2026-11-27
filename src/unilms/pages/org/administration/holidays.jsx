@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../../components';
+import { TableSkeletonLoader, TablePagination, useTablePagination, IndianDateInput } from '../../../components';
+import { formatDate } from '../../../utils/date';
 import apiClient from '../../../services/api';
 
 const initialHolidays = [];
@@ -189,24 +190,22 @@ const OrgAdministrationHolidays = () => {
               
               <div className="form-group" style={{ marginBottom: '14px' }}>
                 <label style={{ fontSize: '13px', fontWeight: '600', marginBottom: '6px', display: 'block' }}>Start Date *</label>
-                <input 
-                  type="date" 
+                <IndianDateInput 
                   value={formData.start_date} 
-                  onChange={(e) => setFormData({ ...formData, start_date: e.target.value })} 
-                  className="form-control" 
+                  onChange={(val) => setFormData({ ...formData, start_date: val })} 
                   required 
+                  placeholder="DD/MM/YYYY" 
                   style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid var(--border-color)' }}
                 />
               </div>
               
               <div className="form-group" style={{ marginBottom: '14px' }}>
                 <label style={{ fontSize: '13px', fontWeight: '600', marginBottom: '6px', display: 'block' }}>End Date *</label>
-                <input 
-                  type="date" 
+                <IndianDateInput 
                   value={formData.end_date} 
-                  onChange={(e) => setFormData({ ...formData, end_date: e.target.value })} 
-                  className="form-control" 
+                  onChange={(val) => setFormData({ ...formData, end_date: val })} 
                   required 
+                  placeholder="DD/MM/YYYY" 
                   style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid var(--border-color)' }}
                 />
               </div>
@@ -281,7 +280,7 @@ const OrgAdministrationHolidays = () => {
                           {h.title}
                         </td>
                         <td style={{ padding: '12px 14px', fontSize: '13px' }}>
-                          {h.start_date === h.end_date ? h.start_date : `${h.start_date} to ${h.end_date}`}
+                          {h.start_date === h.end_date ? formatDate(h.start_date) : `${formatDate(h.start_date)} to ${formatDate(h.end_date)}`}
                         </td>
                         <td style={{ padding: '12px 14px' }}>
                           <span className="badge" style={{ background: badgeBg, color: badgeColor, fontWeight: '700', padding: '3px 8px', borderRadius: '4px', fontSize: '11px' }}>
