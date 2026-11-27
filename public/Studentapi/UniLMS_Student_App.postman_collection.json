@@ -18,9 +18,9 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": "https://unilms.in/api/v1",
+      "value": "https://api.unilms.in/api/v1",
       "type": "string",
-      "description": "Base API endpoint. Use https://unilms.in/api/v1 for production or http://localhost:3000/api/v1 for local testing."
+      "description": "Base API endpoint. Use https://api.unilms.in/api/v1 for production or http://localhost:3000/api/v1 for local testing."
     },
     {
       "key": "tenantCode",

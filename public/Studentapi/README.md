@@ -56,7 +56,7 @@ UniLMS Student Mobile App API Suite
 3. Drag & drop the single file:
    👉 **`UniLMS_Student_App.postman_collection.json`**
 4. Open the **Variables** tab of the collection (or in the request body of `01. Student Multi-Tenant Login`) and fill in your campus credentials:
-   - **`baseUrl`**: `https://unilms.in/api/v1` (Production) or `http://localhost:3000/api/v1` (Local)
+   - **`baseUrl`**: `https://api.unilms.in/api/v1` (Production) or `http://localhost:3000/api/v1` (Local)
    - **`tenantCode`**: Your institution's Campus Code (e.g. `MST`, `DEMO`, etc.)
    - **`identifier`**: Student Roll Number or registered email (e.g. `student1@unilms.com`)
    - **`password`**: Student password (e.g. `Student@123`)
