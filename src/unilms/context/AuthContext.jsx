@@ -62,6 +62,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('unilms_user', JSON.stringify(authData.user));
       localStorage.setItem('org_user_role', authData.user.role);
       localStorage.setItem('user_role', authData.user.role);
+      localStorage.setItem('unilms_access_groups', JSON.stringify(authData.user.access_groups || []));
       localStorage.setItem('org_user_name', authData.user.name || '');
       localStorage.setItem('org_user_email', authData.user.email || '');
       localStorage.setItem('unilms_tenant_code', code);

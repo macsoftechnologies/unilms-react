@@ -516,7 +516,11 @@ const OrgLayout = () => {
   ], []);
 
   // Determine if current user has Organization Admin privileges
-  const isOrgAdmin = userRole === 'admin' || userRole === 'campus_admin' || userRole === 'super_admin' || Boolean(currentUser?.is_org_admin);
+  const isOrgAdmin = (userRole === 'admin' || userRole === 'super_admin' || Boolean(currentUser?.is_org_admin)) &&
+    !userAccessGroups.some(g => {
+      const str = (typeof g === 'string' ? g : g.name || '').toLowerCase();
+      return !str.includes('admin') && !str.includes('administrator');
+    });
 
   // User's assigned access groups
   const userAccessGroups = useMemo(() => {
@@ -1391,11 +1395,11 @@ const OrgLayout = () => {
                         <i className={`fa-solid fa-chevron-down`} style={{ fontSize: '9px', color: 'var(--text-muted)', transition: 'transform 0.2s ease', transform: showUserDropdown ? 'rotate(180deg)' : 'none' }}></i>
                       </div>
                       <span className="user-role" style={{ fontSize: '10px' }}>
-                        {userRole === 'admin' || userRole === 'campus_admin'
+                        {isOrgAdmin
                           ? 'Organization Admin'
                           : (isFaculty
                             ? (currPersona === 'hod' ? 'HOD' : currPersona === 'class_teacher' ? 'Class Teacher' : (currentUser?.designation || 'Faculty Member'))
-                            : (currentUser?.role === 'admin' || currentUser?.role === 'campus_admin' ? 'Organization Admin' : (currentUser?.role || 'Organization Admin'))
+                            : (currentUser?.designation || (userAccessGroups.length > 0 ? userAccessGroups[0] : 'Staff Member'))
                           )
                         }
                       </span>
