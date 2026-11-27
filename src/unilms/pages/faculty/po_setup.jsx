@@ -42,7 +42,18 @@ const FacultyPoSetup = () => {
     setLoading(true);
     try {
       const poList = await obeService.getPos(progId);
-      setOutcomes(poList || []);
+      const formatted = (poList || []).map(o => ({
+        ...o,
+        type: o.type || (o.code?.toUpperCase().startsWith('PSO') ? 'PSO' : 'PO')
+      })).sort((a, b) => {
+        const aPrefix = a.code?.toUpperCase().startsWith('PSO') ? 'PSO' : 'PO';
+        const bPrefix = b.code?.toUpperCase().startsWith('PSO') ? 'PSO' : 'PO';
+        if (aPrefix !== bPrefix) return aPrefix === 'PO' ? -1 : 1;
+        const aNum = parseInt(a.code.replace(/\D/g, ''), 10) || 0;
+        const bNum = parseInt(b.code.replace(/\D/g, ''), 10) || 0;
+        return aNum - bNum;
+      });
+      setOutcomes(formatted);
     } catch (e) {
       console.error('Failed to load POs:', e);
     } finally {
@@ -86,8 +97,9 @@ const FacultyPoSetup = () => {
   };
 
   const handleOpenAdd = () => {
+    const currentPos = outcomes.filter(o => o.type === 'PO' || !o.code?.toUpperCase().startsWith('PSO'));
     setFormData({
-      code: `PO${outcomes.filter(o => o.type === 'PO').length + 1}`,
+      code: `PO${currentPos.length + 1}`,
       type: 'PO',
       description: '',
     });
@@ -102,11 +114,12 @@ const FacultyPoSetup = () => {
       await obeService.createPo({
         programId: selectedProgram,
         code: formData.code.trim().toUpperCase(),
+        title: formData.code.trim().toUpperCase(),
         type: formData.type,
         description: formData.description.trim(),
       });
 
-      showToast(`Outcome ${formData.code} created successfully!`);
+      showToast(`Outcome ${formData.code.trim().toUpperCase()} created successfully!`);
       setIsAddModalOpen(false);
       loadPos(selectedProgram);
     } catch (err) {
@@ -114,8 +127,8 @@ const FacultyPoSetup = () => {
     }
   };
 
-  const poCount = outcomes.filter(o => o.type === 'PO').length;
-  const psoCount = outcomes.filter(o => o.type === 'PSO').length;
+  const poCount = outcomes.filter(o => (o.type === 'PO' || o.code?.toUpperCase().startsWith('PO')) && !o.code?.toUpperCase().startsWith('PSO')).length;
+  const psoCount = outcomes.filter(o => o.type === 'PSO' || o.code?.toUpperCase().startsWith('PSO')).length;
 
   return (
     <>
@@ -212,24 +225,33 @@ const FacultyPoSetup = () => {
                 {loading ? (
                   <TableSkeletonLoader columns={3} rows={5} />
                 ) : paginatedOutcomes.length > 0 ? (
-                  paginatedOutcomes.map((o) => (
-                    <tr key={o.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                      <td style={{ padding: '14px 18px', fontWeight: '800', color: o.type === 'PO' ? '#7C3AED' : '#2563EB' }}>{o.code}</td>
-                      <td style={{ padding: '14px 18px' }}>
-                        <span className="badge" style={{
-                          background: o.type === 'PO' ? '#EDE9FE' : '#DBEAFE',
-                          color: o.type === 'PO' ? '#6D28D9' : '#1E40AF',
-                          padding: '4px 8px',
-                          borderRadius: '4px',
-                          fontSize: '11px',
-                          fontWeight: '700'
-                        }}>
-                          {o.type}
-                        </span>
-                      </td>
-                      <td style={{ padding: '14px 18px', fontSize: '13.5px', color: '#334155' }}>{o.description}</td>
-                    </tr>
-                  ))
+                  paginatedOutcomes.map((o) => {
+                    const isPso = (o.type === 'PSO' || o.code?.toUpperCase().startsWith('PSO'));
+                    const outcomeType = isPso ? 'PSO' : 'PO';
+                    return (
+                      <tr key={o.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '14px 18px', fontWeight: '800', color: isPso ? '#2563EB' : '#7C3AED' }}>{o.code}</td>
+                        <td style={{ padding: '14px 18px' }}>
+                          <span className="badge" style={{
+                            background: isPso ? '#DBEAFE' : '#EDE9FE',
+                            color: isPso ? '#1E40AF' : '#6D28D9',
+                            padding: '4px 8px',
+                            borderRadius: '4px',
+                            fontSize: '11px',
+                            fontWeight: '700'
+                          }}>
+                            {outcomeType}
+                          </span>
+                        </td>
+                        <td style={{ padding: '14px 18px', fontSize: '13.5px', color: '#334155' }}>
+                          {o.title && o.title !== o.code && (
+                            <strong style={{ display: 'block', color: '#1e293b', marginBottom: '2px' }}>{o.title}</strong>
+                          )}
+                          {o.description}
+                        </td>
+                      </tr>
+                    );
+                  })
                 ) : (
                   <tr>
                     <td colSpan="3" style={{ textAlign: 'center', padding: '40px', color: '#64748B' }}>
