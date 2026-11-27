@@ -296,7 +296,7 @@ const OrgSystemsUsers = () => {
           </div>
         </div>
 
-        {/* Enterprise Single-Door Governance Notice */}
+        {/* Enterprise Identity & Access Governance Notice */}
         <div style={{
           background: 'rgba(124, 58, 237, 0.05)',
           border: '1px solid rgba(124, 58, 237, 0.2)',
@@ -310,9 +310,9 @@ const OrgSystemsUsers = () => {
           flexWrap: 'wrap'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <i className="fa-solid fa-circle-info" style={{ color: '#7C3AED', fontSize: '18px' }}></i>
+            <i className="fa-solid fa-shield-halved" style={{ color: '#7C3AED', fontSize: '18px' }}></i>
             <span style={{ fontSize: '13px', color: 'var(--text-main)', lineHeight: '1.4' }}>
-              <strong>Single-Door Staff Provisioning:</strong> Faculty and staff login credentials are automatically created during institutional onboarding in HR &amp; Payroll. Use this IT Governance Desk to reset passwords, manage 2FA, or assign custom security access groups.
+              <strong>Enterprise Identity &amp; Access Governance:</strong> Employee profiles are onboarded by HR. Central IT uses this Security Desk to provision portal login credentials, set passwords, and assign role-based Access Groups.
             </span>
           </div>
           <Link
