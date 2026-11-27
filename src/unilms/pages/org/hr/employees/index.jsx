@@ -38,18 +38,15 @@ const OrgHrEmployeesIndex = () => {
 
       const depts = Array.isArray(deptsData) ? deptsData : [];
       setDepartments(depts);
-      if (depts.length > 0 && !formData.department_id) {
-        setFormData(prev => ({ ...prev, department_id: depts[0].id }));
-      }
 
       const list = (Array.isArray(staffData) ? staffData : []).map(s => ({
         id: s.id,
         employee_code: s.employeeCode || '—',
         full_name: `${s.firstName || ''} ${s.lastName || ''}`.trim() || 'Staff Member',
         email: s.email || '—',
-        department_name: s.department?.name || 'General Department',
+        department_name: s.department?.name || 'Central Administration',
         designation_name: s.designation || 'Staff',
-        employment_type: s.staffType === 'FACULTY' ? 'Academic Faculty' : 'Administrative Staff',
+        employment_type: s.staffType === 'FACULTY' || s.staffType === 'Teaching' ? 'Academic Faculty' : 'Administrative Staff',
         joining_date: s.joiningDate ? s.joiningDate.split('T')[0] : '2023-01-01',
         base_salary: Number(s.basicSalary) || 0,
         status: s.status === 'active' ? 'Active' : 'Inactive'
@@ -306,13 +303,16 @@ const OrgHrEmployeesIndex = () => {
               </div>
 
               <div className="form-group" style={{ marginBottom: '14px' }}>
-                <label style={{ fontSize: '12.5px', fontWeight: '700', marginBottom: '6px', display: 'block' }}>Academic Department</label>
+                <label style={{ fontSize: '12.5px', fontWeight: '700', marginBottom: '6px', display: 'block' }}>
+                  Department {formData.staff_type === 'Non-Teaching' ? <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 'normal' }}>(Optional for Administrative Staff)</span> : <span style={{ color: '#ef4444' }}>*</span>}
+                </label>
                 <select
                   value={formData.department_id}
                   onChange={(e) => setFormData(p => ({ ...p, department_id: e.target.value }))}
                   className="form-control"
                   style={{ width: '100%', height: '38px', borderRadius: '8px' }}
                 >
+                  <option value="">Central Administration / General Operations</option>
                   {departments.map(d => (
                     <option key={d.id} value={d.id}>{d.name}</option>
                   ))}
