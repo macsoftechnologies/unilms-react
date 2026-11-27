@@ -5,10 +5,10 @@ import apiClient from '../../../services/api';
 const OrgSystemsSettings = () => {
   const { currentTenant } = useTenant();
   const [formData, setFormData] = useState({
-    name: currentTenant?.name || 'Organization 1',
-    admin_email: 'admin@campus.edu',
-    org_phone: '9876543210',
-    org_address: 'Knowledge City Campus, Tech Zone IV'
+    name: currentTenant?.name || '',
+    admin_email: '',
+    org_phone: '',
+    org_address: ''
   });
 
   const [savedSuccess, setSavedSuccess] = useState(false);
@@ -24,10 +24,10 @@ const OrgSystemsSettings = () => {
         if (b || contactData) {
           setFormData(prev => ({
             ...prev,
-            name: b?.name || prev.name,
-            admin_email: contactData?.admin_email || b?.adminEmail || b?.settings?.contact_email || prev.admin_email,
-            org_phone: contactData?.org_phone || b?.settings?.phone || prev.org_phone,
-            org_address: contactData?.org_address || b?.settings?.address || prev.org_address,
+            name: b?.name || currentTenant?.name || prev.name || '',
+            admin_email: contactData?.admin_email || b?.adminEmail || b?.settings?.contact_email || '',
+            org_phone: contactData?.org_phone || b?.settings?.phone || '',
+            org_address: contactData?.org_address || b?.settings?.address || '',
           }));
         }
       } catch (err) {
@@ -35,7 +35,7 @@ const OrgSystemsSettings = () => {
       }
     };
     fetchSettings();
-  }, []);
+  }, [currentTenant]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -138,6 +138,7 @@ const OrgSystemsSettings = () => {
                 type="email" 
                 value={formData.admin_email} 
                 onChange={(e) => setFormData({ ...formData, admin_email: e.target.value })} 
+                placeholder="e.g. admin@campus.edu"
                 className="form-control" 
                 required 
                 style={{ width: '100%', padding: '10px 14px', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '14px' }} 
@@ -157,6 +158,7 @@ const OrgSystemsSettings = () => {
                 maxLength="10" 
                 value={formData.org_phone} 
                 onChange={(e) => setFormData({ ...formData, org_phone: e.target.value })} 
+                placeholder="e.g. 9876543210"
                 className="form-control" 
                 style={{ width: '100%', padding: '10px 14px', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '14px' }} 
               />
@@ -170,6 +172,7 @@ const OrgSystemsSettings = () => {
                 rows="4" 
                 value={formData.org_address} 
                 onChange={(e) => setFormData({ ...formData, org_address: e.target.value })} 
+                placeholder="e.g. Knowledge City Campus, Tech Zone IV"
                 className="form-control" 
                 style={{ width: '100%', padding: '10px 14px', border: '1px solid var(--border-color)', borderRadius: '8px', resize: 'vertical', fontSize: '14px' }}
               ></textarea>
