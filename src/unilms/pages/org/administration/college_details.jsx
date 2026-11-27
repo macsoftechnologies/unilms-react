@@ -62,8 +62,9 @@ const OrgAdministrationCollegeDetails = () => {
   const handleLogoChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        alert('Logo file size must be less than 10MB.');
+      if (file.size > 2 * 1024 * 1024) {
+        alert('File size exceeds the 2 MB limit. Please select an image file under 2 MB.');
+        e.target.value = '';
         return;
       }
       const reader = new FileReader();
@@ -402,7 +403,7 @@ const OrgAdministrationCollegeDetails = () => {
                 <input 
                   type="file" 
                   id="college_logo" 
-                  accept="image/*"
+                  accept="image/png, image/jpeg, image/jpg, image/webp, image/svg+xml"
                   onChange={handleLogoChange}
                   className="form-control" 
                   style={{ 
@@ -414,6 +415,9 @@ const OrgAdministrationCollegeDetails = () => {
                     backgroundColor: '#ffffff'
                   }} 
                 />
+                <small style={{ display: 'block', marginTop: '4px', fontSize: '11px', color: 'var(--text-muted, #64748b)' }}>
+                  Accepted: PNG, JPG, JPEG, SVG &bull; Max file size: 2 MB
+                </small>
                 {formData.logo_url && (
                   <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <img 
