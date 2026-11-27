@@ -21,8 +21,6 @@ const OrgHrEmployeesIndex = () => {
     department_id: '',
     designation_name: 'Assistant Professor',
     staff_type: 'Teaching',
-    create_auth_account: true,
-    password: 'password123',
     employment_type: 'Full-Time Permanent',
     joining_date: new Date().toISOString().split('T')[0],
     base_salary: 50000
@@ -97,11 +95,10 @@ const OrgHrEmployeesIndex = () => {
         designation: formData.designation_name,
         basicSalary: parseFloat(formData.base_salary) || 50000,
         staffType: formData.staff_type === 'Teaching' ? 'Teaching' : 'Administrative',
-        createAuthAccount: formData.create_auth_account,
-        password: formData.password || 'password123'
+        createAuthAccount: false
       });
 
-      showToast(`Staff member "${formData.first_name}" onboarded and LMS credentials provisioned.`);
+      showToast(`Staff profile for "${formData.first_name}" onboarded. IT can now provision portal credentials in System Settings → Users.`);
       fetchData();
       setFormData({
         first_name: '',
@@ -111,8 +108,6 @@ const OrgHrEmployeesIndex = () => {
         department_id: departments[0]?.id || '',
         designation_name: 'Assistant Professor',
         staff_type: 'Teaching',
-        create_auth_account: true,
-        password: 'password123',
         employment_type: 'Full-Time Permanent',
         joining_date: new Date().toISOString().split('T')[0],
         base_salary: 50000
@@ -357,34 +352,17 @@ const OrgHrEmployeesIndex = () => {
                 />
               </div>
 
-              {/* Login Provisioning Box */}
-              <div style={{ background: 'rgba(5, 150, 105, 0.06)', border: '1px solid rgba(5, 150, 105, 0.2)', borderRadius: '10px', padding: '12px 14px', marginBottom: '20px' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', margin: 0, fontWeight: '700', fontSize: '12.5px', color: '#065F46' }}>
-                  <input
-                    type="checkbox"
-                    checked={formData.create_auth_account}
-                    onChange={(e) => setFormData(p => ({ ...p, create_auth_account: e.target.checked }))}
-                    style={{ accentColor: '#059669', width: '16px', height: '16px' }}
-                  />
-                  <span>Generate Portal &amp; LMS Login Credentials</span>
-                </label>
-                <div style={{ fontSize: '11px', color: '#047857', marginTop: '4px', paddingLeft: '24px' }}>
-                  Single-door provisioning: Auto-creates User login record with role {formData.staff_type === 'Teaching' ? 'FACULTY' : 'CAMPUS_ADMIN'}.
-                </div>
-
-                {formData.create_auth_account && (
-                  <div style={{ marginTop: '10px', paddingLeft: '24px' }}>
-                    <label style={{ fontSize: '11.5px', fontWeight: '700', color: '#374151', display: 'block', marginBottom: '4px' }}>Temporary Password</label>
-                    <input
-                      type="text"
-                      value={formData.password}
-                      onChange={(e) => setFormData(p => ({ ...p, password: e.target.value }))}
-                      placeholder="e.g. password123"
-                      className="form-control"
-                      style={{ width: '100%', height: '32px', fontSize: '12px', borderRadius: '6px' }}
-                    />
+              {/* Enterprise IT Governance Notice */}
+              <div style={{ background: 'rgba(99, 102, 241, 0.06)', border: '1px solid rgba(99, 102, 241, 0.2)', borderRadius: '10px', padding: '12px 14px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+                  <i className="fa-solid fa-shield-halved" style={{ color: '#6366F1', marginTop: '2px', fontSize: '13px' }}></i>
+                  <div>
+                    <div style={{ fontSize: '12px', fontWeight: '700', color: '#4338CA' }}>IT Access Governance Notice</div>
+                    <div style={{ fontSize: '11px', color: '#4B5563', marginTop: '2px', lineHeight: '1.4' }}>
+                      HR onboards the employee profile. Portal login credentials, passwords, and security Access Groups are provisioned by the Central IT Administrator in <strong>System Settings → Users &amp; Logins</strong>.
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
 
               <button

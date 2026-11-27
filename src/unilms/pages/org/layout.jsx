@@ -515,13 +515,6 @@ const OrgLayout = () => {
     { id: 'systems', label: 'System Settings', path: '/unilms/org/systems/settings', icon: 'fa-solid fa-gear', bg: '#F8FAFC', color: '#334155', groupKeywords: ['system', 'security', 'settings'] },
   ], []);
 
-  // Determine if current user has Organization Admin privileges
-  const isOrgAdmin = (userRole === 'admin' || userRole === 'super_admin' || Boolean(currentUser?.is_org_admin)) &&
-    !userAccessGroups.some(g => {
-      const str = (typeof g === 'string' ? g : g.name || '').toLowerCase();
-      return !str.includes('admin') && !str.includes('administrator');
-    });
-
   // User's assigned access groups
   const userAccessGroups = useMemo(() => {
     let raw = currentUser?.access_groups;
@@ -535,6 +528,24 @@ const OrgLayout = () => {
     if (typeof raw === 'string') return [raw];
     return [];
   }, [currentUser]);
+
+  // Determine if current user has Organization Admin privileges
+  const isOrgAdmin = useMemo(() => {
+    // 1. Super Admin or Primary Tenant root is always full Org Admin
+    if (userRole === 'super_admin') return true;
+    if (currentUser?.email?.toLowerCase().startsWith('vorg@')) return true;
+
+    // 2. If user has explicit access groups, they are Org Admin ONLY if one of the groups has 'admin'
+    if (userAccessGroups.length > 0) {
+      return userAccessGroups.some(g => {
+        const str = (typeof g === 'string' ? g : g.name || '').toLowerCase();
+        return str.includes('admin') || str.includes('administrator');
+      });
+    }
+
+    // 3. Fallback to role / flag
+    return userRole === 'admin' || Boolean(currentUser?.is_org_admin);
+  }, [userRole, currentUser, userAccessGroups]);
 
   // Compute authorized accessible modules for the top ribbon based on RBAC access groups
   const accessibleModules = useMemo(() => {

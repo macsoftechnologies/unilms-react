@@ -147,6 +147,18 @@ const OrgSystemsUsers = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      let groups = [...(formData.access_groups || [])];
+      if (formData.is_org_admin) {
+        if (!groups.includes('Admin / College Administrator')) {
+          groups.unshift('Admin / College Administrator');
+        }
+      } else {
+        groups = groups.filter(g => {
+          const str = (typeof g === 'string' ? g : g.name || '').toLowerCase();
+          return !str.includes('admin') && !str.includes('administrator');
+        });
+      }
+
       if (editingUser) {
         await systemsService.updateUser(editingUser.id, {
           full_name: formData.full_name,
@@ -154,8 +166,8 @@ const OrgSystemsUsers = () => {
           phone: formData.phone,
           designation: formData.designation,
           employee_code: formData.employee_code,
-          role: formData.role,
-          access_groups: formData.access_groups || [],
+          role: formData.is_org_admin ? 'admin' : (formData.role || 'staff'),
+          access_groups: groups,
           ...(formData.password ? { password: formData.password } : {})
         });
       } else {
@@ -165,8 +177,8 @@ const OrgSystemsUsers = () => {
           phone: formData.phone,
           designation: formData.designation,
           employee_code: formData.employee_code,
-          role: formData.role,
-          access_groups: formData.access_groups || [],
+          role: formData.is_org_admin ? 'admin' : (formData.role || 'staff'),
+          access_groups: groups,
           password: formData.password || 'password123'
         });
       }
@@ -237,8 +249,6 @@ const OrgSystemsUsers = () => {
           </div>
 
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
-            {/* Add User is intentionally commented out: Staff/Faculty must be onboarded through HR & Employees, making this a central audit directory */}
-            {/* 
             <button
               type="button"
               className="btn btn-primary"
@@ -259,10 +269,9 @@ const OrgSystemsUsers = () => {
                 whiteSpace: 'nowrap'
               }}
             >
-              <i className="fa-solid fa-plus"></i>
-              <span>Add User</span>
+              <i className="fa-solid fa-user-plus"></i>
+              <span>Add User Account</span>
             </button>
-            */}
             <Link
               to="/unilms/org/systems/access_groups"
               className="btn btn-outline"
@@ -481,7 +490,11 @@ const OrgSystemsUsers = () => {
                       )}
                     </td>
                     <td style={{ padding: '12px 14px' }}>
-                      {user.is_org_admin ? (
+                      {user.status === 'pending_provisioning' ? (
+                        <span className="badge" style={{ background: '#FEF3C7', color: '#B45309', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <i className="fa-solid fa-key"></i> Setup Required
+                        </span>
+                      ) : user.is_org_admin ? (
                         <span className="badge" style={{ background: 'rgba(5, 150, 105, 0.12)', color: '#059669', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                           <i className="fa-solid fa-shield-halved"></i> Org Admin
                         </span>
