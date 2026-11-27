@@ -10,6 +10,7 @@ const OrgAcademicsCohorts = () => {
   const [cohorts, setCohorts] = useState([]);
   const [programs, setPrograms] = useState([]);
   const [academicYears, setAcademicYears] = useState([]);
+  const [semesters, setSemesters] = useState([]);
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isSectionModalOpen, setIsSectionModalOpen] = useState(false);
@@ -24,12 +25,18 @@ const OrgAcademicsCohorts = () => {
   const [cohortName, setCohortName] = useState('');
   const [semesterName, setSemesterName] = useState('Semester 1');
 
-  // Dynamic program duration & semesters computation
+  // Dynamic program duration & semesters computation linked to Semesters Master Setup
   const selectedProgramObj = programs.find(p => p.id === programId);
   const selectedAyObj = academicYears.find(y => y.id === academicYearId);
   const progDurationYears = Number(selectedProgramObj?.durationYears || selectedProgramObj?.duration_years || 4);
   const totalSemesters = Math.max(1, progDurationYears * 2);
-  const dynamicSemesters = Array.from({ length: totalSemesters }, (_, i) => `Semester ${i + 1}`);
+
+  // Read authentic customized terms from /org/academics/semesters setup, filtered by sequence up to program duration!
+  const dynamicSemesters = (Array.isArray(semesters) && semesters.length > 0)
+    ? semesters
+        .filter(s => Number(s.sequence || 1) <= totalSemesters)
+        .map(s => s.name)
+    : Array.from({ length: totalSemesters }, (_, i) => `Semester ${i + 1}`);
 
   const startYearNum = selectedAyObj?.startYear || parseInt(selectedAyObj?.name?.slice(0, 4), 10) || new Date().getFullYear();
   const endYearNum = startYearNum + progDurationYears;
@@ -40,10 +47,10 @@ const OrgAcademicsCohorts = () => {
     if (selectedProgramObj) {
       const semNum = parseInt(semesterName.replace(/\D/g, ''), 10) || 1;
       if (semNum > totalSemesters) {
-        setSemesterName('Semester 1');
+        setSemesterName(dynamicSemesters[0] || 'Semester 1');
       }
     }
-  }, [programId, totalSemesters]);
+  }, [programId, totalSemesters, dynamicSemesters]);
 
   // Section Modal state
   const [targetCohortId, setTargetCohortId] = useState('');
@@ -53,10 +60,11 @@ const OrgAcademicsCohorts = () => {
   const loadData = async () => {
     setIsLoading(true);
     try {
-      const [cohortsData, progsData, aysData] = await Promise.all([
+      const [cohortsData, progsData, aysData, semsData] = await Promise.all([
         academicsService.getCohorts(),
         academicsService.getPrograms(),
         academicsService.getAcademicYears(),
+        academicsService.getSemesters(),
       ]);
 
       setCohorts(Array.isArray(cohortsData) ? cohortsData : []);
@@ -68,6 +76,9 @@ const OrgAcademicsCohorts = () => {
       if (Array.isArray(aysData)) {
         setAcademicYears(aysData);
         if (aysData.length > 0 && !academicYearId) setAcademicYearId(aysData[0].id);
+      }
+      if (Array.isArray(semsData)) {
+        setSemesters(semsData);
       }
     } catch (err) {
       console.error('Error fetching cohorts:', err);
