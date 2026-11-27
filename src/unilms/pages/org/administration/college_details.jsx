@@ -23,21 +23,24 @@ const OrgAdministrationCollegeDetails = () => {
     const fetchTenantDetails = async () => {
       setLoading(true);
       try {
-        const res = await apiClient.get('/tenants/branding');
+        const [res, detailsRes] = await Promise.all([
+          apiClient.get('/tenants/branding').catch(() => null),
+          apiClient.get('/tenants/settings/org_college_details').catch(() => null)
+        ]);
         const data = (res && res.data) ? res.data : res;
-        if (data) {
-          const live = {
-            name: data.name || currentTenant?.name || '',
-            affiliation: data.affiliation || '',
-            naac_grade: data.naacGrade || '',
-            contact_email: data.contactEmail || data.email || currentTenant?.contactEmail || '',
-            contact_phone: data.contactPhone || data.phone || currentTenant?.contactPhone || '',
-            logo_url: data.logoUrl || currentTenant?.logoUrl || '',
-            address: data.address || currentTenant?.address || ''
-          };
-          setDetails(live);
-          setFormData(live);
-        }
+        const collegeSetting = (detailsRes && detailsRes.data) ? detailsRes.data : detailsRes;
+
+        const live = {
+          name: data?.name || currentTenant?.name || '',
+          affiliation: collegeSetting?.affiliation || data?.affiliation || '',
+          naac_grade: collegeSetting?.naac_grade || collegeSetting?.naacGrade || data?.naacGrade || '',
+          contact_email: collegeSetting?.contact_email || data?.contactEmail || data?.email || currentTenant?.contactEmail || '',
+          contact_phone: collegeSetting?.contact_phone || data?.contactPhone || data?.phone || currentTenant?.contactPhone || '',
+          logo_url: data?.logoUrl || collegeSetting?.logo_url || currentTenant?.logoUrl || '',
+          address: collegeSetting?.address || data?.address || currentTenant?.address || ''
+        };
+        setDetails(live);
+        setFormData(live);
       } catch (e) {
         console.warn('Could not load tenant details from server:', e);
       } finally {
@@ -71,12 +74,16 @@ const OrgAdministrationCollegeDetails = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await apiClient.patch('/tenants/settings', {
+      const payload = {
         name: formData.name,
+        affiliation: formData.affiliation,
+        naac_grade: formData.naac_grade,
+        contact_email: formData.contact_email,
+        contact_phone: formData.contact_phone,
         address: formData.address,
-        contactEmail: formData.contact_email,
-        contactPhone: formData.contact_phone
-      });
+        logo_url: formData.logo_url
+      };
+      await apiClient.patch('/tenants/settings', payload);
       setDetails(formData);
       setIsEditing(false);
     } catch (err) {
