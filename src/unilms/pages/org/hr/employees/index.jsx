@@ -93,6 +93,10 @@ const OrgHrEmployeesIndex = () => {
       setFormError(`Staff member with Employee Code '${formData.employee_code}' already exists.`);
       return;
     }
+    if (existingStaffEmail) {
+      setFormError(`Staff member with Official Email '${formData.email}' already exists (${existingStaffEmail.full_name} - ${existingStaffEmail.employee_code}).`);
+      return;
+    }
     setFormError(null);
 
     const ok = await confirm({
@@ -431,17 +435,17 @@ const OrgHrEmployeesIndex = () => {
               <button
                 type="submit"
                 className="btn btn-primary"
-                disabled={Boolean(existingStaffCode)}
+                disabled={Boolean(existingStaffCode || existingStaffEmail)}
                 style={{
                   width: '100%',
                   padding: '11px',
                   fontWeight: '700',
                   borderRadius: '8px',
-                  background: existingStaffCode ? '#9CA3AF' : '#059669',
+                  background: (existingStaffCode || existingStaffEmail) ? '#9CA3AF' : '#059669',
                   border: 'none',
                   color: '#fff',
-                  cursor: existingStaffCode ? 'not-allowed' : 'pointer',
-                  boxShadow: existingStaffCode ? 'none' : '0 4px 12px rgba(5, 150, 105, 0.25)',
+                  cursor: (existingStaffCode || existingStaffEmail) ? 'not-allowed' : 'pointer',
+                  boxShadow: (existingStaffCode || existingStaffEmail) ? 'none' : '0 4px 12px rgba(5, 150, 105, 0.25)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
