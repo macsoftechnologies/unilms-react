@@ -87,13 +87,31 @@ const FacultyPoSetup = () => {
 
   const handleSeedStandard = async () => {
     if (!selectedProgram) return;
+    const progObj = programs.find(p => p.id === selectedProgram);
+    const progName = progObj ? `${progObj.name} (${progObj.code})` : 'this program';
+
+    const confirmed = await confirm({
+      title: 'Provision Discipline-Specific Outcomes',
+      message: `Reset and align accredited standard outcomes for "${progName}"?`,
+      details: [
+        'Engineering / B.Tech: 14 Outcomes (12 NBA Washington Accord POs + 2 PSOs)',
+        'Management / MBA: 10 Outcomes (8 NBA Management POs + 2 PSOs)',
+        'Pharmacy / B.Pharm: 13 Outcomes (11 PCI Pharmacy POs + 2 PSOs)',
+        'General Sciences / Commerce / Arts: 8 Outcomes (6 UGC / NAAC POs + 2 PSOs)',
+      ],
+      confirmText: 'Yes, Provision Standard Outcomes',
+      variant: 'primary',
+      icon: 'fa-solid fa-wand-magic-sparkles'
+    });
+    if (!confirmed) return;
+
     setLoading(true);
     try {
-      await obeService.seedStandardPos(selectedProgram);
-      showToast('Standard NBA accreditation outcomes (PO1-PO12, PSO1-PSO2) provisioned into database!');
+      const res = await obeService.seedStandardPos(selectedProgram, true);
+      showToast(res.message || 'Standard accredited outcomes provisioned into database!');
       await loadPos(selectedProgram);
     } catch (err) {
-      showToast('Outcomes already provisioned or updated.');
+      showToast('Error provisioning outcomes: ' + (err.response?.data?.message || err.message));
       await loadPos(selectedProgram);
     } finally {
       setLoading(false);

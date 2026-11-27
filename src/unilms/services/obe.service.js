@@ -58,8 +58,8 @@ class ObeService {
     return res.data || res;
   }
 
-  async seedStandardPos(programId) {
-    const res = await apiClient.post(`/obe/pos/seed/${programId}`);
+  async seedStandardPos(programId, force = false) {
+    const res = await apiClient.post(`/obe/pos/seed/${programId}${force ? '?force=true' : ''}`);
     return res.data || res;
   }
 

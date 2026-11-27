@@ -24,6 +24,21 @@ const sortOutcomesNatural = (list) => {
   });
 };
 
+const getFrameworkLabel = (prog) => {
+  if (!prog) return 'OBE Accreditation Framework';
+  const text = `${prog.code || ''} ${prog.name || ''} ${prog.type || ''} ${prog.dept_name || ''}`.toUpperCase();
+  if (text.includes('MBA') || text.includes('PGDM') || text.includes('MANAGEMENT') || text.includes('BBA') || text.includes('BUSINESS')) {
+    return 'NBA Management Framework (8 POs + 2 PSOs)';
+  }
+  if (text.includes('PHARM') || text.includes('PHARMA')) {
+    return 'PCI / NBA Pharmacy Framework (11 POs + 2 PSOs)';
+  }
+  if (text.includes('B.COM') || text.includes('BCOM') || text.includes('M.COM') || text.includes('B.A') || text.includes('ARTS') || text.includes('COMMERCE')) {
+    return 'UGC / NAAC Quality Framework (6 POs + 2 PSOs)';
+  }
+  return 'NBA Tier-1 Washington Accord Framework (12 POs + 2 PSOs)';
+};
+
 const OrgAcademicsPrograms = () => {
   // Enterprise Confirmation Dialog Hook
   const { confirm, ConfirmDialog } = useConfirmDialog();
@@ -402,7 +417,7 @@ const OrgAcademicsPrograms = () => {
                         }}
                         onClick={() => openPoModal(prog)}
                       >
-                        <i className="fa-solid fa-award"></i> {prog.pos?.length || (prog.programOutcomes?.length ?? 14)} Outcomes (POs + PSOs)
+                        <i className="fa-solid fa-award"></i> {prog.pos?.length ? `${prog.pos.length} Outcomes (POs + PSOs)` : 'Accredited Outcomes'}
                       </button>
                     </td>
                     <td style={{ textAlign: 'center' }}>
@@ -525,7 +540,7 @@ const OrgAcademicsPrograms = () => {
                     Program Outcomes (POs / PSOs)
                   </h3>
                   <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#64748b' }}>
-                    {selectedProgForPo?.name} &bull; NBA Tier-1 Framework
+                    {selectedProgForPo?.name} &bull; {getFrameworkLabel(selectedProgForPo)}
                   </p>
                 </div>
               </div>
