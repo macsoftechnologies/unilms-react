@@ -12,6 +12,18 @@ const DEFAULT_DEGREE_STREAMS = [
   { id: 'Diploma', code: 'Diploma', name: 'Diploma / Polytechnic', examples: 'D.Pharm, Polytechnic', defaultDuration: 2, active: true }
 ];
 
+const sortOutcomesNatural = (list) => {
+  if (!Array.isArray(list)) return [];
+  return [...list].sort((a, b) => {
+    const aPrefix = a.code?.toUpperCase().startsWith('PSO') ? 'PSO' : 'PO';
+    const bPrefix = b.code?.toUpperCase().startsWith('PSO') ? 'PSO' : 'PO';
+    if (aPrefix !== bPrefix) return aPrefix === 'PO' ? -1 : 1;
+    const aNum = parseInt(a.code.replace(/\D/g, ''), 10) || 0;
+    const bNum = parseInt(b.code.replace(/\D/g, ''), 10) || 0;
+    return aNum - bNum;
+  });
+};
+
 const OrgAcademicsPrograms = () => {
   // Enterprise Confirmation Dialog Hook
   const { confirm, ConfirmDialog } = useConfirmDialog();
@@ -50,12 +62,12 @@ const OrgAcademicsPrograms = () => {
         duration_years: p.durationYears || 4,
         type: p.type || 'UG',
         pos: (p.programOutcomes && p.programOutcomes.length > 0)
-          ? p.programOutcomes.map(po => ({
+          ? sortOutcomesNatural(p.programOutcomes.map(po => ({
               code: po.code,
               title: po.title || po.statement || po.code,
               desc: po.description || po.desc || po.title || ''
-            }))
-          : (Array.isArray(p.pos) ? p.pos : [])
+            })))
+          : sortOutcomesNatural(Array.isArray(p.pos) ? p.pos : [])
       })) : []);
 
       if (Array.isArray(depts)) {
@@ -147,11 +159,11 @@ const OrgAcademicsPrograms = () => {
           pos = await obeService.getPos(prog.id);
         }
         if (Array.isArray(pos) && pos.length > 0) {
-          const mapped = pos.map(po => ({
+          const mapped = sortOutcomesNatural(pos.map(po => ({
             code: po.code,
             title: po.title || po.statement || po.code,
             desc: po.description || po.desc || po.title || ''
-          }));
+          })));
           setSelectedProgForPo(prev => prev ? { ...prev, pos: mapped } : prev);
           setPrograms(prev => prev.map(p => p.id === prog.id ? { ...p, pos: mapped } : p));
         }
@@ -589,10 +601,30 @@ const OrgAcademicsPrograms = () => {
                 borderTop: '1px solid #e2e8f0',
                 background: '#f8fafc',
                 display: 'flex',
-                justifyContent: 'flex-end',
+                justifyContent: 'space-between',
+                alignItems: 'center',
                 flexShrink: 0,
               }}
             >
+              <Link
+                to="/unilms/org/obe/admin_po_setup"
+                className="btn"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  textDecoration: 'none',
+                  fontSize: '12.5px',
+                  fontWeight: '700',
+                  background: 'rgba(124, 58, 237, 0.1)',
+                  color: '#7C3AED',
+                  border: '1px solid rgba(124, 58, 237, 0.25)',
+                  borderRadius: '8px',
+                  padding: '8px 14px',
+                }}
+              >
+                <i className="fa-solid fa-pen-to-square"></i> Edit &amp; Customize in OBE Setup &rarr;
+              </Link>
               <button type="button" className="btn btn-outline" onClick={closePoModal}>
                 Close
               </button>

@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../components';
+import { TableSkeletonLoader, TablePagination, useTablePagination, useConfirmDialog } from '../../components';
 import obeService from '../../services/obe.service';
 import academicsService from '../../services/academics.service';
 
 const FacultyPoSetup = () => {
+  const { confirm, ConfirmDialog } = useConfirmDialog();
+
   const [programs, setPrograms] = useState([]);
   const [selectedProgram, setSelectedProgram] = useState('');
   const [outcomes, setOutcomes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingOutcome, setEditingOutcome] = useState(null);
   const [toastMsg, setToastMsg] = useState(null);
 
   const [formData, setFormData] = useState({
     code: '',
+    title: '',
     type: 'PO',
     description: '',
   });
@@ -97,13 +101,46 @@ const FacultyPoSetup = () => {
   };
 
   const handleOpenAdd = () => {
+    setEditingOutcome(null);
     const currentPos = outcomes.filter(o => o.type === 'PO' || !o.code?.toUpperCase().startsWith('PSO'));
     setFormData({
       code: `PO${currentPos.length + 1}`,
+      title: '',
       type: 'PO',
       description: '',
     });
     setIsAddModalOpen(true);
+  };
+
+  const handleEdit = (outcome) => {
+    setEditingOutcome(outcome);
+    setFormData({
+      code: outcome.code || '',
+      title: outcome.title || outcome.code || '',
+      type: (outcome.type === 'PSO' || outcome.code?.toUpperCase().startsWith('PSO')) ? 'PSO' : 'PO',
+      description: outcome.description || '',
+    });
+    setIsAddModalOpen(true);
+  };
+
+  const handleDelete = async (outcome) => {
+    const confirmed = await confirm({
+      title: 'Confirm Delete Outcome',
+      message: `Permanently delete ${outcome.code} - ${outcome.title || outcome.description?.slice(0, 40)}?`,
+      details: 'This will remove this outcome and any associated Course Outcome (CO-PO) matrix mappings for this program.',
+      confirmText: 'Yes, Delete Outcome',
+      variant: 'danger',
+      icon: 'fa-solid fa-trash-can',
+    });
+    if (!confirmed) return;
+
+    try {
+      await obeService.deletePo(outcome.id);
+      showToast(`Outcome ${outcome.code} deleted successfully.`);
+      loadPos(selectedProgram);
+    } catch (err) {
+      alert('Failed to delete outcome: ' + (err.response?.data?.message || err.message));
+    }
   };
 
   const handleSaveOutcome = async (e) => {
@@ -111,19 +148,30 @@ const FacultyPoSetup = () => {
     if (!formData.code.trim() || !formData.description.trim() || !selectedProgram) return;
 
     try {
-      await obeService.createPo({
-        programId: selectedProgram,
-        code: formData.code.trim().toUpperCase(),
-        title: formData.code.trim().toUpperCase(),
-        type: formData.type,
-        description: formData.description.trim(),
-      });
+      if (editingOutcome) {
+        await obeService.updatePo(editingOutcome.id, {
+          code: formData.code.trim().toUpperCase(),
+          title: formData.title.trim() || formData.code.trim().toUpperCase(),
+          type: formData.type,
+          description: formData.description.trim(),
+        });
+        showToast(`Outcome ${formData.code.trim().toUpperCase()} updated successfully!`);
+      } else {
+        await obeService.createPo({
+          programId: selectedProgram,
+          code: formData.code.trim().toUpperCase(),
+          title: formData.title.trim() || formData.code.trim().toUpperCase(),
+          type: formData.type,
+          description: formData.description.trim(),
+        });
+        showToast(`Outcome ${formData.code.trim().toUpperCase()} created successfully!`);
+      }
 
-      showToast(`Outcome ${formData.code.trim().toUpperCase()} created successfully!`);
       setIsAddModalOpen(false);
+      setEditingOutcome(null);
       loadPos(selectedProgram);
     } catch (err) {
-      alert('Failed to save PO: ' + err.message);
+      alert('Failed to save PO: ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -219,11 +267,12 @@ const FacultyPoSetup = () => {
                   <th style={{ padding: '14px 18px', fontSize: '12px', width: '100px' }}>Code</th>
                   <th style={{ padding: '14px 18px', fontSize: '12px', width: '100px' }}>Type</th>
                   <th style={{ padding: '14px 18px', fontSize: '12px' }}>Description / Graduate Attribute</th>
+                  <th style={{ padding: '14px 18px', fontSize: '12px', width: '100px', textAlign: 'center' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <TableSkeletonLoader columns={3} rows={5} />
+                  <TableSkeletonLoader columns={4} rows={5} />
                 ) : paginatedOutcomes.length > 0 ? (
                   paginatedOutcomes.map((o) => {
                     const isPso = (o.type === 'PSO' || o.code?.toUpperCase().startsWith('PSO'));
@@ -249,12 +298,34 @@ const FacultyPoSetup = () => {
                           )}
                           {o.description}
                         </td>
+                        <td style={{ padding: '14px 18px', textAlign: 'center' }}>
+                          <div style={{ display: 'inline-flex', gap: '8px' }}>
+                            <button
+                              type="button"
+                              className="btn-icon"
+                              onClick={() => handleEdit(o)}
+                              title="Edit Outcome"
+                              style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748b' }}
+                            >
+                              <i className="fa-solid fa-pen"></i>
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-icon text-danger"
+                              onClick={() => handleDelete(o)}
+                              title="Delete Outcome"
+                              style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#ef4444' }}
+                            >
+                              <i className="fa-solid fa-trash"></i>
+                            </button>
+                          </div>
+                        </td>
                       </tr>
                     );
                   })
                 ) : (
                   <tr>
-                    <td colSpan="3" style={{ textAlign: 'center', padding: '40px', color: '#64748B' }}>
+                    <td colSpan="4" style={{ textAlign: 'center', padding: '40px', color: '#64748B' }}>
                       No program outcomes configured yet for this program. Click 'Add Outcome' above.
                     </td>
                   </tr>
@@ -309,7 +380,7 @@ const FacultyPoSetup = () => {
                       <i className="fa-solid fa-award"></i>
                     </div>
                     <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '800', color: '#1e293b' }}>
-                      Add Program Outcome
+                      {editingOutcome ? 'Edit Program Outcome' : 'Add Program Outcome'}
                     </h3>
                   </div>
                   <button type="button" onClick={() => setIsAddModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '20px', color: '#64748b', cursor: 'pointer' }}>
@@ -343,6 +414,17 @@ const FacultyPoSetup = () => {
                     </div>
                   </div>
 
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '6px' }}>Outcome Title / Competency Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Engineering Knowledge, Problem Analysis..."
+                      value={formData.title}
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                      className="form-control"
+                    />
+                  </div>
+
                   <div style={{ marginBottom: '18px' }}>
                     <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '6px' }}>Graduate Attribute Description</label>
                     <textarea
@@ -370,7 +452,7 @@ const FacultyPoSetup = () => {
                     className="btn btn-primary"
                     style={{ padding: '9px 20px', borderRadius: '8px', background: '#7C3AED', color: '#fff', border: 'none', fontWeight: '700', cursor: 'pointer' }}
                   >
-                    Save Outcome
+                    {editingOutcome ? 'Update Outcome' : 'Save Outcome'}
                   </button>
                 </div>
               </form>
@@ -378,6 +460,7 @@ const FacultyPoSetup = () => {
           </div>
         )}
       </section>
+      <ConfirmDialog />
     </>
   );
 };

@@ -48,6 +48,16 @@ class ObeService {
     return res.data || res;
   }
 
+  async updatePo(id, data) {
+    const res = await apiClient.put(`/obe/pos/${id}`, data);
+    return res.data || res;
+  }
+
+  async deletePo(id) {
+    const res = await apiClient.delete(`/obe/pos/${id}`);
+    return res.data || res;
+  }
+
   async seedStandardPos(programId) {
     const res = await apiClient.post(`/obe/pos/seed/${programId}`);
     return res.data || res;
