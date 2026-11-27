@@ -237,6 +237,8 @@ const OrgSystemsUsers = () => {
           </div>
 
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+            {/* Add User is intentionally commented out: Staff/Faculty must be onboarded through HR & Employees, making this a central audit directory */}
+            {/* 
             <button
               type="button"
               className="btn btn-primary"
@@ -260,6 +262,7 @@ const OrgSystemsUsers = () => {
               <i className="fa-solid fa-plus"></i>
               <span>Add User</span>
             </button>
+            */}
             <Link
               to="/unilms/org/systems/access_groups"
               className="btn btn-outline"
