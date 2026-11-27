@@ -42,6 +42,11 @@ const OrgAcademicsCohorts = () => {
   const endYearNum = startYearNum + progDurationYears;
   const suggestedCohortName = `${selectedProgramObj?.code || 'BATCH'} (${startYearNum} - ${endYearNum} Batch)`;
 
+  // Prevent duplicate cohorts for the same Program and Academic Year
+  const duplicateCohort = cohorts.find(
+    (c) => c.programId === programId && c.academicYearId === academicYearId && c.id !== editingCohortId
+  );
+
   // Reset semester if program changed and current selected semester exceeds program's max
   useEffect(() => {
     if (selectedProgramObj) {
@@ -130,6 +135,10 @@ const OrgAcademicsCohorts = () => {
   const handleCohortSubmit = async (e) => {
     e.preventDefault();
     if (!cohortName.trim()) return;
+    if (duplicateCohort && !editingCohortId) {
+      alert(`Conflict: A cohort for this Degree Program in academic year ${selectedAyObj?.name} already exists ("${duplicateCohort.name}"). To create more class divisions, please add sections (e.g. Section B) to the existing batch.`);
+      return;
+    }
 
     const isEdit = Boolean(editingCohortId);
     const prog = programs.find(p => p.id === programId);
@@ -631,6 +640,29 @@ const OrgAcademicsCohorts = () => {
                   </select>
                 </div>
 
+                {duplicateCohort && !editingCohortId && (
+                  <div
+                    style={{
+                      background: 'rgba(239, 68, 68, 0.08)',
+                      border: '1px solid rgba(239, 68, 68, 0.3)',
+                      borderRadius: '10px',
+                      padding: '12px 14px',
+                      display: 'flex',
+                      gap: '10px',
+                      alignItems: 'flex-start',
+                    }}
+                  >
+                    <i className="fa-solid fa-triangle-exclamation" style={{ color: '#ef4444', marginTop: '2px', fontSize: '15px' }}></i>
+                    <div style={{ fontSize: '12px', color: '#991b1b', lineHeight: '1.5' }}>
+                      <strong style={{ display: 'block', marginBottom: '2px' }}>Batch Already Exists:</strong>
+                      A cohort for <strong>{selectedProgramObj?.name}</strong> in <strong>{selectedAyObj?.name}</strong> is already registered as <em>"{duplicateCohort.name}"</em>.
+                      <div style={{ marginTop: '4px', color: '#7f1d1d' }}>
+                        Creating a duplicate batch creates duplicate "Section A"s. To add more classes (e.g. <strong>Section B</strong>, <strong>Section C</strong>), close this drawer and click <strong>Add Section</strong> on the existing batch.
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="form-group" style={{ margin: 0 }}>
                   <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '13px' }}>
                     Cohort Batch Name <span style={{ color: '#ef4444' }}>*</span>
@@ -702,16 +734,20 @@ const OrgAcademicsCohorts = () => {
                 <button
                   type="submit"
                   className="btn btn-primary"
+                  disabled={Boolean(duplicateCohort && !editingCohortId)}
                   style={{
-                    background: 'linear-gradient(135deg, #0284C7 0%, #0369A1 100%)',
+                    background: duplicateCohort && !editingCohortId
+                      ? '#94a3b8'
+                      : 'linear-gradient(135deg, #0284C7 0%, #0369A1 100%)',
                     color: '#fff',
                     border: 'none',
                     padding: '8px 18px',
                     borderRadius: '8px',
                     fontWeight: '700',
+                    cursor: duplicateCohort && !editingCohortId ? 'not-allowed' : 'pointer',
                   }}
                 >
-                  {editingCohortId ? 'Update Cohort' : 'Save Cohort'}
+                  {editingCohortId ? 'Update Cohort' : duplicateCohort ? 'Batch Already Exists' : 'Save Cohort'}
                 </button>
               </div>
             </form>
