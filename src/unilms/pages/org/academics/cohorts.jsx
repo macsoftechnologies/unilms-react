@@ -24,6 +24,27 @@ const OrgAcademicsCohorts = () => {
   const [cohortName, setCohortName] = useState('');
   const [semesterName, setSemesterName] = useState('Semester 1');
 
+  // Dynamic program duration & semesters computation
+  const selectedProgramObj = programs.find(p => p.id === programId);
+  const selectedAyObj = academicYears.find(y => y.id === academicYearId);
+  const progDurationYears = Number(selectedProgramObj?.durationYears || selectedProgramObj?.duration_years || 4);
+  const totalSemesters = Math.max(1, progDurationYears * 2);
+  const dynamicSemesters = Array.from({ length: totalSemesters }, (_, i) => `Semester ${i + 1}`);
+
+  const startYearNum = selectedAyObj?.startYear || parseInt(selectedAyObj?.name?.slice(0, 4), 10) || new Date().getFullYear();
+  const endYearNum = startYearNum + progDurationYears;
+  const suggestedCohortName = `${selectedProgramObj?.code || 'BATCH'} (${startYearNum} - ${endYearNum} Batch)`;
+
+  // Reset semester if program changed and current selected semester exceeds program's max
+  useEffect(() => {
+    if (selectedProgramObj) {
+      const semNum = parseInt(semesterName.replace(/\D/g, ''), 10) || 1;
+      if (semNum > totalSemesters) {
+        setSemesterName('Semester 1');
+      }
+    }
+  }, [programId, totalSemesters]);
+
   // Section Modal state
   const [targetCohortId, setTargetCohortId] = useState('');
   const [sectionName, setSectionName] = useState('');
@@ -609,16 +630,35 @@ const OrgAcademicsCohorts = () => {
                     id="form_name"
                     className="form-control"
                     required
-                    placeholder="e.g. BTECH-CSE (2026 - 2030 Batch)"
+                    placeholder={`e.g. ${suggestedCohortName}`}
                     value={cohortName}
                     onChange={(e) => setCohortName(e.target.value)}
                   />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '5px' }}>
+                    <span style={{ fontSize: '11.5px', color: '#64748b' }}>
+                      Suggested: <strong>{suggestedCohortName}</strong>
+                    </span>
+                    {!cohortName && (
+                      <button
+                        type="button"
+                        onClick={() => setCohortName(suggestedCohortName)}
+                        style={{ background: 'none', border: 'none', color: '#0284c7', fontSize: '11.5px', fontWeight: '700', cursor: 'pointer', padding: 0 }}
+                      >
+                        Auto-fill
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <div className="form-group" style={{ margin: 0 }}>
-                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: '600', fontSize: '13px' }}>
-                    Current Semester
-                  </label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <label style={{ margin: 0, fontWeight: '600', fontSize: '13px' }}>
+                      Current Semester
+                    </label>
+                    <span style={{ fontSize: '11.5px', color: '#0284c7', fontWeight: '700' }}>
+                      {progDurationYears} Years ({totalSemesters} Semesters)
+                    </span>
+                  </div>
                   <select
                     name="current_semester_id"
                     id="form_current_semester_id"
@@ -626,14 +666,9 @@ const OrgAcademicsCohorts = () => {
                     value={semesterName}
                     onChange={(e) => setSemesterName(e.target.value)}
                   >
-                    <option value="Semester 1">Semester 1</option>
-                    <option value="Semester 2">Semester 2</option>
-                    <option value="Semester 3">Semester 3</option>
-                    <option value="Semester 4">Semester 4</option>
-                    <option value="Semester 5">Semester 5</option>
-                    <option value="Semester 6">Semester 6</option>
-                    <option value="Semester 7">Semester 7</option>
-                    <option value="Semester 8">Semester 8</option>
+                    {dynamicSemesters.map((sem) => (
+                      <option key={sem} value={sem}>{sem}</option>
+                    ))}
                   </select>
                 </div>
               </div>
