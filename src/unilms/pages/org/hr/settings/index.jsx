@@ -116,7 +116,7 @@ const OrgHrSettingsIndex = () => {
       setDepartments([...departments, { id: created?.id || Date.now(), name: deptName.trim(), description: `Code: ${code}` }]);
       setDeptName('');
       setDeptDesc('');
-      showToast('Department added and saved to PostgreSQL.');
+      showToast('Department added successfully.');
     } catch (err) {
       setDepartments([...departments, { id: Date.now(), name: deptName.trim(), description: deptDesc.trim() || 'Academic Department' }]);
       setDeptName('');
@@ -140,7 +140,7 @@ const OrgHrSettingsIndex = () => {
     setDesignations(updated);
     persistHrSettings({ designations: updated });
     setDesigName('');
-    showToast('Designation added and saved to PostgreSQL.');
+    showToast('Designation added successfully.');
   };
 
   const handleDeleteDesig = (id) => {
@@ -157,7 +157,7 @@ const OrgHrSettingsIndex = () => {
     setEmploymentTypes(updated);
     persistHrSettings({ employmentTypes: updated });
     setEmpTypeName('');
-    showToast('Employment type added and saved to PostgreSQL.');
+    showToast('Employment type added successfully.');
   };
 
   const handleDeleteEmpType = (id) => {
@@ -175,7 +175,7 @@ const OrgHrSettingsIndex = () => {
     persistHrSettings({ leavePolicies: updated });
     setLpLeaveType('');
     setLpQuota('');
-    showToast('Leave policy added and saved to PostgreSQL.');
+    showToast('Leave policy added successfully.');
   };
 
   const handleDeleteLeavePolicy = (id) => {

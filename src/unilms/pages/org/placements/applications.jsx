@@ -12,14 +12,7 @@ import placementsService from '../../../services/placements.service';
 
 const OrgPlacementsApplications = () => {
   const { id } = useParams();
-  const [drive, setDrive] = useState({
-    id: 1,
-    title: 'Microsoft 2026 Campus Drive',
-    company_name: 'Microsoft Corporation',
-    job_role: 'Software Engineer (Azure Core & Cloud)',
-    ctc_details: '₹44.0 LPA',
-    drive_date: '2026-11-28'
-  });
+  const [drive, setDrive] = useState(null);
 
   const { confirm, ConfirmDialog } = useConfirmDialog();
   const [applications, setApplications] = useState([]);
@@ -40,13 +33,15 @@ const OrgPlacementsApplications = () => {
         setDrive({
           id: found.id,
           company_id: found.companyId || found.company?.id,
-          company_name: found.company?.name || found.company_name || 'Microsoft Corporation',
-          title: found.title,
-          job_role: found.jobRole || found.job_role || 'Software Engineer',
-          ctc_details: found.ctcDetails || (found.ctcNumeric ? `₹${found.ctcNumeric} LPA` : '₹44.0 LPA'),
-          ctc_numeric: found.ctcNumeric || 44.0,
-          drive_date: found.driveDate ? found.driveDate.split('T')[0] : '2026-11-28'
+          company_name: found.company?.name || found.company_name || 'Campus Recruiter',
+          title: found.title || 'Campus Placement Drive',
+          job_role: found.jobRole || found.job_role || 'Open Position',
+          ctc_details: found.ctcDetails || (found.ctcNumeric ? `₹${found.ctcNumeric} LPA` : 'As per policy'),
+          ctc_numeric: found.ctcNumeric || 0,
+          drive_date: found.driveDate ? found.driveDate.split('T')[0] : '—'
         });
+      } else {
+        setDrive(null);
       }
 
       if (Array.isArray(dbApps) && dbApps.length > 0) {

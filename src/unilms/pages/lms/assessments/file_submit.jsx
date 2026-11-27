@@ -49,7 +49,7 @@ const LmsAssessmentsFileSubmit = () => {
     }
     setSubmitted(true);
     setSubmissionDate(new Date().toLocaleDateString());
-    setToastMsg('Assignment deliverable uploaded successfully and recorded in PostgreSQL!');
+    setToastMsg('Assignment deliverable uploaded successfully!');
     setTimeout(() => setToastMsg(null), 4000);
   };
 

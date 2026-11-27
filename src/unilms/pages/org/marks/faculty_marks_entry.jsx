@@ -122,7 +122,7 @@ const OrgMarksFacultyMarksEntry = () => {
 
       if (selectedComponent && !selectedComponent.startsWith('default_') && marksPayload.length > 0) {
         await facultyService.saveAssessmentMarks(selectedComponent, marksPayload);
-        showToast('Marks saved to PostgreSQL database successfully!');
+        showToast('Marks saved successfully!');
       } else {
         await apiClient.post('/tenants/settings/unilms_marks_scores', { value: studentScores }).catch(() => {});
         showToast('Marks draft recorded to database successfully.');

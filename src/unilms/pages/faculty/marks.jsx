@@ -154,7 +154,7 @@ const FacultyMarks = () => {
       }));
 
       await facultyService.saveAssessmentMarks(selectedAssessmentId, marksPayload);
-      showToast('Continuous evaluation marks recorded directly in PostgreSQL database!');
+      showToast('Continuous evaluation marks recorded successfully!');
     } catch (err) {
       alert(err.message || 'Failed to save marks.');
     }

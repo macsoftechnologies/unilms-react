@@ -148,7 +148,7 @@ const OrgHrPayrollStructures = () => {
   const handleDelete = async (id, name) => {
     const ok = await confirm({
       title: 'Confirm Delete Salary Structure',
-      message: `Are you sure you want to delete structure "${name}"? It will be permanently removed from PostgreSQL.`,
+      message: `Are you sure you want to delete structure "${name}"? It will be permanently removed.`,
       confirmText: 'Delete Structure',
       cancelText: 'Cancel',
       type: 'danger',

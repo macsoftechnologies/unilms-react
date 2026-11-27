@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { TableSkeletonLoader, TablePagination, useTablePagination, useConfirmDialog } from '../../../components';
 import studentsService from '../../../services/students.service';
+import academicsService from '../../../services/academics.service';
 
 const OrgAcademicsStudentAnalysis = () => {
   const { confirm, ConfirmDialog } = useConfirmDialog();
@@ -9,6 +10,7 @@ const OrgAcademicsStudentAnalysis = () => {
   const isAnalyticsPortal = location.pathname.includes('/analytics');
 
   const [studentsList, setStudentsList] = useState([]);
+  const [departmentsList, setDepartmentsList] = useState([]);
   const [selectedDept, setSelectedDept] = useState('All');
   const [riskFilter, setRiskFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -17,12 +19,18 @@ const OrgAcademicsStudentAnalysis = () => {
   const [interventionNotice, setInterventionNotice] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // Load real student profiles from PostgreSQL
+  // Load real student profiles
   useEffect(() => {
     const loadStudents = async () => {
       try {
-        const res = await studentsService.getStudents();
+        const [res, deptRes] = await Promise.all([
+          studentsService.getStudents(),
+          academicsService.getDepartments().catch(() => [])
+        ]);
         const liveList = Array.isArray(res) ? res : (res?.data || []);
+        const depts = Array.isArray(deptRes) ? deptRes : (deptRes?.data || []);
+        setDepartmentsList(depts);
+
         if (Array.isArray(liveList) && liveList.length > 0) {
           const mapped = liveList.map((st, idx) => {
             const fullName = `${st.firstName || ''} ${st.lastName || ''}`.trim() || 'Student';
@@ -32,7 +40,7 @@ const OrgAcademicsStudentAnalysis = () => {
                 ? st.cohort.program.name
                 : (st.department && st.department !== '—')
                   ? st.department
-                  : 'Computer Science & Engineering';
+                  : (depts[0]?.name || 'General');
             const att = st.attendancePercentage || 0;
             const cgpa = st.cgpa ? Number(st.cgpa) : 0;
             const risk = att > 0 && att < 75 ? 'High' : att < 85 ? 'Moderate' : 'Low';
@@ -238,12 +246,15 @@ const OrgAcademicsStudentAnalysis = () => {
             style={{ width: 'auto', minWidth: '170px', fontWeight: '700', fontSize: '13px', borderRadius: '10px' }}
           >
             <option value="All">All Departments</option>
-            <option value="Computer Science & Engineering">Computer Science</option>
-            <option value="Electronics & Communication">Electronics & Comm</option>
-            <option value="Mechanical Engineering">Mechanical Engg</option>
-            <option value="Civil Engineering">Civil Engg</option>
-            <option value="Data Science & AI">Data Science & AI</option>
-            <option value="MBA in Finance & Marketing">MBA</option>
+            {departmentsList.length > 0 ? (
+              departmentsList.map((d) => (
+                <option key={d.id} value={d.name}>{d.name}</option>
+              ))
+            ) : (
+              Array.from(new Set(studentsList.map(s => s.department).filter(Boolean))).map((dName) => (
+                <option key={dName} value={dName}>{dName}</option>
+              ))
+            )}
           </select>
 
           <Link
@@ -625,7 +636,7 @@ const OrgAcademicsStudentAnalysis = () => {
                   <div style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
                     <span style={{ fontWeight: '600' }}>{selectedStudent.rollNo}</span>
                     <span style={{ color: 'var(--border-color)', fontWeight: 'bold' }}>&bull;</span>
-                    <span>{selectedStudent.department || 'Computer Science & Engineering'}</span>
+                    <span>{selectedStudent.department || 'General'}</span>
                   </div>
                 </div>
               </div>

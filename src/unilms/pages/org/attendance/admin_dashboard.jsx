@@ -73,7 +73,7 @@ const OrgAttendanceAdminDashboard = () => {
       message: `Set minimum academic attendance compliance threshold to ${threshold}%?`,
       details: [
         `Target Threshold: ${threshold}%`,
-        'Evaluation: Evaluates all student records against live sessions in PostgreSQL.',
+        'Evaluation: Evaluates all student records against live timetable sessions.',
         'Impact: Dynamically recalculates condonation eligibility and flags defaulters.'
       ],
       confirmText: 'Yes, Apply Threshold',

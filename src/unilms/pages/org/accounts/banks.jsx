@@ -74,7 +74,7 @@ const OrgAccountsBanks = () => {
           ifscCode: formData.ifsc_code.trim() || '—',
           openingBalance: parseFloat(formData.opening_balance) || 0
         });
-        showToast(`Account "${formData.account_name}" added to PostgreSQL.`);
+        showToast(`Account "${formData.account_name}" added successfully.`);
       }
       handleClear();
       await loadBanks();

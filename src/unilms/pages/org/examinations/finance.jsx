@@ -3,16 +3,6 @@ import { Link } from 'react-router-dom';
 import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../../components';
 import apiClient from '../../../services/api';
 
-const DEFAULT_GRANTS = [
-  { id: 1, grant_type: 'State Higher Education Council Annual Grant', source: 'Department of Higher Education', amount: 450000, received_date: '2026-01-15', purpose: 'Conduct of terminal winter examinations' },
-  { id: 2, grant_type: 'Autonomous Curriculum Evaluation Grant', source: 'UGC Special Fund', amount: 280000, received_date: '2026-02-10', purpose: 'External examiner fees and question moderation' }
-];
-
-const DEFAULT_EXPENDITURES = [
-  { id: 1, head: 'Answer Booklet & Question Printing', exam_name: 'End Sem Finals', amount: 84000, date: '2026-03-04', description: 'Security watermarked test answer booklets 10,000 units' },
-  { id: 2, head: 'Invigilation & Squad Honorarium', exam_name: 'Midterm Assessment II', amount: 56000, date: '2026-03-08', description: 'Remuneration disbursed to external flying squad & chief superintendents' }
-];
-
 const OrgExaminationsFinance = () => {
   const [grants, setGrants] = useState([]);
   const [expenditures, setExpenditures] = useState([]);
@@ -31,7 +21,7 @@ const OrgExaminationsFinance = () => {
 
   const [expForm, setExpForm] = useState({
     head: '',
-    exam_name: 'End Sem Finals',
+    exam_name: '',
     amount: '',
     date: new Date().toISOString().split('T')[0],
     description: ''
@@ -46,13 +36,12 @@ const OrgExaminationsFinance = () => {
           setGrants(Array.isArray(res.data.value.grants) ? res.data.value.grants : []);
           setExpenditures(Array.isArray(res.data.value.expenditures) ? res.data.value.expenditures : []);
         } else {
-          setGrants(DEFAULT_GRANTS);
-          setExpenditures(DEFAULT_EXPENDITURES);
-          apiClient.post('/tenants/settings/exam_finance', { value: { grants: DEFAULT_GRANTS, expenditures: DEFAULT_EXPENDITURES } }).catch(() => {});
+          setGrants([]);
+          setExpenditures([]);
         }
       } catch {
-        setGrants(DEFAULT_GRANTS);
-        setExpenditures(DEFAULT_EXPENDITURES);
+        setGrants([]);
+        setExpenditures([]);
       } finally {
         setLoading(false);
       }
@@ -256,7 +245,7 @@ const OrgExaminationsFinance = () => {
         <div className="card" style={{ padding: '20px', borderRadius: '12px', border: '1px solid var(--border-color)', background: '#fff' }}>
           <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Net Available Budget</div>
           <div style={{ fontSize: '24px', fontWeight: '800', color: netBalance >= 0 ? '#2563EB' : '#DC2626', marginTop: '4px' }}>₹{netBalance.toLocaleString('en-IN')}</div>
-          <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>PostgreSQL Audited Ledger Balance</div>
+          <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>Audited Ledger Balance</div>
         </div>
       </div>
 

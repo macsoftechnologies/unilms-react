@@ -134,7 +134,7 @@ const OrgObeTargetsSetup = () => {
         {saveSuccess && (
           <div style={{ background: '#DCFCE7', border: '1px solid #86EFAC', color: '#166534', padding: '12px 16px', borderRadius: '10px', marginBottom: '20px', fontSize: '14px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <i className="fa-solid fa-circle-check"></i>
-            Global OBE attainment targets saved to PostgreSQL successfully!
+            Global OBE attainment targets saved successfully!
           </div>
         )}
 

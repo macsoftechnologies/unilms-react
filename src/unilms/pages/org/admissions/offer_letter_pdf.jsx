@@ -44,9 +44,11 @@ const OrgAdmissionsOfferLetterPdf = () => {
   const appNumber = candidate?.applicationNumber || candidate?.adm_number || 'APP-2026-001';
   const programName = candidate?.programName || candidate?.program?.name || 'Undergraduate Degree Program';
   const category = candidate?.admissionCategory || candidate?.admission_category || 'General (Open Merit)';
-  const phone = candidate?.phone || '+91 98765 43210';
-  const email = candidate?.email || 'applicant@example.com';
+  const phone = candidate?.phone || '—';
+  const email = candidate?.email || '—';
   const issueDate = candidate?.createdAt ? new Date(candidate.createdAt).toLocaleDateString('en-GB') : new Date().toLocaleDateString('en-GB');
+  const feeAmount = candidate?.tuition_fee || candidate?.program?.fee || candidate?.admissionFee || 0;
+  const formattedFee = feeAmount ? `₹${Number(feeAmount).toLocaleString('en-IN')}.00` : '₹0.00';
 
   return (
     <div style={{ background: '#F1F5F9', minHeight: '100vh', padding: '30px 20px' }}>
@@ -156,7 +158,7 @@ const OrgAdmissionsOfferLetterPdf = () => {
             </tr>
             <tr style={{ borderBottom: '1px solid #E2E8F0', background: '#F8FAFC' }}>
               <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '13px', color: '#475569' }}>Admission Fee Amount</th>
-              <td style={{ padding: '12px 16px', fontSize: '15px', fontWeight: '700', color: '#7C3AED' }}>₹85,000.00</td>
+              <td style={{ padding: '12px 16px', fontSize: '15px', fontWeight: '700', color: '#7C3AED' }}>{formattedFee}</td>
             </tr>
             <tr>
               <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '13px', color: '#475569' }}>Payment Due Date</th>

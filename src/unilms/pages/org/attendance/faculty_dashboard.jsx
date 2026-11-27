@@ -146,7 +146,7 @@ const OrgAttendanceFacultyDashboard = () => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px', marginBottom: '32px' }}>
           {loading ? (
             <div className="card" style={{ padding: '24px', textAlign: 'center', color: 'var(--text-muted)', gridColumn: '1 / -1' }}>
-              <i className="fa-solid fa-spinner fa-spin me-2"></i> Loading allocated courses from PostgreSQL...
+              <i className="fa-solid fa-spinner fa-spin me-2"></i> Loading allocated courses...
             </div>
           ) : courses.length === 0 ? (
             <div className="card" style={{ padding: '28px', textAlign: 'center', color: 'var(--text-muted)', gridColumn: '1 / -1', background: 'var(--card-bg, #fff)', borderRadius: '14px', border: '1px solid var(--border-color)' }}>

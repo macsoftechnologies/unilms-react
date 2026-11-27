@@ -98,7 +98,7 @@ const OrgAttendanceMarkSession = () => {
 
     const confirmed = await confirm({
       title: 'Confirm Save Attendance Register',
-      message: `Persist attendance session for ${sessionDate} in PostgreSQL?`,
+      message: `Persist attendance session for ${sessionDate}?`,
       details: [
         `Subject: ${sub ? `${sub.code} - ${sub.name}` : 'Curriculum Course'}`,
         `Date of Session: ${sessionDate}`,
@@ -128,7 +128,7 @@ const OrgAttendanceMarkSession = () => {
         records,
       });
 
-      showToast(`Classroom attendance saved to PostgreSQL! (${presentCount}/${students.length} Present).`);
+      showToast(`Classroom attendance saved! (${presentCount}/${students.length} Present).`);
       setTimeout(() => navigate('/unilms/org/attendance'), 1200);
     } catch (err) {
       console.error('Failed to submit attendance records:', err);
@@ -285,7 +285,7 @@ const OrgAttendanceMarkSession = () => {
                 <i className="fa-solid fa-users text-primary me-2" style={{ color: '#059669' }}></i> Enrolled Students Roster ({students.length} Total)
               </span>
               <span className="badge" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#059669', fontWeight: '700', fontSize: '11.5px', padding: '4px 10px', borderRadius: '6px' }}>
-                PostgreSQL Live Roster
+                Live Session Roster
               </span>
             </div>
 
@@ -379,7 +379,7 @@ const OrgAttendanceMarkSession = () => {
               className="btn btn-primary" 
               style={{ background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', padding: '12px 32px', fontSize: '15px', fontWeight: '700', borderRadius: '10px', color: '#fff', cursor: 'pointer', boxShadow: '0 4px 14px rgba(16, 185, 129, 0.25)' }}
             >
-              <i className="fa-solid fa-cloud-arrow-up me-2"></i> {submitting ? 'Committing to PostgreSQL...' : 'Submit Session Register'}
+              <i className="fa-solid fa-cloud-arrow-up me-2"></i> {submitting ? 'Committing...' : 'Submit Session Register'}
             </button>
           </div>
         </form>

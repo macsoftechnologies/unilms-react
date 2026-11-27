@@ -3,14 +3,7 @@ import { Link } from 'react-router-dom';
 import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../../components';
 import academicsService from '../../../services/academics.service';
 import facultyService from '../../../services/faculty.service';
-
-const defaultCos = [
-  { id: 'CO1', code: 'CO1', desc: 'Recall & understand foundational principles and terminology.' },
-  { id: 'CO2', code: 'CO2', desc: 'Apply mathematical & programmatic techniques to solve engineering problems.' },
-  { id: 'CO3', code: 'CO3', desc: 'Analyze structural complexity and optimize performance tradeoffs.' },
-  { id: 'CO4', code: 'CO4', desc: 'Design and synthesize comprehensive modules adhering to constraints.' },
-  { id: 'CO5', code: 'CO5', desc: 'Evaluate real-world implementations, security, and verification metrics.' }
-];
+import obeService from '../../../services/obe.service';
 
 const OrgMarksComponents = () => {
   const [programs, setPrograms] = useState([]);
@@ -20,10 +13,11 @@ const OrgMarksComponents = () => {
   const [selectedSemester, setSelectedSemester] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('');
 
+  const [availableCos, setAvailableCos] = useState([]);
   const [components, setComponents] = useState([]);
   const [newComponentName, setNewComponentName] = useState('');
   const [newMaxMarks, setNewMaxMarks] = useState('25');
-  const [selectedCoIds, setSelectedCoIds] = useState(['CO1', 'CO2']);
+  const [selectedCoIds, setSelectedCoIds] = useState([]);
   const [loading, setLoading] = useState(false);
   const [toastMsg, setToastMsg] = useState(null);
 
@@ -97,6 +91,23 @@ const OrgMarksComponents = () => {
   useEffect(() => {
     if (selectedSubject) {
       loadAssessments(selectedSubject);
+      obeService.getCos(selectedSubject).then(res => {
+        const list = Array.isArray(res) ? res : (res?.data || []);
+        const formatted = list.map(co => ({
+          id: co.code || co.id,
+          code: co.code || `CO${co.coNumber || ''}`,
+          desc: co.statement || co.description || 'Course Outcome statement'
+        }));
+        setAvailableCos(formatted);
+        if (formatted.length > 0) {
+          setSelectedCoIds([formatted[0].id]);
+        } else {
+          setSelectedCoIds([]);
+        }
+      }).catch(() => setAvailableCos([]));
+    } else {
+      setAvailableCos([]);
+      setSelectedCoIds([]);
     }
   }, [selectedSubject]);
 
@@ -139,7 +150,7 @@ const OrgMarksComponents = () => {
         cohortName: programs.find(p => p.id === selectedProgram)?.name || 'Degree Cohort',
       });
 
-      showToast(`Component "${newComponentName.trim()}" saved to PostgreSQL!`);
+      showToast(`Component "${newComponentName.trim()}" saved successfully!`);
       setNewComponentName('');
       setNewMaxMarks('25');
       await loadAssessments(selectedSubject);
@@ -398,19 +409,25 @@ const OrgMarksComponents = () => {
                 <span style={{ fontSize: '11.5px', color: '#7c3aed', fontWeight: '600' }}>{selectedCoIds.length} Selected</span>
               </label>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', border: '1px solid var(--border-color)', padding: '12px', borderRadius: '10px', background: 'var(--bg-main, #f8fafc)', maxHeight: '200px', overflowY: 'auto' }}>
-                {defaultCos.map(co => (
-                  <label key={co.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '12.5px', cursor: 'pointer', userSelect: 'none' }}>
-                    <input 
-                      type="checkbox" 
-                      checked={selectedCoIds.includes(co.id)}
-                      onChange={() => handleToggleCo(co.id)}
-                      style={{ marginTop: '2px', accentColor: '#7c3aed' }}
-                    />
-                    <div>
-                      <strong style={{ color: '#7c3aed' }}>{co.code}:</strong> <span style={{ color: 'var(--text-secondary)' }}>{co.desc}</span>
-                    </div>
-                  </label>
-                ))}
+                {availableCos.length === 0 ? (
+                  <div style={{ fontSize: '12.5px', color: 'var(--text-secondary)', padding: '8px 0', textAlign: 'center' }}>
+                    No COs configured for this subject.
+                  </div>
+                ) : (
+                  availableCos.map(co => (
+                    <label key={co.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '12.5px', cursor: 'pointer', userSelect: 'none' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={selectedCoIds.includes(co.id)}
+                        onChange={() => handleToggleCo(co.id)}
+                        style={{ marginTop: '2px', accentColor: '#7c3aed' }}
+                      />
+                      <div>
+                        <strong style={{ color: '#7c3aed' }}>{co.code}:</strong> <span style={{ color: 'var(--text-secondary)' }}>{co.desc}</span>
+                      </div>
+                    </label>
+                  ))
+                )}
               </div>
             </div>
 

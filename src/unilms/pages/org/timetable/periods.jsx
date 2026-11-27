@@ -108,7 +108,7 @@ const OrgTimetablePeriods = () => {
       });
       setPeriodName('');
       setIsBreak(false);
-      showToast(`Slot "${periodName.trim()}" added to PostgreSQL.`);
+      showToast(`Slot "${periodName.trim()}" added successfully.`);
       await loadPeriods();
     } catch (err) {
       alert('Error creating period: ' + err.message);
@@ -161,7 +161,7 @@ const OrgTimetablePeriods = () => {
     } else {
       const confirmed = await confirm({
         title: 'Generate Collegiate Bell Schedule',
-        message: 'Auto-generate standard 7-period collegiate bell schedule in PostgreSQL?',
+        message: 'Auto-generate standard 7-period collegiate bell schedule?',
         details: [
           '7 Academic Lecture Periods (50m each) + Morning Interval (15m) + Lunch Recess (50m)',
           'Total Generated: 9 Bell Schedule Slots in database'
@@ -183,7 +183,7 @@ const OrgTimetablePeriods = () => {
       });
     }
     setIsModalOpen(false);
-    showToast('Standard 7-period collegiate bell schedule generated in PostgreSQL!');
+    showToast('Standard 7-period collegiate bell schedule generated successfully!');
     await loadPeriods();
   };
 
@@ -458,7 +458,7 @@ const OrgTimetablePeriods = () => {
             </div>
 
             <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-              This will populate Period 1 (09:00 AM) through Period 7 (03:55 PM) with standard 50-minute teaching intervals directly in PostgreSQL.
+              This will populate Period 1 (09:00 AM) through Period 7 (03:55 PM) with standard 50-minute teaching intervals.
             </p>
           </div>
 

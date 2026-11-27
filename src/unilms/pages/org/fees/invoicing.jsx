@@ -27,7 +27,7 @@ const OrgFeesInvoicing = () => {
   // Individual Form State
   const [selectedStudentId, setSelectedStudentId] = useState('');
   const [selectedStructureId, setSelectedStructureId] = useState('');
-  const [customAmount, setCustomAmount] = useState('87000');
+  const [customAmount, setCustomAmount] = useState('');
   const [dueDate, setDueDate] = useState(() => {
     const d = new Date();
     d.setDate(d.getDate() + 30);
@@ -48,7 +48,7 @@ const OrgFeesInvoicing = () => {
   // Bulk Form State
   const [bulkProgramId, setBulkProgramId] = useState(urlProgramId || '');
   const [bulkSemester, setBulkSemester] = useState(urlSemester || '1');
-  const [bulkAmount, setBulkAmount] = useState('87000');
+  const [bulkAmount, setBulkAmount] = useState('');
   const [bulkDueDate, setBulkDueDate] = useState(() => {
     const d = new Date();
     d.setDate(d.getDate() + 30);
@@ -64,7 +64,7 @@ const OrgFeesInvoicing = () => {
     d.setDate(d.getDate() + 150);
     return d.toISOString().split('T')[0];
   });
-  const [bulkTitle, setBulkTitle] = useState(() => `Academic Year ${getCurrentAcademicYear()} Term 1 Fee Package`);
+  const [bulkTitle, setBulkTitle] = useState('');
 
   const [toastMsg, setToastMsg] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -93,11 +93,20 @@ const OrgFeesInvoicing = () => {
         setSelectedStudentId(stuList[0].id);
       }
       if (progList.length > 0 && !bulkProgramId) {
-        setBulkProgramId(urlProgramId || progList[0].id);
+        const initProgId = urlProgramId || progList[0].id;
+        setBulkProgramId(initProgId);
+        const prog = progList.find(p => p.id === initProgId);
+        const matched = structList.find(s => s.programId === initProgId);
+        if (matched && matched.totalAmount) {
+          setBulkAmount(String(matched.totalAmount));
+        }
+        if (prog) {
+          setBulkTitle(`${prog.code || prog.name} - Term 1 Fee Package`);
+        }
       }
       if (structList.length > 0 && !selectedStructureId) {
         setSelectedStructureId(structList[0].id);
-        setCustomAmount(String(structList[0].totalAmount || 87000));
+        setCustomAmount(String(structList[0].totalAmount || ''));
       }
     } catch (e) {
       console.error('Failed to load invoicing desk data:', e);
@@ -135,12 +144,16 @@ const OrgFeesInvoicing = () => {
   const handleProgramSelectInBulk = (progId) => {
     setBulkProgramId(progId);
     const prog = programs.find(p => p.id === progId);
-    const isMba = prog?.code?.includes('MBA') || prog?.name?.toLowerCase().includes('management');
     const matched = structures.find(s => s.programId === progId);
-    if (matched) {
+    if (matched && matched.totalAmount) {
       setBulkAmount(String(matched.totalAmount));
     } else {
-      setBulkAmount(isMba ? '150000' : '87000');
+      setBulkAmount('');
+    }
+    if (prog) {
+      setBulkTitle(`${prog.code || prog.name} - Term ${bulkSemester} Fee Package`);
+    } else {
+      setBulkTitle('');
     }
   };
 
@@ -516,6 +529,7 @@ const OrgFeesInvoicing = () => {
                     required
                     style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', fontWeight: '600' }}
                   >
+                    <option value="">-- Choose Degree Program --</option>
                     {programs.map((p) => (
                       <option key={p.id} value={p.id}>
                         {p.name} [{p.code}] ({p.durationYears || 4} Years)
@@ -530,7 +544,14 @@ const OrgFeesInvoicing = () => {
                   </label>
                   <select
                     value={bulkSemester}
-                    onChange={(e) => setBulkSemester(e.target.value)}
+                    onChange={(e) => {
+                      const sem = e.target.value;
+                      setBulkSemester(sem);
+                      const prog = programs.find(p => p.id === bulkProgramId);
+                      if (prog) {
+                        setBulkTitle(`${prog.code || prog.name} - Term ${sem} Fee Package`);
+                      }
+                    }}
                     className="form-control"
                     style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', fontWeight: '600' }}
                   >

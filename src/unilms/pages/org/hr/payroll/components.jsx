@@ -87,7 +87,7 @@ const OrgHrPayrollComponents = () => {
       title: isEdit ? 'Confirm Update Payroll Component' : 'Confirm New Payroll Component',
       message: isEdit
         ? `Are you sure you want to update component "${formData.name}" (${formData.code}) in the database?`
-        : `Are you sure you want to create salary component "${formData.name}" (${formData.code}) in PostgreSQL?`,
+        : `Are you sure you want to create salary component "${formData.name}" (${formData.code})?`,
       confirmText: isEdit ? 'Update Component' : 'Create Component',
       cancelText: 'Cancel',
       type: 'primary',
@@ -125,7 +125,7 @@ const OrgHrPayrollComponents = () => {
   const handleDelete = async (id, name) => {
     const ok = await confirm({
       title: 'Confirm Delete Component',
-      message: `Are you sure you want to delete component "${name}"? It will be permanently removed from PostgreSQL.`,
+      message: `Are you sure you want to delete component "${name}"? It will be permanently removed.`,
       confirmText: 'Delete Component',
       cancelText: 'Cancel',
       type: 'danger',

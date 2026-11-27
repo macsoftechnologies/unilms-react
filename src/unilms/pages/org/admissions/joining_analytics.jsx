@@ -69,7 +69,7 @@ const OrgAdmissionsJoiningAnalytics = () => {
           offerDate: a.offerDate ? new Date(a.offerDate).toLocaleDateString('en-GB') : (a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-GB') : '—'),
           phone: a.phone || '—',
           source: a.source || 'Direct Portal',
-          depositDue: a.tuition_fee ? `₹${Number(a.tuition_fee).toLocaleString('en-IN')}` : '₹35,000',
+          depositDue: a.tuition_fee ? `₹${Number(a.tuition_fee).toLocaleString('en-IN')}` : (a.program?.fee ? `₹${Number(a.program.fee).toLocaleString('en-IN')}` : '₹0'),
           daysPending: a.createdAt ? Math.max(1, Math.floor((Date.now() - new Date(a.createdAt).getTime()) / (1000 * 60 * 60 * 24))) : 0,
           risk: 'Moderate'
         }));

@@ -2,37 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import apiClient from '../../../services/api';
 
-const DEFAULT_TEMPLATES = [
-  {
-    id: 'tpl-1',
-    name: 'B.Tech Regular 8-Period Schedule',
-    description: 'Standard Monday through Friday schedule with 8 instructional periods, morning break, and 50-minute lunch.',
-    periods: [
-      { id: 'p-1', period_name: 'Period 1 (Theory)', start_time: '09:00', end_time: '09:50', is_break: false },
-      { id: 'p-2', period_name: 'Period 2 (Theory)', start_time: '09:50', end_time: '10:40', is_break: false },
-      { id: 'p-3', period_name: 'Morning Tea Break', start_time: '10:40', end_time: '11:00', is_break: true },
-      { id: 'p-4', period_name: 'Period 3 (Lab/Theory)', start_time: '11:00', end_time: '11:50', is_break: false },
-      { id: 'p-5', period_name: 'Period 4 (Lab/Theory)', start_time: '11:50', end_time: '12:40', is_break: false },
-      { id: 'p-6', period_name: 'Lunch Break', start_time: '12:40', end_time: '13:30', is_break: true },
-      { id: 'p-7', period_name: 'Period 5 (Tutorial)', start_time: '13:30', end_time: '14:20', is_break: false },
-      { id: 'p-8', period_name: 'Period 6 (Project/Elective)', start_time: '14:20', end_time: '15:10', is_break: false },
-      { id: 'p-9', period_name: 'Period 7 (Mentorship / Sports)', start_time: '15:10', end_time: '16:00', is_break: false }
-    ]
-  },
-  {
-    id: 'tpl-2',
-    name: 'M.Tech / Postgraduate Intensive Block',
-    description: 'Postgraduate seminar schedule with 90-minute lecture blocks and afternoon lab research windows.',
-    periods: [
-      { id: 'p-10', period_name: 'Block A (Core Seminar)', start_time: '09:30', end_time: '11:00', is_break: false },
-      { id: 'p-11', period_name: 'Tea Break', start_time: '11:00', end_time: '11:20', is_break: true },
-      { id: 'p-12', period_name: 'Block B (Specialization)', start_time: '11:20', end_time: '12:50', is_break: false },
-      { id: 'p-13', period_name: 'Lunch Break', start_time: '12:50', end_time: '13:45', is_break: true },
-      { id: 'p-14', period_name: 'Research & Lab Work', start_time: '13:45', end_time: '16:30', is_break: false }
-    ]
-  }
-];
-
 const OrgAcademicsTimetableTemplates = () => {
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -60,11 +29,10 @@ const OrgAcademicsTimetableTemplates = () => {
       if (res?.data?.value && Array.isArray(res.data.value)) {
         setTemplates(res.data.value);
       } else {
-        setTemplates(DEFAULT_TEMPLATES);
-        apiClient.post('/tenants/settings/timetable_templates', { value: DEFAULT_TEMPLATES }).catch(() => {});
+        setTemplates([]);
       }
     } catch {
-      setTemplates(DEFAULT_TEMPLATES);
+      setTemplates([]);
     } finally {
       setLoading(false);
     }
@@ -199,7 +167,7 @@ const OrgAcademicsTimetableTemplates = () => {
         </div>
 
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
-          {saving && <span style={{ fontSize: '12px', color: '#2563EB', fontWeight: '600' }}><i className="fa-solid fa-spinner fa-spin me-1"></i> Saving to PostgreSQL...</span>}
+          {saving && <span style={{ fontSize: '12px', color: '#2563EB', fontWeight: '600' }}><i className="fa-solid fa-spinner fa-spin me-1"></i> Saving changes...</span>}
           <button
             className="btn btn-primary"
             onClick={() => setShowTemplateModal(true)}

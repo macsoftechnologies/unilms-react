@@ -128,7 +128,7 @@ const OrgAccountsIndex = () => {
             onClick={() => fetchAccountsData(false)}
             className="btn btn-outline"
             style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '9px 14px', borderRadius: '10px', border: '1px solid #cbd5e1', background: '#fff', color: '#475569', fontSize: '13px', cursor: 'pointer' }}
-            title="Refresh financial data from PostgreSQL"
+            title="Refresh financial data"
           >
             <i className={`fa-solid fa-rotate ${loading ? 'fa-spin' : ''}`}></i>
             <span>Refresh</span>
@@ -353,7 +353,7 @@ const OrgAccountsIndex = () => {
                 <i className="fa-solid fa-receipt me-2" style={{ color: '#4f46e5' }}></i>
                 Recent Financial Vouchers
               </h3>
-              <small style={{ color: '#64748b' }}>PostgreSQL Real-Time Double-Entry Audit Trail</small>
+              <small style={{ color: '#64748b' }}>Real-Time Double-Entry Audit Trail</small>
             </div>
             <Link to="/unilms/org/accounts/transactions" style={{ fontSize: '12.5px', fontWeight: '700', color: '#4f46e5', textDecoration: 'none' }}>
               View All ({transactions.length}) &rarr;

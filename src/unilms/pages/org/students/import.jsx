@@ -135,7 +135,7 @@ const OrgStudentsImport = () => {
 
       setStatusMsg({
         type: 'success',
-        text: `PostgreSQL Import Complete: ${totalImported} new students onboarded, ${totalExisting} already existed.`
+        text: `Student Import Complete: ${totalImported} new students onboarded, ${totalExisting} already existed.`
       });
 
       setTimeout(() => navigate('/unilms/org/students'), 1500);

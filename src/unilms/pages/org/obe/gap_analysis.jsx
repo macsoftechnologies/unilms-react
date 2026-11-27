@@ -166,7 +166,7 @@ const OrgObeGapAnalysis = () => {
 
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <Link
-              to="/unilms/faculty/co_po_matrix"
+              to="/unilms/org/obe/faculty_mapping_matrix"
               className="btn btn-primary"
               style={{
                 background: 'linear-gradient(135deg, #D97706, #B45309)',
@@ -186,7 +186,7 @@ const OrgObeGapAnalysis = () => {
               <span>CO-PO Matrix</span>
             </Link>
             <Link
-              to="/unilms/faculty/po_setup"
+              to="/unilms/org/obe/admin_po_setup"
               className="btn btn-outline"
               style={{
                 padding: '10px 18px',

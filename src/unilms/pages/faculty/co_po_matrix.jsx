@@ -3,22 +3,15 @@ import { Link } from 'react-router-dom';
 import academicsService from '../../services/academics.service';
 import obeService from '../../services/obe.service';
 
-const posList = ['PO1', 'PO2', 'PO3', 'PO4', 'PO5', 'PO6', 'PO7', 'PO8', 'PSO1', 'PSO2'];
-
-const defaultCos = [
-  { code: 'CO1', title: 'Fundamental Concepts & Core Principles' },
-  { code: 'CO2', title: 'System Modeling & Problem Analysis' },
-  { code: 'CO3', title: 'Design & Engineering Architecture' },
-  { code: 'CO4', title: 'Implementation, Tooling & Benchmarking' },
-  { code: 'CO5', title: 'Testing, Security & Production Deployment' }
-];
+const standardPos = ['PO1', 'PO2', 'PO3', 'PO4', 'PO5', 'PO6', 'PO7', 'PO8', 'PSO1', 'PSO2'];
 
 const FacultyCoPoMatrix = () => {
   const [subjects, setSubjects] = useState([]);
   const [selectedSubjectId, setSelectedSubjectId] = useState('');
-  const [cosList, setCosList] = useState(defaultCos);
+  const [cosList, setCosList] = useState([]);
+  const [posList, setPosList] = useState([]);
   const [matrix, setMatrix] = useState({});
-  const [approvalStatus, setApprovalStatus] = useState('Approved by HOD');
+  const [approvalStatus, setApprovalStatus] = useState('Draft');
   const [loading, setLoading] = useState(true);
   const [toastMsg, setToastMsg] = useState(null);
 
@@ -46,38 +39,59 @@ const FacultyCoPoMatrix = () => {
     fetchSubjects();
   }, []);
 
-  // When subject changes, fetch COs and Matrix
+  // When subject changes, fetch COs, POs, and Matrix
   useEffect(() => {
-    if (!selectedSubjectId) return;
+    if (!selectedSubjectId) {
+      setCosList([]);
+      setPosList([]);
+      setApprovalStatus('—');
+      return;
+    }
 
     const fetchMatrixData = async () => {
       try {
-        const [cosRes, matrixRes] = await Promise.allSettled([
+        const curSub = subjects.find(s => s.id === selectedSubjectId);
+        const [cosRes, matrixRes, posRes] = await Promise.allSettled([
           obeService.getCos(selectedSubjectId),
-          obeService.getMatrix(selectedSubjectId)
+          obeService.getMatrix(selectedSubjectId),
+          obeService.getPos(curSub?.programId || '')
         ]);
 
+        let loadedPos = [];
+        if (posRes.status === 'fulfilled' && Array.isArray(posRes.value) && posRes.value.length > 0) {
+          loadedPos = posRes.value.map(p => p.code || p.poCode || p.name);
+        } else {
+          loadedPos = standardPos;
+        }
+        setPosList(loadedPos);
+
+        let loadedCos = [];
         if (cosRes.status === 'fulfilled' && Array.isArray(cosRes.value) && cosRes.value.length > 0) {
-          setCosList(cosRes.value.map((c, i) => ({
+          loadedCos = cosRes.value.map((c, i) => ({
             code: c.code || `CO${i + 1}`,
             title: c.statement || c.title || `Course Outcome ${i + 1}`
-          })));
-        } else {
-          setCosList(defaultCos);
+          }));
         }
+        setCosList(loadedCos);
 
         if (matrixRes.status === 'fulfilled' && matrixRes.value && typeof matrixRes.value === 'object') {
-          setMatrix(matrixRes.value);
+          setMatrix(matrixRes.value.mappings || matrixRes.value);
+          if (matrixRes.value.approvalStatus || matrixRes.value.status) {
+            setApprovalStatus(matrixRes.value.approvalStatus || matrixRes.value.status);
+          } else {
+            setApprovalStatus('Draft');
+          }
         } else {
-          // Initialize empty matrix for the COs
+          // Initialize empty matrix for the loaded COs
           const initial = {};
-          defaultCos.forEach(co => {
+          loadedCos.forEach(co => {
             initial[co.code] = {};
-            posList.forEach(po => {
+            loadedPos.forEach(po => {
               initial[co.code][po] = '';
             });
           });
           setMatrix(initial);
+          setApprovalStatus('Draft');
         }
       } catch (err) {
         console.warn('Failed to load matrix for subject:', err);
@@ -85,7 +99,7 @@ const FacultyCoPoMatrix = () => {
     };
 
     fetchMatrixData();
-  }, [selectedSubjectId]);
+  }, [selectedSubjectId, subjects]);
 
   const currentSubject = subjects.find(s => s.id === selectedSubjectId) || null;
 
@@ -236,7 +250,7 @@ const FacultyCoPoMatrix = () => {
             <div className="faculty-metric-info">
               <div className="faculty-metric-label">Selected Course</div>
               <div className="faculty-metric-value">{currentSubject ? currentSubject.code : 'None'}</div>
-              <div className="faculty-metric-sub" style={{ color: '#7C3AED' }}>
+              <div className="faculty-metric-sub" style={{ color: currentSubject ? '#7C3AED' : '#94a3b8' }}>
                 <span>{currentSubject ? currentSubject.name : 'No subjects in database'}</span>
               </div>
             </div>
@@ -249,10 +263,12 @@ const FacultyCoPoMatrix = () => {
             </div>
             <div className="faculty-metric-info">
               <div className="faculty-metric-label">Course Outcomes</div>
-              <div className="faculty-metric-value" style={{ color: '#059669' }}>{cosList.length} COs Defined</div>
-              <div className="faculty-metric-sub" style={{ color: '#059669' }}>
-                <i className="fa-solid fa-check"></i>
-                <span>Taxonomy Compliant</span>
+              <div className="faculty-metric-value" style={{ color: cosList.length > 0 ? '#059669' : '#64748b' }}>
+                {cosList.length > 0 ? `${cosList.length} COs Defined` : '0 COs Defined'}
+              </div>
+              <div className="faculty-metric-sub" style={{ color: cosList.length > 0 ? '#059669' : '#94a3b8' }}>
+                <i className={`fa-solid ${cosList.length > 0 ? 'fa-check' : 'fa-circle-info'}`}></i>
+                <span>{cosList.length > 0 ? 'Taxonomy Compliant' : (currentSubject ? 'Awaiting CO Setup' : 'No subjects in database')}</span>
               </div>
             </div>
           </div>
@@ -264,9 +280,11 @@ const FacultyCoPoMatrix = () => {
             </div>
             <div className="faculty-metric-info">
               <div className="faculty-metric-label">Target POs &amp; PSOs</div>
-              <div className="faculty-metric-value" style={{ color: '#2563EB' }}>{posList.length} Attributes</div>
+              <div className="faculty-metric-value" style={{ color: posList.length > 0 ? '#2563EB' : '#64748b' }}>
+                {posList.length > 0 ? `${posList.length} Attributes` : '0 Attributes'}
+              </div>
               <div className="faculty-metric-sub" style={{ color: 'var(--text-secondary, #64748b)' }}>
-                <span>NBA Criterion 3 Ready</span>
+                <span>{posList.length > 0 ? 'NBA Criterion 3 Ready' : 'Awaiting PO Setup'}</span>
               </div>
             </div>
           </div>
@@ -278,10 +296,12 @@ const FacultyCoPoMatrix = () => {
             </div>
             <div className="faculty-metric-info">
               <div className="faculty-metric-label">HOD Review Status</div>
-              <div className="faculty-metric-value" style={{ color: '#D97706' }}>{approvalStatus === 'Approved by HOD' ? 'Approved' : 'Review'}</div>
-              <div className="faculty-metric-sub" style={{ color: '#059669' }}>
-                <i className="fa-solid fa-circle-check"></i>
-                <span>{approvalStatus}</span>
+              <div className="faculty-metric-value" style={{ color: approvalStatus === 'Approved by HOD' ? '#059669' : '#D97706' }}>
+                {approvalStatus === 'Approved by HOD' ? 'Approved' : (approvalStatus || 'Draft')}
+              </div>
+              <div className="faculty-metric-sub" style={{ color: approvalStatus === 'Approved by HOD' ? '#059669' : '#64748b' }}>
+                <i className={`fa-solid ${approvalStatus === 'Approved by HOD' ? 'fa-circle-check' : 'fa-clock'}`}></i>
+                <span>{currentSubject ? (approvalStatus || 'Draft') : 'No mapping recorded'}</span>
               </div>
             </div>
           </div>

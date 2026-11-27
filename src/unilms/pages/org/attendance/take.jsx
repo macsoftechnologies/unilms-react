@@ -78,7 +78,7 @@ const OrgAttendanceTake = () => {
 
     const confirmed = await confirm({
       title: 'Confirm Submit Classroom Register',
-      message: `Commit period attendance for ${sessionDate} to PostgreSQL?`,
+      message: `Commit period attendance for ${sessionDate}?`,
       details: [
         `Date of Session: ${sessionDate}`,
         `Breakdown: ${presentCount} Present • ${absentCount} Absent • ${lateCount} Late (${students.length} Total)`,
@@ -102,7 +102,7 @@ const OrgAttendanceTake = () => {
       }));
 
       await attendanceService.markBatch({ records, date: sessionDate, subjectId: subjectId || undefined });
-      showToast(`Classroom register saved to PostgreSQL! (${presentCount}/${students.length} present). Redirecting...`);
+      showToast(`Classroom register saved! (${presentCount}/${students.length} present). Redirecting...`);
       setTimeout(() => navigate('/unilms/org/attendance'), 1200);
     } catch (err) {
       console.error('Submit attendance error:', err);

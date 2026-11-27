@@ -34,7 +34,7 @@ const OrgLibrarySuppliers = () => {
       setSuppliers(Array.isArray(data) ? data : []);
       setLastSyncTime(new Date().toLocaleTimeString());
     } catch (e) {
-      console.warn('Failed to load library suppliers from PostgreSQL:', e);
+      console.warn('Failed to load library suppliers:', e);
     } finally {
       if (!isBackground) setLoading(false);
       else setIsSyncing(false);
@@ -145,7 +145,7 @@ const OrgLibrarySuppliers = () => {
   const handleDelete = (sup) => {
     confirmAction({
       title: 'Delete Vendor / Supplier',
-      message: `Are you sure you want to remove publisher "${sup.name}"? This action removes vendor procurement records from PostgreSQL.`,
+      message: `Are you sure you want to remove publisher "${sup.name}"? This action permanently removes vendor procurement records from the system.`,
       confirmText: 'Delete Vendor',
       confirmVariant: 'danger',
       onConfirm: async () => {
@@ -207,7 +207,7 @@ const OrgLibrarySuppliers = () => {
               )}
             </div>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              Directory of registered book distributors, academic publishing houses, and procurement vendors &bull; Realtime DB &bull; Synced at {lastSyncTime}
+              Directory of registered book distributors, academic publishing houses, and procurement vendors &bull; Synced at {lastSyncTime}
             </p>
           </div>
         </div>
@@ -292,7 +292,7 @@ const OrgLibrarySuppliers = () => {
           />
         </div>
         <div style={{ fontSize: '13px', color: '#64748b' }}>
-          Active vendors: <strong>{suppliers.length}</strong> partners registered in PostgreSQL
+          Active vendors: <strong>{suppliers.length}</strong> registered partners
         </div>
       </div>
 

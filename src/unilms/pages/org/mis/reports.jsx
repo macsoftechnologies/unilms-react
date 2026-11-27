@@ -30,7 +30,7 @@ const OrgMisReports = () => {
   const isAnalyticsPortal = location.pathname.includes('/analytics');
 
   const [activeCategory, setActiveCategory] = useState('admissions');
-  const [session, setSession] = useState(getCurrentAcademicYear());
+  const [session, setSession] = useState('');
   const [academicYears, setAcademicYears] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [exportNotice, setExportNotice] = useState('');
@@ -55,7 +55,7 @@ const OrgMisReports = () => {
       setAcademicYears(validYears);
       if (validYears.length > 0) {
         const activeYear = validYears.find(y => y.status === 'active' || y.isCurrent) || validYears[0];
-        if (activeYear && !session) {
+        if (activeYear) {
           setSession(activeYear.name || activeYear.year);
         }
       }
@@ -266,9 +266,7 @@ const OrgMisReports = () => {
                 </option>
               ))
             ) : (
-              getAcademicYearOptions().map(opt => (
-                <option key={opt} value={opt}>Academic Session {opt}</option>
-              ))
+              <option value="">No academic sessions configured</option>
             )}
           </select>
 

@@ -9,7 +9,7 @@ const FacultyAttainment = () => {
   const [subjects, setSubjects] = useState([]);
   const [selectedSubjectId, setSelectedSubjectId] = useState('');
   const [academicYears, setAcademicYears] = useState([]);
-  const [academicYear, setAcademicYear] = useState(getCurrentAcademicYear());
+  const [academicYear, setAcademicYear] = useState('');
   const [reportData, setReportData] = useState({ attainments: [], poAttainments: {} });
   const [loading, setLoading] = useState(true);
   const [toastMsg, setToastMsg] = useState(null);
@@ -200,9 +200,7 @@ const FacultyAttainment = () => {
                   </option>
                 ))
               ) : (
-                getAcademicYearOptions().map(opt => (
-                  <option key={opt} value={opt}>Academic Year {opt}</option>
-                ))
+                <option value="">No academic years configured</option>
               )}
             </select>
           </div>

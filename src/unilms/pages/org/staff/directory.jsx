@@ -31,7 +31,8 @@ const OrgStaffDirectory = () => {
         staffService.getCertificates(),
         staffService.getChecklists()
       ]);
-      setDepartmentsList(Array.isArray(deptsData) ? deptsData : []);
+      const validDepts = Array.isArray(deptsData) ? deptsData : (deptsData?.data || []);
+      setDepartmentsList(validDepts);
       setDuties(Array.isArray(dutiesData) ? dutiesData : []);
       setCertificates(Array.isArray(certsData) ? certsData : []);
       setChecklists(Array.isArray(checksData) ? checksData : []);
@@ -536,7 +537,7 @@ const OrgStaffDirectory = () => {
                   <option key={d.id} value={d.name}>{d.name}</option>
                 ))
               ) : (
-                staffDepartments.map((d) => (
+                Array.from(new Set(staff.map(s => s.department).filter(Boolean))).map((d) => (
                   <option key={d} value={d}>{d}</option>
                 ))
               )}
@@ -804,7 +805,7 @@ const OrgStaffDirectory = () => {
                           <option key={d.id} value={d.name}>{d.name}</option>
                         ))
                       ) : (
-                        staffDepartments.map((d) => (
+                        Array.from(new Set(staff.map(s => s.department).filter(Boolean))).map((d) => (
                           <option key={d} value={d}>{d}</option>
                         ))
                       )}

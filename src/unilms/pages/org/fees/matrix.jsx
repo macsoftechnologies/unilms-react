@@ -21,18 +21,19 @@ const OrgFeesMatrix = () => {
   const [selectedDeptId, setSelectedDeptId] = useState('');
   const [selectedProgramId, setSelectedProgramId] = useState('');
   const [selectedBatchYear, setSelectedBatchYear] = useState(String(new Date().getFullYear()));
+  const [cohorts, setCohorts] = useState([]);
 
   // One-time Joining Fees configuration (Semester 1 Only)
   const [joiningFees, setJoiningFees] = useState({
-    bldgFund: 50000,
-    cautionDeposit: 10000,
-    admissionFee: 5000,
+    bldgFund: 0,
+    cautionDeposit: 0,
+    admissionFee: 0,
   });
 
-  // Recurring semester fee templates (defaults)
-  const [semesterTuition, setSemesterTuition] = useState(65000);
-  const [semesterLab, setSemesterLab] = useState(15000);
-  const [semesterExamMisc, setSemesterExamMisc] = useState(5000);
+  // Recurring semester fee templates (defaults to 0 until loaded from backend fee structures)
+  const [semesterTuition, setSemesterTuition] = useState(0);
+  const [semesterLab, setSemesterLab] = useState(0);
+  const [semesterExamMisc, setSemesterExamMisc] = useState(0);
 
   // Modals & UI States
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -49,34 +50,45 @@ const OrgFeesMatrix = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [deptRes, progRes, structRes, typesRes] = await Promise.all([
+      const [deptRes, progRes, structRes, typesRes, cohortRes] = await Promise.all([
         academicsService.getDepartments(),
         academicsService.getPrograms(),
         financeService.getFeeStructures(),
         financeService.getFeeTypes(),
+        academicsService.getCohorts().catch(() => []),
       ]);
 
       const depts = Array.isArray(deptRes) ? deptRes : (deptRes?.data || []);
       const progs = Array.isArray(progRes) ? progRes : (progRes?.data || []);
       const structs = Array.isArray(structRes) ? structRes : (structRes?.data || []);
       const types = Array.isArray(typesRes) ? typesRes : (typesRes?.data || []);
+      const chs = Array.isArray(cohortRes) ? cohortRes : (cohortRes?.data || []);
 
       setDepartments(depts);
       setPrograms(progs);
       setStructures(structs);
       setFeeTypes(types);
+      setCohorts(chs);
 
+      let initialProg = null;
       // Default selection
       if (depts.length > 0 && !selectedDeptId) {
         setSelectedDeptId(depts[0].id);
         const deptProgs = progs.filter(p => p.departmentId === depts[0].id || p.department?.id === depts[0].id);
         if (deptProgs.length > 0) {
           setSelectedProgramId(deptProgs[0].id);
+          initialProg = deptProgs[0];
         } else if (progs.length > 0) {
           setSelectedProgramId(progs[0].id);
+          initialProg = progs[0];
         }
       } else if (progs.length > 0 && !selectedProgramId) {
         setSelectedProgramId(progs[0].id);
+        initialProg = progs[0];
+      }
+
+      if (initialProg) {
+        syncProgramFeesFromBackend(initialProg, structs);
       }
     } catch (e) {
       console.error('Failed to load fee matrix data:', e);
@@ -89,15 +101,50 @@ const OrgFeesMatrix = () => {
     loadData();
   }, []);
 
+  // Sync fee heads dynamically from existing backend fee structure for this program
+  const syncProgramFeesFromBackend = (prog, currentStructs) => {
+    if (!prog) return;
+    const pool = currentStructs || structures;
+    const matched = pool.filter(s => s.programId === prog.id);
+    if (matched.length > 0) {
+      const sem1Struct = matched.find(s => s.name?.includes('Semester 1')) || matched[0];
+      const heads = sem1Struct.heads || [];
+      const tuitionHead = heads.find(h => h.name?.toLowerCase().includes('tuition'));
+      const labHead = heads.find(h => h.name?.toLowerCase().includes('lab'));
+      const miscHead = heads.find(h => h.name?.toLowerCase().includes('exam') || h.name?.toLowerCase().includes('misc'));
+      const bldgHead = heads.find(h => h.name?.toLowerCase().includes('building'));
+      const depositHead = heads.find(h => h.name?.toLowerCase().includes('caution') || h.name?.toLowerCase().includes('deposit'));
+      const admHead = heads.find(h => h.name?.toLowerCase().includes('admission'));
+
+      setJoiningFees({
+        bldgFund: bldgHead ? Number(bldgHead.amount) : 0,
+        cautionDeposit: depositHead ? Number(depositHead.amount) : 0,
+        admissionFee: admHead ? Number(admHead.amount) : 0,
+      });
+      setSemesterTuition(tuitionHead ? Number(tuitionHead.amount) : (sem1Struct.totalAmount ? Number(sem1Struct.totalAmount) : 0));
+      setSemesterLab(labHead ? Number(labHead.amount) : 0);
+      setSemesterExamMisc(miscHead ? Number(miscHead.amount) : 0);
+    } else {
+      setJoiningFees({ bldgFund: 0, cautionDeposit: 0, admissionFee: 0 });
+      setSemesterTuition(0);
+      setSemesterLab(0);
+      setSemesterExamMisc(0);
+    }
+  };
+
   // Sync program when department changes
   const handleDepartmentChange = (deptId) => {
     setSelectedDeptId(deptId);
     const deptProgs = programs.filter(p => p.departmentId === deptId || p.department?.id === deptId);
     if (deptProgs.length > 0) {
       setSelectedProgramId(deptProgs[0].id);
-      adjustDefaultsForProgram(deptProgs[0]);
+      syncProgramFeesFromBackend(deptProgs[0], structures);
     } else {
       setSelectedProgramId('');
+      setJoiningFees({ bldgFund: 0, cautionDeposit: 0, admissionFee: 0 });
+      setSemesterTuition(0);
+      setSemesterLab(0);
+      setSemesterExamMisc(0);
     }
   };
 
@@ -105,31 +152,7 @@ const OrgFeesMatrix = () => {
     setSelectedProgramId(progId);
     const prog = programs.find(p => p.id === progId);
     if (prog) {
-      adjustDefaultsForProgram(prog);
-    }
-  };
-
-  // Adjust defaults intelligently by department/program type (e.g. MBA vs Engineering)
-  const adjustDefaultsForProgram = (prog) => {
-    const isMba = prog.code?.includes('MBA') || prog.name?.toLowerCase().includes('management') || prog.name?.toLowerCase().includes('business');
-    if (isMba) {
-      setJoiningFees({
-        bldgFund: 80000,
-        cautionDeposit: 15000,
-        admissionFee: 10000,
-      });
-      setSemesterTuition(120000);
-      setSemesterLab(25000); // Immersion & Simulation lab
-      setSemesterExamMisc(5000);
-    } else {
-      setJoiningFees({
-        bldgFund: 50000,
-        cautionDeposit: 10000,
-        admissionFee: 5000,
-      });
-      setSemesterTuition(65000);
-      setSemesterLab(15000);
-      setSemesterExamMisc(5000);
+      syncProgramFeesFromBackend(prog, structures);
     }
   };
 
@@ -515,15 +538,26 @@ const OrgFeesMatrix = () => {
               className="form-control"
               style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', fontWeight: '600', fontSize: '13.5px' }}
             >
-              {[0, -1, -2].map(offset => {
-                const year = new Date().getFullYear() + offset;
-                const label = offset === 0
-                  ? `Class of ${year}–${year + durationYears} (Current Admitted Batch ${year})`
-                  : offset === -1
-                    ? `Class of ${year}–${year + durationYears} (Batch ${year} - Year 2 / Locked Fee)`
-                    : `Class of ${year}–${year + durationYears} (Batch ${year} - Senior / Locked Fee)`;
-                return <option key={year} value={String(year)}>{label}</option>;
-              })}
+              {cohorts.length > 0 ? (
+                cohorts.map((c) => {
+                  const sYear = c.startYear || c.year || (c.name && c.name.match(/\d{4}/) ? c.name.match(/\d{4}/)[0] : new Date().getFullYear());
+                  return (
+                    <option key={c.id || sYear} value={String(sYear)}>
+                      {c.name || `Class of ${sYear}–${Number(sYear) + durationYears}`} {c.status === 'active' ? '(Current Admitted)' : ''}
+                    </option>
+                  );
+                })
+              ) : (
+                [0, -1, -2].map(offset => {
+                  const year = new Date().getFullYear() + offset;
+                  const label = offset === 0
+                    ? `Class of ${year}–${year + durationYears} (Current Admitted Batch ${year})`
+                    : offset === -1
+                      ? `Class of ${year}–${year + durationYears} (Batch ${year} - Year 2)`
+                      : `Class of ${year}–${year + durationYears} (Batch ${year} - Senior)`;
+                  return <option key={year} value={String(year)}>{label}</option>;
+                })
+              )}
             </select>
           </div>
         </div>

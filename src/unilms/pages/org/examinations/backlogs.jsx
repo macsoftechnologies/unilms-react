@@ -260,7 +260,7 @@ const OrgExaminationsBacklogs = () => {
         remarks: 'Remediation case registered via Examination Office'
       });
       await loadData();
-      showToast(`Arrear registered in PostgreSQL for ${stu.firstName} (${sub.code})!`);
+      showToast(`Arrear registered for ${stu.firstName} (${sub.code})!`);
     } catch (err) {
       console.warn('Could not create backlog on server:', err);
       showToast('Could not register arrear on server.', 'danger');

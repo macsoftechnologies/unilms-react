@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../../components';
 import admissionsService from '../../../services/admissions.service';
@@ -6,7 +6,6 @@ import admissionsService from '../../../services/admissions.service';
 const OrgAdmissionsDashboard = () => {
   const [filterPeriod, setFilterPeriod] = useState('ay_2026_27');
   const [loading, setLoading] = useState(true);
-  const [showShortcuts, setShowShortcuts] = useState(false);
   const [stats, setStats] = useState({
     totalLeads: 0,
     totalApplications: 0,
@@ -17,17 +16,6 @@ const OrgAdmissionsDashboard = () => {
     seatOccupancy: 0,
     programIntake: []
   });
-  const shortcutsRef = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (shortcutsRef.current && !shortcutsRef.current.contains(e.target)) {
-        setShowShortcuts(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const loadStats = async () => {
     try {
@@ -103,178 +91,6 @@ const OrgAdmissionsDashboard = () => {
         </div>
 
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-          {/* Direct View Shortcuts Dropdown */}
-          <div style={{ position: 'relative' }} ref={shortcutsRef}>
-            <button
-              type="button"
-              onClick={() => setShowShortcuts(prev => !prev)}
-              style={{
-                background: '#F5F3FF',
-                color: '#7C3AED',
-                border: '1px solid #DDD6FE',
-                padding: '4px 10px',
-                borderRadius: '6px',
-                fontWeight: '600',
-                fontSize: '11.5px',
-                height: '30px',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              <i className="fa-solid fa-compass"></i>
-              <span>Direct View Shortcuts</span>
-              <i className="fa-solid fa-chevron-down" style={{ fontSize: '9px', transition: 'transform 0.2s', transform: showShortcuts ? 'rotate(180deg)' : 'none' }}></i>
-            </button>
-
-            {showShortcuts && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 8px)',
-                  right: 0,
-                  width: '320px',
-                  maxWidth: 'calc(100vw - 32px)',
-                  background: 'var(--card-bg, #ffffff)',
-                  border: '1px solid var(--border-color, rgba(0,0,0,0.1))',
-                  borderRadius: '14px',
-                  boxShadow: '0 16px 36px rgba(0, 0, 0, 0.16)',
-                  padding: '12px',
-                  zIndex: 1050,
-                  animation: 'fadeIn 0.18s ease-out'
-                }}
-              >
-                <div style={{ padding: '4px 6px 6px', fontSize: '10.5px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--text-secondary, #64748b)' }}>
-                  Direct View Shortcuts (New Tab)
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                  <a
-                    href="/unilms/analytics/dashboard"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setShowShortcuts(false)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px',
-                      padding: '8px 10px',
-                      borderRadius: '10px',
-                      textDecoration: 'none',
-                      color: 'var(--text-primary, #1e293b)',
-                      transition: 'background 0.15s ease'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(124, 58, 237, 0.08)'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                  >
-                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#EDE9FE', color: '#7C3AED', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px' }}>
-                      <i className="fa-solid fa-chart-pie"></i>
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: '700', fontSize: '12.5px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span>MIS Executive Cockpit</span>
-                        <i className="fa-solid fa-arrow-up-right-from-square" style={{ fontSize: '10px', color: '#94a3b8' }}></i>
-                      </div>
-                      <div style={{ fontSize: '11px', color: '#64748b' }}>Boardroom KPIs, financials & health</div>
-                    </div>
-                  </a>
-
-                  <a
-                    href="/unilms/analytics/joining_analytics"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setShowShortcuts(false)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px',
-                      padding: '8px 10px',
-                      borderRadius: '10px',
-                      textDecoration: 'none',
-                      color: 'var(--text-primary, #1e293b)',
-                      transition: 'background 0.15s ease'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(124, 58, 237, 0.08)'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                  >
-                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#E0F2FE', color: '#0284C7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px' }}>
-                      <i className="fa-solid fa-filter-circle-dollar"></i>
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: '700', fontSize: '12.5px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span>Admissions & Yield Funnel</span>
-                        <i className="fa-solid fa-arrow-up-right-from-square" style={{ fontSize: '10px', color: '#94a3b8' }}></i>
-                      </div>
-                      <div style={{ fontSize: '11px', color: '#64748b' }}>7-stage funnel & AI narrative</div>
-                    </div>
-                  </a>
-
-                  <a
-                    href="/unilms/analytics/student_analysis"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setShowShortcuts(false)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px',
-                      padding: '8px 10px',
-                      borderRadius: '10px',
-                      textDecoration: 'none',
-                      color: 'var(--text-primary, #1e293b)',
-                      transition: 'background 0.15s ease'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(124, 58, 237, 0.08)'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                  >
-                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#DCFCE7', color: '#16A34A', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px' }}>
-                      <i className="fa-solid fa-user-shield"></i>
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: '700', fontSize: '12.5px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span>Student 360° & Risk Radar</span>
-                        <i className="fa-solid fa-arrow-up-right-from-square" style={{ fontSize: '10px', color: '#94a3b8' }}></i>
-                      </div>
-                      <div style={{ fontSize: '11px', color: '#64748b' }}>Attendance detention & backlogs</div>
-                    </div>
-                  </a>
-
-                  <a
-                    href="/unilms/analytics/reports"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setShowShortcuts(false)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px',
-                      padding: '8px 10px',
-                      borderRadius: '10px',
-                      textDecoration: 'none',
-                      color: 'var(--text-primary, #1e293b)',
-                      transition: 'background 0.15s ease'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(124, 58, 237, 0.08)'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                  >
-                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#FEF3C7', color: '#D97706', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px' }}>
-                      <i className="fa-solid fa-table-list"></i>
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: '700', fontSize: '12.5px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span>Central Reports & NAAC</span>
-                        <i className="fa-solid fa-arrow-up-right-from-square" style={{ fontSize: '10px', color: '#94a3b8' }}></i>
-                      </div>
-                      <div style={{ fontSize: '11px', color: '#64748b' }}>Compliance SSR & Excel exports</div>
-                    </div>
-                  </a>
-                </div>
-              </div>
-            )}
-          </div>
-
           <Link
             to="/unilms/org/admissions/joining_analytics"
             className="btn btn-primary"

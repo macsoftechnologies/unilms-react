@@ -83,7 +83,7 @@ const OrgHrPayrollIndex = () => {
 
     const ok = await confirm({
       title: 'Confirm Generate Payroll Run',
-      message: `Are you sure you want to generate a new institutional payroll run for ${formMonth} ${formYear}? This will calculate salaries and generate payslips for all active faculty and staff members in PostgreSQL.`,
+      message: `Are you sure you want to generate a new institutional payroll run for ${formMonth} ${formYear}? This will calculate salaries and generate payslips for all active faculty and staff members.`,
       confirmText: 'Generate Payroll',
       cancelText: 'Cancel',
       type: 'primary',

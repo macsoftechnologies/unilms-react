@@ -37,7 +37,7 @@ const OrgInternshipsReviewStudent = () => {
     } catch (err) {
       console.warn('Backend rubric submit note:', err.message);
     }
-    setToastMsg(`Rubric evaluation and remarks for ${studentName} saved to PostgreSQL!`);
+    setToastMsg(`Rubric evaluation and remarks for ${studentName} saved successfully!`);
     setTimeout(() => {
       navigate('/unilms/org/internships/faculty_mentorship');
     }, 2000);

@@ -104,7 +104,7 @@ const OrgAccountsTransactions = () => {
         description: formData.description.trim() || `${formData.type} entry logged in ledger`
       });
 
-      showToast(`Transaction of ₹${amt.toLocaleString('en-IN')} posted to PostgreSQL.`);
+      showToast(`Transaction of ₹${amt.toLocaleString('en-IN')} posted successfully.`);
 
       setFormData(prev => ({
         ...prev,
@@ -242,7 +242,7 @@ const OrgAccountsTransactions = () => {
               )}
             </div>
             <p style={{ margin: '4px 0 0', color: 'var(--text-secondary, #64748b)', fontSize: '13px' }}>
-              PostgreSQL Journal, Payment, Receipt and Contra Vouchers
+              Journal, Payment, Receipt and Contra Vouchers
               {lastSyncTime && (
                 <span style={{ marginLeft: '10px', fontSize: '11.5px', color: '#94a3b8' }}>
                   &bull; Last synced: {lastSyncTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}

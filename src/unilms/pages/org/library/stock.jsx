@@ -283,7 +283,7 @@ const OrgLibraryStock = () => {
           />
         </div>
         <div style={{ fontSize: '13px', color: '#64748b' }}>
-          Total audits: <strong>{stockList.length}</strong> physical inspections in PostgreSQL
+          Total audits: <strong>{stockList.length}</strong> physical inspections recorded
         </div>
       </div>
 
@@ -420,7 +420,7 @@ const OrgLibraryStock = () => {
                 <tr>
                   <td colSpan="7" style={{ padding: '36px', textAlign: 'center', color: '#64748b' }}>
                     <i className="fa-solid fa-boxes-stacked" style={{ fontSize: '32px', color: '#cbd5e1', display: 'block', marginBottom: '10px' }}></i>
-                    No stock verification records found in PostgreSQL.
+                    No stock verification records found.
                   </td>
                 </tr>
               )}

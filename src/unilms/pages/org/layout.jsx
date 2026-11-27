@@ -1391,9 +1391,12 @@ const OrgLayout = () => {
                         <i className={`fa-solid fa-chevron-down`} style={{ fontSize: '9px', color: 'var(--text-muted)', transition: 'transform 0.2s ease', transform: showUserDropdown ? 'rotate(180deg)' : 'none' }}></i>
                       </div>
                       <span className="user-role" style={{ fontSize: '10px' }}>
-                        {isFaculty
-                          ? (currPersona === 'hod' ? 'HOD' : currPersona === 'class_teacher' ? 'Class Teacher' : (currentUser?.designation || 'Faculty Member'))
-                          : (currentUser?.role === 'admin' || currentUser?.role === 'campus_admin' ? 'Organization Admin' : (currentUser?.role || 'Organization Admin'))
+                        {userRole === 'admin' || userRole === 'campus_admin'
+                          ? 'Organization Admin'
+                          : (isFaculty
+                            ? (currPersona === 'hod' ? 'HOD' : currPersona === 'class_teacher' ? 'Class Teacher' : (currentUser?.designation || 'Faculty Member'))
+                            : (currentUser?.role === 'admin' || currentUser?.role === 'campus_admin' ? 'Organization Admin' : (currentUser?.role || 'Organization Admin'))
+                          )
                         }
                       </span>
                     </div>
@@ -1429,9 +1432,12 @@ const OrgLayout = () => {
                           </div>
                           <div style={{ fontSize: '11px', color: '#059669', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '600' }}>
                             <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10B981', display: 'inline-block' }}></span>
-                            {isFaculty
-                              ? (currPersona === 'hod' ? 'HOD' : currPersona === 'class_teacher' ? 'Class Teacher' : (currentUser?.designation || 'Faculty Member'))
-                              : (currentUser?.tenant?.name ? `${currentUser.tenant.name}` : (currentTenant?.name || 'Organization Admin'))
+                            {userRole === 'admin' || userRole === 'campus_admin'
+                              ? (currentUser?.tenant?.name ? `${currentUser.tenant.name}` : (currentTenant?.name || 'Organization Admin'))
+                              : (isFaculty
+                                ? (currPersona === 'hod' ? 'HOD' : currPersona === 'class_teacher' ? 'Class Teacher' : (currentUser?.designation || 'Faculty Member'))
+                                : (currentUser?.tenant?.name ? `${currentUser.tenant.name}` : (currentTenant?.name || 'Organization Admin'))
+                              )
                             }
                           </div>
                           {currentUser?.email && (
@@ -1448,29 +1454,14 @@ const OrgLayout = () => {
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                         {isOrgAdmin && (
                           <>
-                            <Link
-                              to="/unilms/org/mis/dashboard"
-                              onClick={() => setShowUserDropdown(false)}
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '10px',
-                                padding: '7px 10px',
-                                borderRadius: '8px',
-                                textDecoration: 'none',
-                                color: 'var(--text-muted)',
-                                fontSize: '12px',
-                                fontWeight: '600'
-                              }}
-                              onMouseEnter={(e) => { e.currentTarget.style.color = '#4F46E5'; e.currentTarget.style.background = 'rgba(79, 70, 229, 0.06)'; }}
-                              onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'none'; }}
-                            >
-                              <i className="fa-solid fa-chart-pie" style={{ width: '16px', color: '#4F46E5' }}></i>
-                              <span>Institutional MIS &amp; Cockpit</span>
-                            </Link>
+                            <div style={{ padding: '6px 10px 4px', fontSize: '10px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.6px', color: 'var(--text-muted, #64748b)' }}>
+                              Direct View Shortcuts (New Tab)
+                            </div>
 
-                            <Link
-                              to="/unilms/org/mis/reports"
+                            <a
+                              href="/unilms/analytics/dashboard"
+                              target="_blank"
+                              rel="noopener noreferrer"
                               onClick={() => setShowUserDropdown(false)}
                               style={{
                                 display: 'flex',
@@ -1481,17 +1472,28 @@ const OrgLayout = () => {
                                 textDecoration: 'none',
                                 color: 'var(--text-muted)',
                                 fontSize: '12px',
-                                fontWeight: '600'
+                                fontWeight: '600',
+                                transition: 'all 0.15s ease'
                               }}
-                              onMouseEnter={(e) => { e.currentTarget.style.color = '#4F46E5'; e.currentTarget.style.background = 'rgba(79, 70, 229, 0.06)'; }}
+                              onMouseEnter={(e) => { e.currentTarget.style.color = '#7C3AED'; e.currentTarget.style.background = 'rgba(124, 58, 237, 0.08)'; }}
                               onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'none'; }}
                             >
-                              <i className="fa-solid fa-table-list" style={{ width: '16px', color: '#059669' }}></i>
-                              <span>Cross-Module MIS Reports</span>
-                            </Link>
+                              <div style={{ width: '26px', height: '26px', borderRadius: '6px', background: '#EDE9FE', color: '#7C3AED', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px' }}>
+                                <i className="fa-solid fa-chart-pie"></i>
+                              </div>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontWeight: '700', fontSize: '12px', color: 'var(--text-main)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                  <span>MIS Executive Cockpit</span>
+                                  <i className="fa-solid fa-arrow-up-right-from-square" style={{ fontSize: '9px', color: '#94a3b8' }}></i>
+                                </div>
+                                <div style={{ fontSize: '10.5px', color: 'var(--text-muted)' }}>Boardroom KPIs, financials &amp; health</div>
+                              </div>
+                            </a>
 
-                            <Link
-                              to="/unilms/org/admissions/joining_analytics"
+                            <a
+                              href="/unilms/analytics/joining_analytics"
+                              target="_blank"
+                              rel="noopener noreferrer"
                               onClick={() => setShowUserDropdown(false)}
                               style={{
                                 display: 'flex',
@@ -1502,14 +1504,87 @@ const OrgLayout = () => {
                                 textDecoration: 'none',
                                 color: 'var(--text-muted)',
                                 fontSize: '12px',
-                                fontWeight: '600'
+                                fontWeight: '600',
+                                transition: 'all 0.15s ease'
                               }}
-                              onMouseEnter={(e) => { e.currentTarget.style.color = '#4F46E5'; e.currentTarget.style.background = 'rgba(79, 70, 229, 0.06)'; }}
+                              onMouseEnter={(e) => { e.currentTarget.style.color = '#0284C7'; e.currentTarget.style.background = 'rgba(2, 132, 199, 0.08)'; }}
                               onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'none'; }}
                             >
-                              <i className="fa-solid fa-filter-circle-dollar" style={{ width: '16px', color: '#D97706' }}></i>
-                              <span>Admission ➔ Joining Funnel</span>
-                            </Link>
+                              <div style={{ width: '26px', height: '26px', borderRadius: '6px', background: '#E0F2FE', color: '#0284C7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px' }}>
+                                <i className="fa-solid fa-filter-circle-dollar"></i>
+                              </div>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontWeight: '700', fontSize: '12px', color: 'var(--text-main)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                  <span>Admissions &amp; Yield Funnel</span>
+                                  <i className="fa-solid fa-arrow-up-right-from-square" style={{ fontSize: '9px', color: '#94a3b8' }}></i>
+                                </div>
+                                <div style={{ fontSize: '10.5px', color: 'var(--text-muted)' }}>7-stage funnel &amp; AI narrative</div>
+                              </div>
+                            </a>
+
+                            <a
+                              href="/unilms/analytics/student_analysis"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={() => setShowUserDropdown(false)}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                padding: '7px 10px',
+                                borderRadius: '8px',
+                                textDecoration: 'none',
+                                color: 'var(--text-muted)',
+                                fontSize: '12px',
+                                fontWeight: '600',
+                                transition: 'all 0.15s ease'
+                              }}
+                              onMouseEnter={(e) => { e.currentTarget.style.color = '#16A34A'; e.currentTarget.style.background = 'rgba(22, 163, 74, 0.08)'; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'none'; }}
+                            >
+                              <div style={{ width: '26px', height: '26px', borderRadius: '6px', background: '#DCFCE7', color: '#16A34A', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px' }}>
+                                <i className="fa-solid fa-user-shield"></i>
+                              </div>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontWeight: '700', fontSize: '12px', color: 'var(--text-main)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                  <span>Student 360° &amp; Risk Radar</span>
+                                  <i className="fa-solid fa-arrow-up-right-from-square" style={{ fontSize: '9px', color: '#94a3b8' }}></i>
+                                </div>
+                                <div style={{ fontSize: '10.5px', color: 'var(--text-muted)' }}>Attendance detention &amp; backlogs</div>
+                              </div>
+                            </a>
+
+                            <a
+                              href="/unilms/analytics/reports"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={() => setShowUserDropdown(false)}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                padding: '7px 10px',
+                                borderRadius: '8px',
+                                textDecoration: 'none',
+                                color: 'var(--text-muted)',
+                                fontSize: '12px',
+                                fontWeight: '600',
+                                transition: 'all 0.15s ease'
+                              }}
+                              onMouseEnter={(e) => { e.currentTarget.style.color = '#D97706'; e.currentTarget.style.background = 'rgba(217, 119, 6, 0.08)'; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'none'; }}
+                            >
+                              <div style={{ width: '26px', height: '26px', borderRadius: '6px', background: '#FEF3C7', color: '#D97706', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px' }}>
+                                <i className="fa-solid fa-table-list"></i>
+                              </div>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontWeight: '700', fontSize: '12px', color: 'var(--text-main)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                  <span>Central Reports &amp; NAAC</span>
+                                  <i className="fa-solid fa-arrow-up-right-from-square" style={{ fontSize: '9px', color: '#94a3b8' }}></i>
+                                </div>
+                                <div style={{ fontSize: '10.5px', color: 'var(--text-muted)' }}>Compliance SSR &amp; Excel exports</div>
+                              </div>
+                            </a>
 
                             <div style={{ margin: '6px 0', borderTop: '1px solid rgba(0,0,0,0.06)' }}></div>
                           </>

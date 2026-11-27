@@ -15,6 +15,7 @@ const OrgAdmissionsEnrollment = () => {
   // Academics integration
   const [cohortsList, setCohortsList] = useState([]);
   const [sectionsList, setSectionsList] = useState([]);
+  const [totalIntakeQuota, setTotalIntakeQuota] = useState(0);
   const [cohortId, setCohortId] = useState('');
   const [sectionId, setSectionId] = useState('');
 
@@ -25,12 +26,24 @@ const OrgAdmissionsEnrollment = () => {
 
   const loadAcademicsData = async () => {
     try {
-      const [cohorts, sections] = await Promise.all([
-        academicsService.getCohorts(),
-        academicsService.getSections()
+      const [cohorts, sections, stats, progs] = await Promise.all([
+        academicsService.getCohorts().catch(() => []),
+        academicsService.getSections().catch(() => []),
+        admissionsService.getDashboardStats().catch(() => null),
+        academicsService.getPrograms().catch(() => [])
       ]);
       setCohortsList(Array.isArray(cohorts) ? cohorts : []);
       setSectionsList(Array.isArray(sections) ? sections : []);
+
+      let quota = 0;
+      if (stats?.programIntake && Array.isArray(stats.programIntake) && stats.programIntake.length > 0) {
+        quota = stats.programIntake.reduce((acc, p) => acc + (Number(p.intake) || 0), 0);
+      } else {
+        const progList = Array.isArray(progs) ? progs : (progs?.data || []);
+        quota = progList.reduce((acc, p) => acc + (60 * (p.durationYears || 4)), 0);
+      }
+      setTotalIntakeQuota(quota);
+
       if (Array.isArray(cohorts) && cohorts.length > 0) setCohortId(cohorts[0].id);
       if (Array.isArray(sections) && sections.length > 0) setSectionId(sections[0].id);
     } catch (e) {
@@ -51,12 +64,12 @@ const OrgAdmissionsEnrollment = () => {
         program_id: a.programId,
         program_name: a.programName || a.program?.name || 'Undergraduate Degree',
         offer_status: a.status === 'Enrolled' ? 'Enrolled' : (a.offerLetterSent ? 'Offer Accepted' : a.status),
-        fee_status: 'Paid in Full (₹85,000)',
+        fee_status: a.feeStatus || (a.status === 'Enrolled' ? 'Paid in Full' : 'Offer Issued'),
         receipt_no: `RCP-${a.id.slice(0, 8)}`,
         is_enrolled: a.status === 'Enrolled',
         roll_number: a.rollNumber || '',
         section: a.section?.name || 'Section A',
-        batch: a.cohort?.name || '2026 - 2030 Batch'
+        batch: a.cohort?.name || 'Current Batch'
       }));
       setCandidates(list);
     } catch (err) {
@@ -306,7 +319,7 @@ const OrgAdmissionsEnrollment = () => {
             </div>
             <div className="faculty-metric-info">
               <div className="faculty-metric-label">Approved Intake Quota</div>
-              <div className="faculty-metric-value" style={{ color: '#2563EB' }}>300</div>
+              <div className="faculty-metric-value" style={{ color: '#2563EB' }}>{totalIntakeQuota}</div>
               <div className="faculty-metric-sub" style={{ color: 'var(--text-secondary, #64748b)' }}>
                 <span>Across all programs</span>
               </div>
@@ -320,9 +333,9 @@ const OrgAdmissionsEnrollment = () => {
             </div>
             <div className="faculty-metric-info">
               <div className="faculty-metric-label">Remaining Seats</div>
-              <div className="faculty-metric-value" style={{ color: '#7C3AED' }}>{300 - enrolledCount}</div>
+              <div className="faculty-metric-value" style={{ color: '#7C3AED' }}>{Math.max(0, totalIntakeQuota - enrolledCount)}</div>
               <div className="faculty-metric-sub" style={{ color: 'var(--text-secondary, #64748b)' }}>
-                <span>Open for admissions</span>
+                <span>{totalIntakeQuota > 0 ? 'Open for admissions' : 'Awaiting program intake setup'}</span>
               </div>
             </div>
           </div>

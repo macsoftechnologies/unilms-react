@@ -239,7 +239,7 @@ const LmsPortalFeedback = () => {
       {submitted && (
         <div style={{ background: "rgba(16, 185, 129, 0.12)", color: "#059669", padding: "14px 18px", borderRadius: "12px", marginBottom: "20px", display: "flex", alignItems: "center", gap: "10px", fontWeight: "700" }}>
           <i className="fa-solid fa-circle-check" style={{ fontSize: "18px" }}></i>
-          <span>Thank you! Your feedback has been securely encrypted and saved directly into PostgreSQL.</span>
+          <span>Thank you! Your feedback has been securely submitted.</span>
         </div>
       )}
 

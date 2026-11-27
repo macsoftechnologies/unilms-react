@@ -272,7 +272,7 @@ const OrgDashboard = () => {
             Operational
           </div>
           <div style={{ fontSize: '10px', color: 'var(--text-muted, #64748B)', fontWeight: '600', marginTop: '2px' }}>
-            PostgreSQL 17 Multi-Tenant
+            Enterprise Cloud Multi-Tenant
           </div>
         </div>
       </div>

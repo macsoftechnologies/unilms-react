@@ -26,7 +26,7 @@ const OrgMisDashboard = () => {
   const location = useLocation();
   const isAnalyticsPortal = location.pathname.includes('/analytics');
 
-  const [session, setSession] = useState(getCurrentAcademicYear());
+  const [session, setSession] = useState('');
   const [academicYears, setAcademicYears] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -374,9 +374,7 @@ const OrgMisDashboard = () => {
                   </option>
                 ))
               ) : (
-                getAcademicYearOptions().map(opt => (
-                  <option key={opt} value={opt}>AY {opt}</option>
-                ))
+                <option value="">No academic years configured</option>
               )}
             </select>
           </div>

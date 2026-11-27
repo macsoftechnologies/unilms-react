@@ -1,33 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { TableSkeletonLoader, TablePagination, useTablePagination } from '../../../components';
-
-const initialSessions = [
-  { id: '1', session_name: 'B.Tech SEM-1 2024-25', type: 'Internal' },
-  { id: '2', session_name: 'B.Tech SEM-2 2024-25', type: 'Internal' },
-  { id: '3', session_name: 'End-Term External Winter 2024', type: 'External' },
-  { id: '4', session_name: 'Summer Supplementary 2024', type: 'External' }
-];
-
-const initialConfigs = [
-  { id: '1', sessionId: '1', short_name: 'MID-1 Assessment', max_marks: 30, passing_marks: 12, average_logic: 'Standard', n_value: 1 },
-  { id: '2', sessionId: '1', short_name: 'MID-2 Assessment', max_marks: 30, passing_marks: 12, average_logic: 'Best of N', n_value: 1 },
-  { id: '3', sessionId: '1', short_name: 'Lab Assignment & Viva', max_marks: 20, passing_marks: 8, average_logic: 'Average of N', n_value: 3 },
-  { id: '4', sessionId: '1', short_name: 'Continuous Quiz Series', max_marks: 20, passing_marks: 10, average_logic: 'Best of N', n_value: 4 },
-  { id: '5', sessionId: '2', short_name: 'Semester Midterm I', max_marks: 40, passing_marks: 16, average_logic: 'Standard', n_value: 1 },
-  { id: '6', sessionId: '3', short_name: 'University Theory Exam', max_marks: 100, passing_marks: 40, average_logic: 'Standard', n_value: 1 }
-];
+import apiClient from '../../../services/api';
 
 const OrgObeAssessmentConfig = () => {
-  const [sessions, setSessions] = useState(initialSessions);
-  const [configs, setConfigs] = useState(initialConfigs);
-  const [selectedSession, setSelectedSession] = useState('1');
-  const [loading, setLoading] = useState(false);
+  const [sessions, setSessions] = useState([]);
+  const [configs, setConfigs] = useState([]);
+  const [selectedSession, setSelectedSession] = useState('');
+  const [loading, setLoading] = useState(true);
 
   // Form states
   const [newSessionName, setNewSessionName] = useState('');
   const [newSessionType, setNewSessionType] = useState('Internal');
 
-  const [formExamSession, setFormExamSession] = useState('1');
+  const [formExamSession, setFormExamSession] = useState('');
   const [formShortName, setFormShortName] = useState('');
   const [formMaxMarks, setFormMaxMarks] = useState('100');
   const [formPassMarks, setFormPassMarks] = useState('40');
@@ -35,10 +20,38 @@ const OrgObeAssessmentConfig = () => {
   const [formNValue, setFormNValue] = useState('1');
 
   useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => setLoading(false), 300);
-    return () => clearTimeout(timer);
-  }, [selectedSession]);
+    const fetchConfigData = async () => {
+      try {
+        setLoading(true);
+        const res = await apiClient.get('/tenants/settings/obe_assessment_config').catch(() => null);
+        if (res?.data?.value && typeof res.data.value === 'object') {
+          const loadedSessions = Array.isArray(res.data.value.sessions) ? res.data.value.sessions : [];
+          const loadedConfigs = Array.isArray(res.data.value.configs) ? res.data.value.configs : [];
+          setSessions(loadedSessions);
+          setConfigs(loadedConfigs);
+          if (loadedSessions.length > 0) {
+            setSelectedSession(loadedSessions[0].id);
+            setFormExamSession(loadedSessions[0].id);
+          }
+        } else {
+          setSessions([]);
+          setConfigs([]);
+        }
+      } catch {
+        setSessions([]);
+        setConfigs([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchConfigData();
+  }, []);
+
+  const syncToBackend = (updatedSessions, updatedConfigs) => {
+    apiClient.post('/tenants/settings/obe_assessment_config', {
+      value: { sessions: updatedSessions, configs: updatedConfigs }
+    }).catch(() => {});
+  };
 
   const handleCreateSession = (e) => {
     e.preventDefault();
@@ -48,14 +61,17 @@ const OrgObeAssessmentConfig = () => {
       session_name: newSessionName.trim(),
       type: newSessionType
     };
-    setSessions([...sessions, newSession]);
+    const updated = [...sessions, newSession];
+    setSessions(updated);
     setSelectedSession(newSession.id);
+    setFormExamSession(newSession.id);
     setNewSessionName('');
+    syncToBackend(updated, configs);
   };
 
   const handleAddConfig = (e) => {
     e.preventDefault();
-    if (!formShortName.trim()) return;
+    if (!formShortName.trim() || !formExamSession) return;
     const newCfg = {
       id: String(Date.now()),
       sessionId: formExamSession,
@@ -65,8 +81,10 @@ const OrgObeAssessmentConfig = () => {
       average_logic: formLogic,
       n_value: parseInt(formNValue, 10) || 1
     };
-    setConfigs([...configs, newCfg]);
+    const updated = [...configs, newCfg];
+    setConfigs(updated);
     setFormShortName('');
+    syncToBackend(sessions, updated);
   };
 
   const filteredConfigs = configs.filter((c) => !selectedSession || c.sessionId === selectedSession);

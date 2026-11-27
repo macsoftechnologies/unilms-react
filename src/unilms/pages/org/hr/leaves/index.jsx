@@ -13,6 +13,7 @@ const OrgHrLeavesIndex = () => {
   const [toastMsg, setToastMsg] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
+  const [categoryFilter, setCategoryFilter] = useState('All');
 
   const [applyForm, setApplyForm] = useState({
     staff_id: '',
@@ -136,12 +137,19 @@ const OrgHrLeavesIndex = () => {
     }
   };
 
+  const availableCategories = useMemo(() => {
+    const typesFromData = leaves.map(l => l.leave_type).filter(Boolean);
+    const standardTypes = ['Casual Leave (CL)', 'Sick Leave (SL)', 'Earned Leave (EL)', 'Duty Leave (DL)'];
+    return Array.from(new Set([...typesFromData, ...standardTypes]));
+  }, [leaves]);
+
   const filteredLeaves = leaves.filter(l => {
     const matchesSearch = l.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       l.leave_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
       l.employee_code.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'All' || l.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesCategory = categoryFilter === 'All' || l.leave_type === categoryFilter;
+    return matchesSearch && matchesStatus && matchesCategory;
   });
 
   const {
@@ -155,7 +163,7 @@ const OrgHrLeavesIndex = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, statusFilter, setCurrentPage]);
+  }, [searchQuery, statusFilter, categoryFilter, setCurrentPage]);
 
   const pendingCount = leaves.filter(l => l.status === 'Pending').length;
   const approvedCount = leaves.filter(l => l.status === 'Approved').length;
@@ -344,10 +352,9 @@ const OrgHrLeavesIndex = () => {
                 onChange={(e) => setApplyForm({ ...applyForm, leave_type: e.target.value })}
                 style={{ width: '100%', height: '40px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
               >
-                <option value="Casual Leave (CL)">Casual Leave (CL) - Quota: 12</option>
-                <option value="Sick Leave (SL)">Sick Leave (SL) - Quota: 10</option>
-                <option value="Earned Leave (EL)">Earned Leave (EL) - Quota: 8</option>
-                <option value="Duty Leave (DL)">Duty Leave (DL) - Quota: Official</option>
+                {availableCategories.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
               </select>
             </div>
 
@@ -423,6 +430,18 @@ const OrgHrLeavesIndex = () => {
                 <option value="Pending">Pending Only</option>
                 <option value="Approved">Approved Only</option>
                 <option value="Rejected">Rejected Only</option>
+              </select>
+
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="form-control"
+                style={{ height: '38px', fontSize: '13px', borderRadius: '8px', border: '1px solid #cbd5e1' }}
+              >
+                <option value="All">All Categories</option>
+                {availableCategories.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
               </select>
 
               <input
