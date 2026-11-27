@@ -120,13 +120,13 @@ const OrgAcademicsSubjects = () => {
           credits: Number(s.credits || 3.0),
           semester_id: '1',
           semester_name: 'Semester 1',
-          sessions: s.sessions || 45,
-          units: 5,
-          outcomes: 6,
-          internal_max: 40,
-          internal_pass: 16,
-          external_max: 60,
-          external_pass: 24,
+          sessions: s.sessions !== undefined ? s.sessions : 45,
+          units: s.units !== undefined ? s.units : 5,
+          outcomes: s.outcomes !== undefined ? s.outcomes : 6,
+          internal_max: s.internalMax !== undefined ? s.internalMax : 40,
+          internal_pass: s.internalPass !== undefined ? s.internalPass : 16,
+          external_max: s.externalMax !== undefined ? s.externalMax : 60,
+          external_pass: s.externalPass !== undefined ? s.externalPass : 24,
         };
       });
       setSubjects(formattedSubs);
@@ -358,25 +358,27 @@ const OrgAcademicsSubjects = () => {
       const targetProg = programs.find(p => p.id === formProgramId);
       const deptId = targetProg?.department_id || targetProg?.departmentId;
 
+      const payload = {
+        code: formCode.trim().toUpperCase(),
+        name: formName.trim(),
+        shortName: formShortName.trim() || formCode.trim().toUpperCase(),
+        departmentId: deptId,
+        credits: parseFloat(formCredits) || 3.0,
+        type: formType,
+        sessions: parseInt(formSessions) || 45,
+        units: parseInt(formUnits) || 5,
+        outcomes: parseInt(formOutcomes) || 6,
+        internalMax: parseInt(formInternalMax) || 40,
+        internalPass: parseInt(formInternalPass) || 16,
+        externalMax: parseInt(formExternalMax) || 60,
+        externalPass: parseInt(formExternalPass) || 24,
+      };
+
       if (editingSubjectId) {
-        await academicsService.updateSubject(editingSubjectId, {
-          code: formCode.trim().toUpperCase(),
-          name: formName.trim(),
-          departmentId: deptId,
-          credits: parseFloat(formCredits) || 3.0,
-          type: formType,
-          sessions: parseInt(formSessions) || 45,
-        });
+        await academicsService.updateSubject(editingSubjectId, payload);
         showToast(`Subject ${formCode.trim().toUpperCase()} updated successfully!`);
       } else {
-        await academicsService.createSubject({
-          code: formCode.trim().toUpperCase(),
-          name: formName.trim(),
-          departmentId: deptId,
-          credits: parseFloat(formCredits) || 4.0,
-          type: formType,
-          sessions: parseInt(formSessions) || 45,
-        });
+        await academicsService.createSubject(payload);
         showToast(`Subject ${formCode.trim().toUpperCase()} added successfully!`);
       }
       await loadSubjectsData();
