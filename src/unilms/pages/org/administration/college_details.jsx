@@ -72,6 +72,10 @@ const OrgAdministrationCollegeDetails = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.contact_phone && formData.contact_phone.length !== 10) {
+      alert('Official Contact Phone must be exactly 10 digits.');
+      return;
+    }
     setLoading(true);
     try {
       const payload = {
@@ -344,14 +348,20 @@ const OrgAdministrationCollegeDetails = () => {
               {/* Row 3, Col 1: Official Contact Phone */}
               <div className="form-group" style={{ margin: 0 }}>
                 <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '6px', display: 'block' }}>
-                  Official Contact Phone / Landline
+                  Official Contact Phone
                 </label>
                 <input 
                   type="tel" 
+                  inputMode="numeric"
+                  maxLength={10}
+                  pattern="[0-9]{10}"
                   value={formData.contact_phone} 
-                  onChange={(e) => setFormData({ ...formData, contact_phone: e.target.value })} 
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                    setFormData(prev => ({ ...prev, contact_phone: val }));
+                  }} 
                   className="form-control" 
-                  placeholder="e.g. 040-23456789 / 9876543210"
+                  placeholder="e.g. 9876543210 (10 digits only)"
                   style={{ width: '100%', fontSize: '14px', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border-color)' }}
                 />
               </div>

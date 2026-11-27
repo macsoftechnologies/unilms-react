@@ -39,6 +39,10 @@ const OrgSystemsSettings = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.org_phone && formData.org_phone.length !== 10) {
+      alert('Contact Phone Number must be exactly 10 digits.');
+      return;
+    }
     try {
       await apiClient.post('/tenants/settings/org_contact_details', {
         admin_email: formData.admin_email,
@@ -154,11 +158,15 @@ const OrgSystemsSettings = () => {
               </label>
               <input 
                 type="tel" 
+                inputMode="numeric"
                 pattern="[0-9]{10}" 
-                maxLength="10" 
+                maxLength={10} 
                 value={formData.org_phone} 
-                onChange={(e) => setFormData({ ...formData, org_phone: e.target.value })} 
-                placeholder="e.g. 9876543210"
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                  setFormData(prev => ({ ...prev, org_phone: val }));
+                }} 
+                placeholder="e.g. 9876543210 (10 digits only)"
                 className="form-control" 
                 style={{ width: '100%', padding: '10px 14px', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '14px' }} 
               />
