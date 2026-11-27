@@ -10,6 +10,7 @@ const OrgHrEmployeesIndex = () => {
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toastMsg, setToastMsg] = useState(null);
+  const [formError, setFormError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [deptFilter, setDeptFilter] = useState('All');
 
@@ -25,6 +26,18 @@ const OrgHrEmployeesIndex = () => {
     joining_date: new Date().toISOString().split('T')[0],
     base_salary: 50000
   });
+
+  const existingStaffCode = useMemo(() => {
+    const code = formData.employee_code.trim().toUpperCase();
+    if (!code) return null;
+    return employees.find(e => (e.employee_code || '').toUpperCase() === code);
+  }, [formData.employee_code, employees]);
+
+  const existingStaffEmail = useMemo(() => {
+    const email = formData.email.trim().toLowerCase();
+    if (!email) return null;
+    return employees.find(e => (e.email || '').toLowerCase() === email);
+  }, [formData.email, employees]);
 
   const fetchData = async () => {
     try {
@@ -67,14 +80,20 @@ const OrgHrEmployeesIndex = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const showToast = (msg) => {
-    setToastMsg(msg);
-    setTimeout(() => setToastMsg(null), 3000);
+  const showToast = (msg, type = 'success') => {
+    setToastMsg({ text: msg, type });
+    setTimeout(() => setToastMsg(null), 4000);
   };
 
   const handleOnboard = async (e) => {
     e.preventDefault();
     if (!formData.first_name.trim() || !formData.employee_code.trim()) return;
+
+    if (existingStaffCode) {
+      setFormError(`Staff member with Employee Code '${formData.employee_code}' already exists.`);
+      return;
+    }
+    setFormError(null);
 
     const ok = await confirm({
       title: 'Confirm Onboard Employee',
@@ -98,7 +117,8 @@ const OrgHrEmployeesIndex = () => {
         createAuthAccount: false
       });
 
-      showToast(`Staff profile for "${formData.first_name}" onboarded. IT can now provision portal credentials in System Settings → Users.`);
+      setFormError(null);
+      showToast(`Staff profile for "${formData.first_name}" onboarded. IT can now provision portal credentials in System Settings → Users.`, 'success');
       fetchData();
       setFormData({
         first_name: '',
@@ -114,7 +134,9 @@ const OrgHrEmployeesIndex = () => {
       });
     } catch (err) {
       console.error('Onboard staff error:', err);
-      showToast(err.response?.data?.message || 'Failed to onboard staff member.');
+      const msg = err.response?.data?.message || 'Failed to onboard staff member.';
+      setFormError(msg);
+      showToast(msg, 'error');
     }
   };
 
@@ -163,10 +185,20 @@ const OrgHrEmployeesIndex = () => {
     <>
       <section className="view-section active">
         {toastMsg && (
-          <div style={{ background: '#10B981', color: '#fff', padding: '12px 18px', borderRadius: '10px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)' }}>
+          <div style={{
+            background: toastMsg.type === 'error' ? '#EF4444' : '#10B981',
+            color: '#fff',
+            padding: '12px 18px',
+            borderRadius: '10px',
+            marginBottom: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            boxShadow: toastMsg.type === 'error' ? '0 4px 12px rgba(239, 68, 68, 0.25)' : '0 4px 12px rgba(16, 185, 129, 0.25)'
+          }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontWeight: '600', fontSize: '13.5px' }}>
-              <i className="fa-solid fa-circle-check"></i>
-              {toastMsg}
+              <i className={`fa-solid ${toastMsg.type === 'error' ? 'fa-circle-xmark' : 'fa-circle-check'}`}></i>
+              {toastMsg.text}
             </div>
             <button onClick={() => setToastMsg(null)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '14px' }}>
               <i className="fa-solid fa-xmark"></i>
@@ -281,8 +313,20 @@ const OrgHrEmployeesIndex = () => {
                   onChange={(e) => setFormData(p => ({ ...p, employee_code: e.target.value }))}
                   placeholder="e.g. FAC-2005"
                   className="form-control"
-                  style={{ width: '100%', height: '38px', borderRadius: '8px' }}
+                  style={{
+                    width: '100%',
+                    height: '38px',
+                    borderRadius: '8px',
+                    border: existingStaffCode ? '1.5px solid #EF4444' : undefined,
+                    background: existingStaffCode ? '#FEF2F2' : undefined
+                  }}
                 />
+                {existingStaffCode && (
+                  <div style={{ color: '#DC2626', fontSize: '11.5px', marginTop: '5px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <i className="fa-solid fa-circle-exclamation"></i>
+                    <span>Staff Code '{formData.employee_code.toUpperCase()}' already exists (assigned to {existingStaffCode.full_name}).</span>
+                  </div>
+                )}
               </div>
 
               <div className="form-group" style={{ marginBottom: '14px' }}>
@@ -293,8 +337,20 @@ const OrgHrEmployeesIndex = () => {
                   onChange={(e) => setFormData(p => ({ ...p, email: e.target.value }))}
                   placeholder="e.g. rajesh.s@apex.edu"
                   className="form-control"
-                  style={{ width: '100%', height: '38px', borderRadius: '8px' }}
+                  style={{
+                    width: '100%',
+                    height: '38px',
+                    borderRadius: '8px',
+                    border: existingStaffEmail ? '1.5px solid #EF4444' : undefined,
+                    background: existingStaffEmail ? '#FEF2F2' : undefined
+                  }}
                 />
+                {existingStaffEmail && (
+                  <div style={{ color: '#DC2626', fontSize: '11.5px', marginTop: '5px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <i className="fa-solid fa-circle-exclamation"></i>
+                    <span>Email '{formData.email.toLowerCase()}' already exists for {existingStaffEmail.full_name}.</span>
+                  </div>
+                )}
               </div>
 
               <div className="form-group" style={{ marginBottom: '14px' }}>
@@ -365,19 +421,27 @@ const OrgHrEmployeesIndex = () => {
                 </div>
               </div>
 
+              {formError && (
+                <div style={{ background: '#FEF2F2', border: '1.5px solid #FCA5A5', color: '#991B1B', padding: '10px 14px', borderRadius: '8px', marginBottom: '14px', fontSize: '12.5px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <i className="fa-solid fa-circle-exclamation" style={{ fontSize: '16px', color: '#EF4444', flexShrink: 0 }}></i>
+                  <span style={{ fontWeight: '600' }}>{formError}</span>
+                </div>
+              )}
+
               <button
                 type="submit"
                 className="btn btn-primary"
+                disabled={Boolean(existingStaffCode)}
                 style={{
                   width: '100%',
                   padding: '11px',
                   fontWeight: '700',
                   borderRadius: '8px',
-                  background: '#059669',
+                  background: existingStaffCode ? '#9CA3AF' : '#059669',
                   border: 'none',
                   color: '#fff',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(5, 150, 105, 0.25)',
+                  cursor: existingStaffCode ? 'not-allowed' : 'pointer',
+                  boxShadow: existingStaffCode ? 'none' : '0 4px 12px rgba(5, 150, 105, 0.25)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
