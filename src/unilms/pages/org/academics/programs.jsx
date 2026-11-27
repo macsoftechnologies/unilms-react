@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { TableSkeletonLoader, TablePagination, useTablePagination, useConfirmDialog } from '../../../components';
 import academicsService from '../../../services/academics.service';
+import obeService from '../../../services/obe.service';
 
 const DEFAULT_DEGREE_STREAMS = [
   { id: 'UG', code: 'UG', name: 'Undergraduate (UG)', examples: 'B.Pharm, B.Tech', defaultDuration: 4, active: true },
@@ -48,7 +49,13 @@ const OrgAcademicsPrograms = () => {
         dept_name: p.department?.name || '—',
         duration_years: p.durationYears || 4,
         type: p.type || 'UG',
-        pos: p.pos || []
+        pos: (p.programOutcomes && p.programOutcomes.length > 0)
+          ? p.programOutcomes.map(po => ({
+              code: po.code,
+              title: po.title || po.statement || po.code,
+              desc: po.description || po.desc || po.title || ''
+            }))
+          : (Array.isArray(p.pos) ? p.pos : [])
       })) : []);
 
       if (Array.isArray(depts)) {
@@ -69,6 +76,7 @@ const OrgAcademicsPrograms = () => {
 
   const [selectedProgForPo, setSelectedProgForPo] = useState(null);
   const [isPoModalOpen, setIsPoModalOpen] = useState(false);
+  const [poLoading, setPoLoading] = useState(false);
 
   const {
     currentPage,
@@ -126,14 +134,39 @@ const OrgAcademicsPrograms = () => {
     setType('UG');
   };
 
-  const openPoModal = (prog) => {
+  const openPoModal = async (prog) => {
     setSelectedProgForPo(prog);
     setIsPoModalOpen(true);
+    if (!prog.pos || prog.pos.length === 0) {
+      setPoLoading(true);
+      try {
+        let pos = await obeService.getPos(prog.id);
+        if (!pos || pos.length === 0) {
+          // If empty, auto-seed standard accreditation outcomes for this program
+          await obeService.seedStandardPos(prog.id);
+          pos = await obeService.getPos(prog.id);
+        }
+        if (Array.isArray(pos) && pos.length > 0) {
+          const mapped = pos.map(po => ({
+            code: po.code,
+            title: po.title || po.statement || po.code,
+            desc: po.description || po.desc || po.title || ''
+          }));
+          setSelectedProgForPo(prev => prev ? { ...prev, pos: mapped } : prev);
+          setPrograms(prev => prev.map(p => p.id === prog.id ? { ...p, pos: mapped } : p));
+        }
+      } catch (e) {
+        console.warn('Failed to load POs:', e);
+      } finally {
+        setPoLoading(false);
+      }
+    }
   };
 
   const closePoModal = () => {
     setSelectedProgForPo(null);
     setIsPoModalOpen(false);
+    setPoLoading(false);
   };
 
   const handleSubmit = async (e) => {
@@ -357,7 +390,7 @@ const OrgAcademicsPrograms = () => {
                         }}
                         onClick={() => openPoModal(prog)}
                       >
-                        <i className="fa-solid fa-award"></i> {prog.pos?.length || 11} Outcomes (POs + PSOs)
+                        <i className="fa-solid fa-award"></i> {prog.pos?.length || (prog.programOutcomes?.length ?? 14)} Outcomes (POs + PSOs)
                       </button>
                     </td>
                     <td style={{ textAlign: 'center' }}>
@@ -517,7 +550,12 @@ const OrgAcademicsPrograms = () => {
                 overflowY: 'auto',
               }}
             >
-              {selectedProgForPo?.pos?.length > 0 ? (
+              {poLoading ? (
+                <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>
+                  <i className="fa-solid fa-circle-notch fa-spin" style={{ fontSize: '28px', color: '#0284c7', marginBottom: '12px', display: 'block' }}></i>
+                  Loading accredited Program Outcomes (POs / PSOs)...
+                </div>
+              ) : selectedProgForPo?.pos?.length > 0 ? (
                 selectedProgForPo.pos.map((po, idx) => (
                   <div
                     key={idx}
@@ -533,7 +571,7 @@ const OrgAcademicsPrograms = () => {
                       <strong style={{ fontSize: '14px', color: '#1e293b' }}>{po.title}</strong>
                     </div>
                     <div style={{ fontSize: '13px', color: '#64748b', lineHeight: '1.5' }}>
-                      {po.desc}
+                      {po.desc || po.description}
                     </div>
                   </div>
                 ))
