@@ -62,9 +62,36 @@ const OrgAdministrationCollegeDetails = () => {
   const handleLogoChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Logo file size must be less than 10MB.');
+        return;
+      }
       const reader = new FileReader();
       reader.onload = (event) => {
-        setFormData(prev => ({ ...prev, logo_url: event.target.result }));
+        const img = new Image();
+        img.onload = () => {
+          // Optimize dimensions to max 512px to guarantee smooth saving through Nginx/backend
+          const maxDim = 512;
+          let w = img.width;
+          let h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) {
+              h = Math.round((h * maxDim) / w);
+              w = maxDim;
+            } else {
+              w = Math.round((w * maxDim) / h);
+              h = maxDim;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          const optimizedDataUrl = canvas.toDataURL(file.type || 'image/png', 0.92);
+          setFormData(prev => ({ ...prev, logo_url: optimizedDataUrl }));
+        };
+        img.src = event.target.result;
       };
       reader.readAsDataURL(file);
     }
@@ -91,9 +118,10 @@ const OrgAdministrationCollegeDetails = () => {
       setDetails(formData);
       setIsEditing(false);
     } catch (err) {
-      console.warn('Error saving college details to database:', err);
-      setDetails(formData);
-      setIsEditing(false);
+      console.error('Error saving college details to database:', err);
+      const msg = err.response?.data?.message || err.message || 'Server error occurred while saving details.';
+      alert('Failed to save college details: ' + msg);
+      return;
     } finally {
       setLoading(false);
     }
