@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { TableSkeletonLoader, TablePagination, useTablePagination, useConfirmDialog } from '../../../../components';
 import staffService from '../../../../services/staff.service';
