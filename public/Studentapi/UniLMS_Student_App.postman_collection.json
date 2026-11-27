@@ -24,7 +24,7 @@
     },
     {
       "key": "tenantCode",
-      "value": "MST",
+      "value": "MCS",
       "type": "string",
       "description": "Your institution Campus Code (e.g. MST, DEMO, ORG1)."
     },
@@ -54,7 +54,7 @@
     },
     {
       "key": "studentId",
-      "value": "",
+      "value": "self",
       "type": "string",
       "description": "Active student profile UUID automatically populated upon calling Login."
     }
@@ -110,28 +110,31 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
                   "if (pm.response.code === 200) {",
-                  "    const data = pm.response.json();",
-                  "    if (data.accessToken) {",
-                  "        pm.collectionVariables.set(\"token\", data.accessToken);",
-                  "        console.log(\"Token stored in collection variables!\");",
+                  "    const res = pm.response.json();",
+                  "    const payload = res.data || res;",
+                  "    const token = payload.accessToken || payload.token;",
+                  "    if (token) {",
+                  "        pm.collectionVariables.set(\"token\", token);",
+                  "        console.log(\"Access token stored in collection variables!\");",
                   "    }",
-                  "    if (data.refreshToken) {",
-                  "        pm.collectionVariables.set(\"refreshToken\", data.refreshToken);",
+                  "    if (payload.refreshToken) {",
+                  "        pm.collectionVariables.set(\"refreshToken\", payload.refreshToken);",
                   "    }",
-                  "    if (data.user) {",
-                  "        if (data.user.studentId) {",
-                  "            pm.collectionVariables.set(\"studentId\", data.user.studentId);",
-                  "            console.log(\"Student ID stored:\", data.user.studentId);",
+                  "    if (payload.user) {",
+                  "        if (payload.user.studentId) {",
+                  "            pm.collectionVariables.set(\"studentId\", payload.user.studentId);",
+                  "            console.log(\"Student ID stored:\", payload.user.studentId);",
                   "        }",
-                  "        if (data.user.tenant && data.user.tenant.code) {",
-                  "            pm.collectionVariables.set(\"tenantCode\", data.user.tenant.code);",
+                  "        if (payload.user.tenant && payload.user.tenant.code) {",
+                  "            pm.collectionVariables.set(\"tenantCode\", payload.user.tenant.code);",
+                  "            console.log(\"Tenant Code stored:\", payload.user.tenant.code);",
                   "        }",
                   "    }",
                   "}"
-                ],
-                "type": "text/javascript"
+                ]
               }
             }
           ]
@@ -141,12 +144,6 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "x-tenant-code",
-                "value": "{{tenantCode}}",
-                "type": "text",
-                "description": "Multi-Tenant Identifier Header"
-              },
               {
                 "key": "Content-Type",
                 "value": "application/json",
@@ -182,16 +179,18 @@
             {
               "listen": "test",
               "script": {
+                "type": "text/javascript",
                 "exec": [
                   "if (pm.response.code === 200) {",
-                  "    const data = pm.response.json();",
-                  "    if (data.accessToken) {",
-                  "        pm.collectionVariables.set(\"token\", data.accessToken);",
+                  "    const res = pm.response.json();",
+                  "    const payload = res.data || res;",
+                  "    const token = payload.accessToken || payload.token;",
+                  "    if (token) {",
+                  "        pm.collectionVariables.set(\"token\", token);",
                   "        console.log(\"New token renewed!\");",
                   "    }",
                   "}"
-                ],
-                "type": "text/javascript"
+                ]
               }
             }
           ]
@@ -201,12 +200,6 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "x-tenant-code",
-                "value": "{{tenantCode}}",
-                "type": "text",
-                "description": "Multi-Tenant Identifier Header"
-              },
               {
                 "key": "Content-Type",
                 "value": "application/json",
@@ -253,14 +246,7 @@
           "name": "04. Get Current Student Profile Dossier",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "x-tenant-code",
-                "value": "{{tenantCode}}",
-                "type": "text",
-                "description": "Multi-Tenant Identifier Header"
-              }
-            ],
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/students/{{studentId}}",
               "host": [
@@ -289,14 +275,7 @@
               "name": "01. Get Student 360 Dashboard Overview",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/parent/student/{{studentId}}/overview",
                   "host": [
@@ -317,14 +296,7 @@
               "name": "02. Get Verified Student Digital ID Card Dossier",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/students/portal/digital-id?studentId={{studentId}}",
                   "host": [
@@ -351,14 +323,7 @@
               "name": "03. Get Campus Academic Calendar & Events",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/parent/student/{{studentId}}/calendar",
                   "host": [
@@ -379,14 +344,7 @@
               "name": "04. Get Student Self-Service Quick Counters",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/students/portal/self-service-summary?studentId={{studentId}}",
                   "host": [
@@ -419,14 +377,7 @@
               "name": "01. Get Homework Assignments & Submissions",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/parent/student/{{studentId}}/homework",
                   "host": [
@@ -447,14 +398,7 @@
               "name": "02. Get Assignment Worksheets & Project Guidelines",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/academics/study-materials",
                   "host": [
@@ -479,14 +423,7 @@
               "name": "01. List Available & Active Quizzes",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/cbt/quizzes",
                   "host": [
@@ -505,14 +442,7 @@
               "name": "02. Get Quiz Instructions & Question Breakdown",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/cbt/quizzes/:quizId",
                   "host": [
@@ -533,12 +463,6 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  },
                   {
                     "key": "Content-Type",
                     "value": "application/json",
@@ -572,14 +496,7 @@
               "name": "04. Get Live CBT Exam Player State",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/cbt/session/:sessionId",
                   "host": [
@@ -600,12 +517,6 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  },
                   {
                     "key": "Content-Type",
                     "value": "application/json",
@@ -641,14 +552,7 @@
               "name": "06. Finalize & Submit CBT Assessment",
               "request": {
                 "method": "POST",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/cbt/session/:sessionId/submit",
                   "host": [
@@ -675,14 +579,7 @@
               "name": "01. Get Weekly Class Timetable (Mon-Sat)",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/parent/student/{{studentId}}/timetable",
                   "host": [
@@ -709,14 +606,7 @@
               "name": "01. Get Cumulative Attendance Summary & Roll-Call Logs",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/parent/student/{{studentId}}/attendance",
                   "host": [
@@ -737,14 +627,7 @@
               "name": "02. Get Monthly Filtered Attendance Register",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/parent/student/{{studentId}}/attendance?month=2026-11",
                   "host": [
@@ -772,14 +655,7 @@
               "name": "03. Get Gazetted Public & Institutional Holidays",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/tenants/settings/org_holidays",
                   "host": [
@@ -805,14 +681,7 @@
               "name": "01. Get Student Marks & Semester Grade Card",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/parent/student/{{studentId}}/marks",
                   "host": [
@@ -833,14 +702,7 @@
               "name": "02. Get Published Examination Date-Sheets",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/examinations/schedules",
                   "host": [
@@ -865,14 +727,7 @@
               "name": "01. Get Subject-wise Lecture Notes & Materials",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/academics/study-materials",
                   "host": [
@@ -891,14 +746,7 @@
               "name": "02. Browse Digital LMS Course Catalog",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/lms/courses?isPublished=true",
                   "host": [
@@ -924,14 +772,7 @@
               "name": "03. Get My Enrolled Courses & Learning Progress",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/lms/my-courses?studentId={{studentId}}",
                   "host": [
@@ -957,14 +798,7 @@
               "name": "04. Get Course Syllabus & Playable Lessons",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/lms/courses/:courseId",
                   "host": [
@@ -984,14 +818,7 @@
               "name": "05. Self-Enroll into an LMS Course",
               "request": {
                 "method": "POST",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/lms/courses/:courseId/enroll",
                   "host": [
@@ -1018,14 +845,7 @@
               "name": "01. Get Accredited Program Outcomes (POs & PSOs)",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/obe/pos",
                   "host": [
@@ -1044,14 +864,7 @@
               "name": "02. Get CO-PO Course Articulation Matrix",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/obe/matrix/:subjectId",
                   "host": [
@@ -1083,14 +896,7 @@
               "name": "01. List Verified Industry Internships",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/placements/internships",
                   "host": [
@@ -1115,14 +921,7 @@
               "name": "01. List Campus Placement Drives",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/placements/drives",
                   "host": [
@@ -1141,14 +940,7 @@
               "name": "02. Get My Submitted Job Applications",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/placements/applications",
                   "host": [
@@ -1168,12 +960,6 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  },
                   {
                     "key": "Content-Type",
                     "value": "application/json",
@@ -1207,14 +993,7 @@
               "name": "04. Get Received Job Offers & Terms",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/placements/offers",
                   "host": [
@@ -1245,14 +1024,7 @@
               "name": "01. Get Fee Invoices, Receipts & Pending Balance",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/parent/student/{{studentId}}/fees",
                   "host": [
@@ -1279,14 +1051,7 @@
               "name": "01. Get Self-Service Desk Summary KPIs",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/students/portal/self-service-summary?studentId={{studentId}}",
                   "host": [
@@ -1313,14 +1078,7 @@
               "name": "02. Get Campus Circulars & General Notices",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/students/portal/notices",
                   "host": [
@@ -1340,14 +1098,7 @@
               "name": "03. Get Real-Time Notifications Feed",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/notifications",
                   "host": [
@@ -1371,14 +1122,7 @@
               "name": "01. List Submitted Certificate Requests",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/students/portal/certificate-requests?studentId={{studentId}}",
                   "host": [
@@ -1406,12 +1150,6 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  },
                   {
                     "key": "Content-Type",
                     "value": "application/json",
@@ -1452,14 +1190,7 @@
               "name": "01. Get Exam Registrations & Hall Tickets",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/students/portal/exam-registrations?studentId={{studentId}}",
                   "host": [
@@ -1487,12 +1218,6 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  },
                   {
                     "key": "Content-Type",
                     "value": "application/json",
@@ -1533,14 +1258,7 @@
               "name": "01. Get Daily Academic Notices & Circulars",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/students/portal/notices",
                   "host": [
@@ -1560,14 +1278,7 @@
               "name": "02. Get Academic Calendar & Holiday Schedule",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/parent/student/{{studentId}}/calendar",
                   "host": [
@@ -1594,14 +1305,7 @@
               "name": "01. Get My Hostel Bed Allocation",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/hostel/allocations?studentId={{studentId}}",
                   "host": [
@@ -1627,14 +1331,7 @@
               "name": "02. List Outing & Gate Pass Requests",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/hostel/outings?studentId={{studentId}}",
                   "host": [
@@ -1661,12 +1358,6 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  },
                   {
                     "key": "Content-Type",
                     "value": "application/json",
@@ -1706,14 +1397,7 @@
               "name": "01. Get My Transport Subscription & Bus Pass",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/transport/subscriptions?studentId={{studentId}}",
                   "host": [
@@ -1740,12 +1424,6 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  },
                   {
                     "key": "Content-Type",
                     "value": "application/json",
@@ -1785,14 +1463,7 @@
               "name": "01. List Submitted Grievances & Support Tickets",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/students/portal/complaints?studentId={{studentId}}",
                   "host": [
@@ -1820,12 +1491,6 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  },
                   {
                     "key": "Content-Type",
                     "value": "application/json",
@@ -1866,14 +1531,7 @@
               "name": "01. List Submitted Course Feedback",
               "request": {
                 "method": "GET",
-                "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  }
-                ],
+                "header": [],
                 "url": {
                   "raw": "{{baseUrl}}/students/portal/feedbacks?studentId={{studentId}}",
                   "host": [
@@ -1901,12 +1559,6 @@
               "request": {
                 "method": "POST",
                 "header": [
-                  {
-                    "key": "x-tenant-code",
-                    "value": "{{tenantCode}}",
-                    "type": "text",
-                    "description": "Multi-Tenant Identifier Header"
-                  },
                   {
                     "key": "Content-Type",
                     "value": "application/json",
